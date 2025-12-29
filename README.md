@@ -35,8 +35,8 @@ In this repository, you can find the results of my studies at Sevastopol State U
 + Year of enrollment: 2025
 + Year of graduation: 2029
 + Field of study: 
-+ + 1 and 2 Course: 09.03.00 (General Course)
-+ + 3 and 4 Course: 09.03.xx
+    + 1 and 2 Course: 09.03.00 (General Course)
+    + 3 and 4 Course: 09.03.xx
 
 # My curriculum:
 ```cpp
