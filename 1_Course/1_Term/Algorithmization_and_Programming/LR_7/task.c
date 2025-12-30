@@ -21,6 +21,7 @@ int countCircleRoutes(struct route *arr, int n);
 void sortByPrice(struct route *arr, int n);
 
 int main() {
+    setlocale(LC_ALL, "Rus");
     int choice, n = 0;
     struct route *arr=NULL;
     while (1) {
@@ -79,7 +80,7 @@ int main() {
             
             case 9:
                 free(arr);
-                printf("\nВыход из программы . . .");
+                printf("Выход из программы . . .");
                 return 0;
 
             default:

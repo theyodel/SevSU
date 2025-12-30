@@ -1,5 +1,5 @@
 *.exe
-.vscode/*
+1_Course/1_Term/Algorithmization_and_Programming/.vscode/*
 .idea
 *.py
 */zashita.cpp
@@ -8,4 +8,4 @@
 */proba.c
 */proba.cpp
 */proba.exe
-.laba_6/*
+1_Course/1_Term/Algorithmization_and_Programming/LR_6

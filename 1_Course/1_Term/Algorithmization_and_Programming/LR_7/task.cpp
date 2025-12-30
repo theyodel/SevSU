@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string>
 #include <iomanip>
+#include <locale.h>
 #include <math.h>
 
 using namespace std;
@@ -25,6 +26,7 @@ void sortByPrice(route *arr, int n);
 
 int main()
 {
+    char *locale = setlocale(LC_ALL, "");
     int choice, n = 0;
     route *arr = NULL;
     while (1)
