@@ -24,6 +24,19 @@
         9. Безопасность Жизнедеятельности
         10. Физическая Культура и Спорт
     }
+    2 Семестр {
+        1. Алгоритмизация и Программирование
+        2. Программирование на Python
+        3. Высшая Математика
+        4. Теория Вероятности
+        5. Дискретная Математика (Структуры)
+        6. Компьютерная Схемотехника
+        7. Графический Дизайн в Веб
+        8. История России
+        9. Иностранный язык (Английский язык)
+        10. Физическая Культура и Спорт
+        11. Основы Проектной Деятельности (МООК)
+    }
 }
 ```
 
@@ -52,6 +65,19 @@ In this repository, you can find the results of my studies at Sevastopol State U
         8. Foreign Language (English)
         9. Life Safety
         10. Physical Culture and Sports
+    }
+    2 Term {
+        1. Algorithmization and Programming
+        2. Python Programming
+        3. Higher Mathematics
+        4. Probability Theory
+        5. Discrete Mathematics (Structures)
+        6. Computer Schematics
+        7. Web Graphic Design
+        8. History of Russia
+        9. Foreign Language (English)
+        10. Physical Education and Sports
+        11. Fundamentals of Project Activities (MOOC)
     }
 }
 ```
