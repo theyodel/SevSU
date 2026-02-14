@@ -29,8 +29,8 @@ void listOutput(struct list *s);
 void fmemory(struct list *s);
 
 int main() {
-    SetConsoleCP(1125);
-    SetConsoleOutputCP(1125);
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     setlocale(LC_ALL, "RU");
 
     int choice;
@@ -103,7 +103,6 @@ struct scientist readData() {
     printf("Введите учёную степень: ");
     gets(data.degree);
     data.degree[strcspn(data.degree, "\n")] = '\0';
-
     printf("Введите количество научных статей: "); scanf("%d", &data.articles);
     printf("Введите количество цитирований: "); scanf("%d", &data.quote);
     printf("Введите индекс Хирша: "); scanf("%d", &data.hirshIndex);
@@ -134,6 +133,10 @@ struct list *addLast(struct list *s, struct scientist data) {
 }
 
 struct list *createList(struct list *s) {
+    if (s != NULL) {
+        printf("Список уже введён! Воспользуйтесь командами под номерами 2 и 3, чтобы ввести новых учёных!\n");
+        return s;
+    }
     struct scientist data;
     int choice = 0;
     do {
@@ -152,6 +155,10 @@ struct list *createList(struct list *s) {
 }
 
 struct list *deleteScientist(struct list *s) {
+    if (s == NULL) {
+        printf("Список не введён!\n");
+        return s;
+    }
     int id;
     printf("Введите ID учёного, которого хотите удалить: "); scanf("%d", &id);
     struct list *temp = s;
@@ -163,7 +170,8 @@ struct list *deleteScientist(struct list *s) {
     if (temp == NULL) return s;
     if (prev == NULL) {
         s = temp->next;
-    } else {
+    } 
+    else {
         prev->next = temp->next;
     }
     free(temp);
@@ -185,7 +193,7 @@ struct list *deleteScndThrdScientist(struct list *s) {
 
 void listOutput(struct list *s) {
     if (s == NULL) {
-        printf("Список пуст!\n");
+        printf("Список не введён!\n");
         return;
     }
     
@@ -210,7 +218,7 @@ void listOutput(struct list *s) {
 }
 
 void fmemory(struct list *s) {
-    int c=0;
+    int c = 0;
     if (s == NULL) {
         printf("Список пуст...\n");
         return;
