@@ -5,14 +5,11 @@
 
 char *readString();
 void outputString(char *s);
-// char replaceStars();
-// void outputBeforeSpace(char *s);
+void replaceStars(char *s);
+void outputBeforeSpace(char *s);
 int isByeEnd(char *s);
 
 int main() {
-    // SetConsoleCP(65001);
-    // SetConsoleOutputCP(65001);
-
     int choice;
     char *s = NULL;
     while (1) {
@@ -21,7 +18,7 @@ int main() {
         printf("2. Вывести текущую строку\n");
         printf("3. Проверить окончание строки на \"Bye\"\n");
         printf("4. Заменить все \"***\" на \"/\"\n");
-        printf("5. Вывести подстроку до первого символа \' \'\n");
+        printf("5. Вывести подстроку до первого символа \" \"\n");
         printf("0. Выход из программы\n");
         printf("-> "); 
         fflush(stdin);
@@ -53,8 +50,8 @@ int main() {
                 break;
 
             case 5:
-                // if (s == NULL) printf("Строка не введена!\n");
-                // else outputBeforeSpace(s);
+                if (s == NULL) printf("Строка не введена!\n");
+                else outputBeforeSpace(s);
                 break;
 
             case 0:
@@ -72,46 +69,27 @@ char *readString() {
     printf("Введите строку: "); 
     while (getchar() != '\n');
     gets(temp);
-    char *s = (char*)malloc(strlen(temp)+1);
+    char *s = (char*)calloc(strlen(temp)+1, 1);
     strcpy(s, temp);
     return s;
 }
 
 void outputString(char *s) {
     printf("Введённая строка: %s\n", s);
-    printf("Вес строки: %dБайт\n", strlen(s)+1);
+    printf("Вес строки: %d Байт\n", strlen(s)+1);
 }
-
-int StringCompare(char *n, char *s) {
-    char *Ftemp = (char*)calloc(4, 4);
-    char *Stemp = (char*)calloc(4, 4);
-    *Ftemp = n[strlen(n)-3]; *Stemp = s[strlen(s)-3];
-    
-    while (*Ftemp == *Stemp) {
-        printf("%d | %d\n", *Ftemp, *Stemp);
-        Ftemp++; Stemp++;
-    }
-    return *Ftemp-*Stemp;
-}
-
-// int StringCompare(char *n, char *s) {
-//     if (*s==*n) return 0;
-//     return *n-*s;
-// }
 
 int isByeEnd(char *s) {
-    int flag = 0;
-    printf("%d", StringCompare(s, "Bye"));
-    if (StringCompare(s, "Bye")==0) flag = 1;
-    return flag;
+    if (strlen(s) < 3) return 0;
+    if (strcmp(&s[strlen(s)-3] , "Bye")==0) return 1;
+    return 0;
 }
 
-// void outputBeforeSpace(char *s) {
-//     char temp[strlen(s)+1];
-//     int i = 0;
-//     while (strcmp(s[i], ' ') != 0) {
-//         strcat(temp, s[i]);
-//         i++;
-//     }
-//     printf("Строка до первого знака \' \': %s\n", temp);
-// }
+void replaceStars(char *s) {
+    if (s == NULL) return;
+    char *pos;
+    while ((pos = strstr(s, "***")) != NULL) {
+        *pos = '/';
+        memmove(pos + 1, pos + 3, strlen(pos + 3) + 1);
+    }
+}
