@@ -29,8 +29,10 @@ void listOutput(struct list *s);
 void freeMemory(struct list *s);
 
 int main() {
-    setlocale(LC_ALL, "ru");
-    SetConsoleCP(1251);
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
+    setlocale(LC_ALL, "RU");
+
     int choice;
     struct list *s, *e;
     s = e = NULL;
@@ -99,7 +101,6 @@ struct scientist readData() {
     printf("Введите учёную степень: ");
     gets(data.degree);
     data.degree[strcspn(data.degree, "\n")] = '\0';
-
     printf("Введите количество научных статей: "); scanf("%d", &data.articles);
     printf("Введите количество цитирований: "); scanf("%d", &data.quote);
     printf("Введите индекс Хирша: "); scanf("%d", &data.hirshIndex);
@@ -155,7 +156,8 @@ struct list *deleteScientist(struct list *s) {
     }
     if (prev == NULL) {
         s = temp->next;
-    } else {
+    } 
+    else {
         prev->next = temp->next;
     }
     free(temp);
@@ -177,7 +179,7 @@ struct list *deleteScndThrdScientist(struct list *s) {
 
 void listOutput(struct list *s) {
     if (s == NULL) {
-        printf("Список пуст!\n");
+        printf("Список не введён!\n");
         return;
     }
     struct list *temp;
