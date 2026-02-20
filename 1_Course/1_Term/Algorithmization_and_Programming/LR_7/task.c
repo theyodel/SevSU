@@ -1,230 +1,178 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
-#include <locale.h>
+#include <math.h>
 
-struct scientist {
-    int id;
-    char name[76];
-    char area[26];
-    char degree[26];
-    int articles;
-    int quote;
-    int hirshIndex;
+// Создание структуры "route"
+struct route {
+    int number;
+    int routeNumber;
+    char startPoint[100];
+    char endPoint[100];
+    float price;
+    int time;
 };
 
-struct list {
-    struct scientist info;
-    struct list* next;
-};
+// Объявление функций
+struct route* scanRoutes(int n);
+void printRoutes(struct route *arr, int n);
+int countCircleRoutes(struct route *arr, int n);
+void sortByPrice(struct route *arr, int n);
 
-struct scientist readData();
-struct list *createList(struct list *s);
-struct list *addFirst(struct list *s, struct scientist d);
-struct list *addLast(struct list *s, struct scientist d);
-struct list *deleteScientist(struct list *s);
-struct list *deleteScndThrdScientist(struct list *s);
-void listOutput(struct list *s);
-void fmemory(struct list *s);
 
 int main() {
-    SetConsoleCP(65001);
-    SetConsoleOutputCP(65001);
-    // setlocale(LC_ALL, "RU");
-
-    int choice;
-    struct list *s, *e, *temp;
-    s = e = NULL;
-    struct scientist data;
+    int choice, n = 0;
+    struct route *arr=NULL;
     while (1) {
-        printf("\n================ МЕНЮ ================\n");
-        printf("1. Создать список учёных\n");
-        printf("2. Ввести информацию об учёном в начало\n");
-        printf("3. Ввести информацию об учёном в конец\n");
-        printf("4. Удалить учёного из списка\n");
-        printf("5. Вывести список всех учёных\n");
-        printf("6. Удалить 2 и 3 запись\n");
-        printf("0. Выход из программы\n");
+        printf("\n======= М Е Н Ю =======\n");
+        printf("1. Ввести все маршруты\n");
+        printf("2. Вывести все маршруты\n");
+        printf("3. Найти количество круговых маршрутов\n");
+        printf("4. Отсортировать маршруты по стоимости проезда\n");
+        printf("9. Выход\n");
         printf("-> ");
         scanf("%d", &choice);
-        
-        switch (choice) {  
-            case 1:
-                s = createList(s);
-                break;
+        printf("\n");
 
+        switch(choice) {
+            case 1:
+                if (arr != NULL) {
+                    free(arr);
+                }
+                n = 0;
+                printf("Введите количество маршрутов: ");
+                scanf("%d", &n);
+                if (n <= 0) {
+                    printf("Количество маршрутов должно быть > 0");
+                    break;
+                }
+                arr = scanRoutes(n);
+                break;
+            
             case 2:
-                data = readData();
-                s = addFirst(s, data);
+                if (arr == NULL) {
+                    printf("Маршруты не введены!\n");
+                } 
+                else {
+                    printf("Все маршруты:\n");
+                    printRoutes(arr, n);
+                }
                 break;
 
             case 3:
-                data = readData();
-                s = addLast(s, data);
-                break;
-
-            case 4:
-                s = deleteScientist(s);
-                break;
-
-            case 5:
-                listOutput(s);
-                break;
-
-            case 6:
-                s = deleteScndThrdScientist(s);
+                if (arr == NULL) {
+                    printf("Маршруты не введены!\n");
+                } 
+                else {
+                    printf("Количество круговых маршрутов: %d\n", countCircleRoutes(arr, n));
+                }  
                 break;
             
-            case 0:
-                fmemory(s);
-                printf("Выход из программы...");
+            case 4:
+                if (arr == NULL) {
+                    printf("Маршруты не введены!\n");
+                } 
+                else {
+                    sortByPrice(arr, n);
+                }
+                break;
+            
+            case 9:
+                free(arr);
+                printf("\nВыход из программы . . .");
                 return 0;
 
             default:
-                printf("Команда не распознана!\n");
+                printf("Неверный выбор! Попробуйте снова.");
+                break;
         }
     }
 }
 
-struct scientist readData() {
-    struct scientist data;
-    static int nextID = 1;
-    data.id = nextID++;
-    while (getchar() != '\n');
-    printf("Введите ФИО: ");
-    gets(data.name);
-    data.name[strcspn(data.name, "\n")] = '\0';
+struct route* scanRoutes(int n) {
+    struct route *arr = (struct route*) malloc(n * sizeof(struct route));
     
-    printf("Введите научную область: ");
-    gets(data.area);
-    data.area[strcspn(data.area, "\n")] = '\0';
-
-    printf("Введите учёную степень: ");
-    gets(data.degree);
-    data.degree[strcspn(data.degree, "\n")] = '\0';
-
-    printf("Введите количество научных статей: "); scanf("%d", &data.articles);
-    printf("Введите количество цитирований: "); scanf("%d", &data.quote);
-    printf("Введите индекс Хирша: "); scanf("%d", &data.hirshIndex);
-    printf("\n");
-    return data;
-}
-
-struct list *addFirst(struct list *s, struct scientist data) {
-    struct list *temp;
-    temp = (struct list*)malloc(sizeof(struct list));
-    temp->info = data;
-    temp->next = s;
-    s = temp;
-    return s;
-}
-
-struct list *addLast(struct list *s, struct scientist data) {
-    struct list *temp, *e;
-    temp = (struct list*)malloc(sizeof(struct list));
-    temp->info = data;
-    temp->next = NULL;
-    if (s == NULL) s = temp;
-    else {
-        for (e = s; e->next != NULL; e = e->next);
-        e->next = temp;
+    if (arr == NULL) {
+        printf("Ошибка выделения памяти!\n");
+        return NULL;
     }
-    return s;
+    
+    printf("Введите %d маршрутов:\n", n);
+    for (int i = 0; i < n; i++) {
+       arr[i].number = i+1;
+       printf("Введите номер маршрута: ");
+       scanf("%d", &arr[i].routeNumber);
+       while (getchar() != '\n');
+
+       printf("Введите начальную точку маршрута (до 100 символов): ");
+       gets(arr[i].startPoint); 
+
+       printf("Введите конечную точку маршрута (до 100 символов): ");
+       gets(arr[i].endPoint);
+
+       printf("Введите цену маршрута: ");
+       scanf("%f", &arr[i].price);
+
+       printf("Введите время в пути (в минутах): ");
+       scanf("%d", &arr[i].time);
+
+       printf("----------------------------------------------\n");
+   }
+    
+    return arr;
 }
 
-struct list *createList(struct list *s) {
-    struct scientist data;
-    int choice = 0;
-    do {
-        if (s == NULL) {
-            data = readData();
-            s = addFirst(s, data);
+void printRoutes(struct route *arr, int n) {
+    printf("----------------------------------------------\n");
+
+    for (int i = 0; i < n; i++) {
+        printf("%d) Номер маршрута: %d\n", arr[i].number, arr[i].routeNumber);
+        printf("Начальная точка: %s \nКонечная точка: %s\n", arr[i].startPoint, arr[i].endPoint);
+        printf("Цена проезда: %.2f₽\n", arr[i].price);
+        if (arr[i].time % 60 == 0) {
+            printf("Время в пути: %dч\n", arr[i].time/60);
+        }
+        else if (arr[i].time < 60) {
+            printf("Время в пути: %dмин\n", arr[i].time);
         }
         else {
-            data = readData();
-            addLast(s, data);
+            printf("Время в пути: %dч %dмин\n", arr[i].time/60, arr[i].time%60);
         }
-        printf("Ввести ещё? \n1. да \n0. нет \n-> ");
-        scanf("%d", &choice);
-    } while (choice);
-    return s;
+        printf("----------------------------------------------\n");
+    }
+
+    printf("Всего маршрутов: %d\n", n);
 }
 
-struct list *deleteScientist(struct list *s) {
-    int id;
-    printf("Введите ID учёного, которого хотите удалить: "); scanf("%d", &id);
-    struct list *temp = s;
-    struct list *prev = NULL;
-    while (temp != NULL && temp->info.id != id) {
-        prev = temp;
-        temp = temp->next;
-    }
-    if (temp == NULL) return s;
-    if (prev == NULL) {
-        s = temp->next;
-    } else {
-        prev->next = temp->next;
-    }
-    free(temp);
-    return s;
-}
+int countCircleRoutes(struct route *arr, int n) {
+    int count = 0;
 
-struct list *deleteScndThrdScientist(struct list *s) {
-    if (s == NULL || s->next == NULL || s->next->next == NULL) {
-        printf("В списке меньше трёх учёных! Удаление невозможно.\n");
-        return s;
-    }
-    struct list *second = s->next;
-    struct list *third  = second->next;
-    s->next = third->next;
-    free(second);
-    free(third);
-    return s;
-}
-
-void listOutput(struct list *s) {
-    if (s == NULL) {
-        printf("Список пуст!\n");
-        return;
-    }
-    
-    struct list *temp;
-    temp = s;
-    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
-    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    while (temp != NULL) {
-        printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
-          temp->info.id,
-          temp->info.name,
-          temp->info.degree,
-          temp->info.area,
-          temp->info.articles,
-          temp->info.quote,
-          temp->info.hirshIndex
-        );
-        temp = temp->next;
-        printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    }
-}
-
-void fmemory(struct list *s) {
-    int c=0;
-    if (s == NULL) {
-        printf("Список пуст...\n");
-        return;
-    }
-    else {
-        struct list *temp, *n;
-        temp = s;
-        n = temp->next;
-        while (temp != NULL) {
-            n = temp->next;
-            free(temp);
-            temp = n;
-            c++;
+    for (int i = 0; i < n; i++) {
+        if (strcmp(arr[i].startPoint, arr[i].endPoint) == 0) {
+            count++;
         }
-        printf("Было удалено %d записей...\nСписок пуст...\n", c);
     }
+
+    return count;
+}
+
+void sortByPrice(struct route *arr, int n) {
+    struct route temp, tarr[n];
+
+    for (int i = 0; i < n; i++) {
+        tarr[i] = arr[i];
+    }
+
+    for (int j = n; j > 1; j--) {
+        for(int i = 0; i < j-1; i++) {
+            if(tarr[i].price < tarr[i+1].price) {
+                temp=tarr[i];
+                tarr[i]=tarr[i+1];
+                tarr[i+1]=temp;
+            }
+        }
+    }
+
+    printf("Отсортированный список маршрутов по полю \"Цена проезда\":\n");
+    printRoutes(tarr, n);
 }
