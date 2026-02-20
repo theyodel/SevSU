@@ -9,9 +9,9 @@ struct scientist {
     char name[76];
     char area[26];
     char degree[26];
-    int articles;
-    int quote;
-    int hirshIndex;
+    unsigned int articles;
+    unsigned int quote;
+    unsigned int hirshIndex;
 };
 
 struct list {
@@ -26,15 +26,13 @@ struct list *addLast(struct list *s, struct scientist d);
 struct list *deleteScientist(struct list *s);
 struct list *deleteScndThrdScientist(struct list *s);
 void listOutput(struct list *s);
-void fmemory(struct list *s);
+void freeMemory(struct list *s);
 
 int main() {
-    SetConsoleCP(1125);
-    SetConsoleOutputCP(1125);
-    setlocale(LC_ALL, "RU");
-
+    setlocale(LC_ALL, "ru");
+    SetConsoleCP(1251);
     int choice;
-    struct list *s, *e, *temp;
+    struct list *s, *e;
     s = e = NULL;
     struct scientist data;
     while (1) {
@@ -55,13 +53,11 @@ int main() {
                 break;
 
             case 2:
-                data = readData();
-                s = addFirst(s, data);
+                s = addFirst(s, readData());
                 break;
 
             case 3:
-                data = readData();
-                s = addLast(s, data);
+                s = addLast(s, readData());
                 break;
 
             case 4:
@@ -77,7 +73,7 @@ int main() {
                 break;
             
             case 0:
-                fmemory(s);
+                freeMemory(s);
                 printf("Выход из программы...");
                 return 0;
 
@@ -111,13 +107,27 @@ struct scientist readData() {
     return data;
 }
 
+struct list *createList(struct list *s) {
+    int choice = 0;
+    do {
+        if (s == NULL) {
+            s = addFirst(s, readData());
+        }
+        else {
+            addLast(s, readData());
+        }
+        printf("Ввести ещё? \n1. да \n0. нет \n-> ");
+        scanf("%d", &choice);
+    } while (choice);
+    return s;
+}
+
 struct list *addFirst(struct list *s, struct scientist data) {
     struct list *temp;
     temp = (struct list*)malloc(sizeof(struct list));
     temp->info = data;
     temp->next = s;
-    s = temp;
-    return s;
+    return temp;
 }
 
 struct list *addLast(struct list *s, struct scientist data) {
@@ -133,34 +143,16 @@ struct list *addLast(struct list *s, struct scientist data) {
     return s;
 }
 
-struct list *createList(struct list *s) {
-    struct scientist data;
-    int choice = 0;
-    do {
-        if (s == NULL) {
-            data = readData();
-            s = addFirst(s, data);
-        }
-        else {
-            data = readData();
-            addLast(s, data);
-        }
-        printf("Ввести ещё? \n1. да \n0. нет \n-> ");
-        scanf("%d", &choice);
-    } while (choice);
-    return s;
-}
-
 struct list *deleteScientist(struct list *s) {
+    struct list *temp = s, *prev = NULL;
     int id;
-    printf("Введите ID учёного, которого хотите удалить: "); scanf("%d", &id);
-    struct list *temp = s;
-    struct list *prev = NULL;
+    if (temp == NULL) return s;
+    printf("Введите ID учёного, которого хотите удалить: ");
+    scanf("%d", &id);
     while (temp != NULL && temp->info.id != id) {
         prev = temp;
         temp = temp->next;
     }
-    if (temp == NULL) return s;
     if (prev == NULL) {
         s = temp->next;
     } else {
@@ -188,7 +180,6 @@ void listOutput(struct list *s) {
         printf("Список пуст!\n");
         return;
     }
-    
     struct list *temp;
     temp = s;
     printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
@@ -209,22 +200,19 @@ void listOutput(struct list *s) {
     }
 }
 
-void fmemory(struct list *s) {
-    int c=0;
+void freeMemory(struct list *s) {
     if (s == NULL) {
         printf("Список пуст...\n");
         return;
     }
-    else {
-        struct list *temp, *n;
-        temp = s;
+    struct list *temp=s, *n;
+    int c = 0;
+    n = temp->next;
+    while (temp != NULL) {
         n = temp->next;
-        while (temp != NULL) {
-            n = temp->next;
-            free(temp);
-            temp = n;
-            c++;
-        }
-        printf("Было удалено %d записей...\nСписок пуст...\n", c);
+        free(temp);
+        temp = n;
+        c++;
     }
+    printf("Было удалено %d записей...\nСписок пуст...\n", c);
 }
