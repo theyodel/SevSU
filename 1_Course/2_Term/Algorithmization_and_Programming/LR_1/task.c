@@ -16,7 +16,7 @@ struct scientist {
 
 struct list {
     struct scientist info;
-    struct list* next;
+    struct list *next;
 };
 
 struct scientist readData();
@@ -34,9 +34,8 @@ int main() {
     setlocale(LC_ALL, "RU");
 
     int choice;
-    struct list *s, *e;
-    s = e = NULL;
-    struct scientist data;
+    struct list *s;
+    s = NULL;
     while (1) {
         printf("\n================ МЕНЮ ================\n");
         printf("1. Создать список учёных\n");

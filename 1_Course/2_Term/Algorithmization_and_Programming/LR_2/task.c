@@ -93,3 +93,5 @@ void replaceStars(char *s) {
         memmove(pos + 1, pos + 3, strlen(pos + 3) + 1);
     }
 }
+
+// поменять предпоследний и второй местами
