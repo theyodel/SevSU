@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // TEMPORARY VARIABLES
 int STEP = 2;
@@ -57,7 +58,7 @@ int main() {
             
             case 0:
                 freeMemory(s);
-                printf("Выход из программы...");
+                printf("\n\n\nВыход из программы...");
                 return 0;
 
             default:
@@ -149,19 +150,20 @@ void viewList(struct list *beg) {
         );
         printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
     }
+    printf("\nСтраница: %d\n", page);
+    printf("\nДля навигации:\n`<` и `>`\nДля выхода:\n 0\t");
+    scanf("%c", &act);
+    
+    int flag = 100;
 
-    again:
-        printf("\nСтраница: %d\n", page);
-        printf("\nДля навигации:\n`<` и `>`\nДля выхода:\n 0\t");
-        scanf("%c", &act);
-    if (act == 60) {
-        printf("Страниц до 1 нет!");
-        goto again;
-    }
-
-    while (act != '0') {
-        switch (act) {
-            case 60:
+    while (flag != 0) {
+        // Перевод действия из char (str) в int (для удобства использования switch)
+        if (strcmp(act, "<")==0) flag=-1;
+        else if (strcmp(act, "0")==0) flag=0;
+        else if (strcmp(act, ">")==0) flag=1; 
+        
+        switch (flag) {
+            case 1:
                 if (temp->next == NULL) break;
                 page++;
                 printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
@@ -185,6 +187,8 @@ void viewList(struct list *beg) {
                 return;
             
             case 62:
+            
+            case -1:
                 if (temp->prev == NULL) break;
                 page--;
                 for (int c=0; (temp->prev != NULL) & c<STEP; c++, temp = temp->prev); // Перемещаемся на 15 записей назад, чтобы не терять последовательность
@@ -210,7 +214,7 @@ void viewList(struct list *beg) {
                 break;
         }
         printf("\nСтраница: %d\n", page);
-        printf("\nДля навигации:\n`<` и `>`\nДля выхода:\n 0\t");
+        printf("\nДля навигации:\n`<` = Влево и `>` = Вправо\nДля выхода: 0\t\t");
         scanf("%c", &act);
     }
 
@@ -230,5 +234,5 @@ void freeMemory(struct list *s) {
         temp = n;
         c++;
     }
-    printf("Было удалено %d записей...\nСписок пуст...\n", c);
+    printf("Было удалено %d записей...\nПамять освобождена...\n", c);
 }
