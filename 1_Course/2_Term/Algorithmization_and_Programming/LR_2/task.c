@@ -9,7 +9,7 @@ void replaceStars(char *s);
 void outputBeforeSpace(char *s);
 int isByeEnd(char *s);
 
-int main() {
+void main() {
     int choice;
     char *s = NULL;
     while (1) {
@@ -20,7 +20,7 @@ int main() {
         printf("4. Заменить все \"***\" на \"/\"\n");
         printf("5. Вывести подстроку до первого символа \" \"\n");
         printf("0. Выход из программы\n");
-        printf("-> "); 
+        printf("-> ");
         fflush(stdin);
         scanf("%d", &choice);
         switch (choice) {
@@ -47,6 +47,8 @@ int main() {
                 break;
 
             case 4:
+                if (s == NULL) printf("Строка не введена!\n");
+                else replaceStars(s);
                 break;
 
             case 5:
@@ -56,7 +58,7 @@ int main() {
 
             case 0:
                 if (s != NULL) free(s);
-                return 0; 
+                return; 
 
             default:
                 printf("Команда не распознана!\n");
@@ -85,6 +87,15 @@ int isByeEnd(char *s) {
     return 0;
 }
 
+/*!
+	\brief Функция замены "***" на "/"
+	\author yodel
+	\version 1.0
+	\date 23 Марта 2026
+	\warning Это моя функция!
+
+	Бля круто, теперь буду этим 24/7 пользоваться ыыы
+*/
 void replaceStars(char *s) {
     if (s == NULL) return;
     char *pos;
@@ -92,4 +103,14 @@ void replaceStars(char *s) {
         *pos = '/';
         memmove(pos + 1, pos + 3, strlen(pos + 3) + 1);
     }
+    printf("Полученная строка: %s\n", s);
+    printf("Вес строки: %dБайт", strlen(s)+1);
+}
+
+void outputBeforeSpace(char *s) {
+    int b = strcspn(s, " ");
+    for (int i=0; i<b; i++) {
+        printf("%c", s[i]);
+    }
+    printf("\n");
 }
