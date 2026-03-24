@@ -13,7 +13,7 @@ void outputBeforeSpace(string s);
 
 int main()
 {
-    int choice; /// Переменная для храниения выбора пользователя
+    int choice;
     string s = "";
     while (1)
     {

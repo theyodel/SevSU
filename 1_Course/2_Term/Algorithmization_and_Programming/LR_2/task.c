@@ -87,15 +87,6 @@ int isByeEnd(char *s) {
     return 0;
 }
 
-/*!
-	\brief Функция замены "***" на "/"
-	\author yodel
-	\version 1.0
-	\date 23 Марта 2026
-	\warning Это моя функция!
-
-	Бля круто, теперь буду этим 24/7 пользоваться ыыы
-*/
 void replaceStars(char *s) {
     if (s == NULL) return;
     char *pos;
