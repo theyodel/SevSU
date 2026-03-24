@@ -9,7 +9,7 @@ void replaceStars(char *s);
 void outputBeforeSpace(char *s);
 int isByeEnd(char *s);
 
-void main() {
+int main() {
     int choice;
     char *s = NULL;
     while (1) {
@@ -58,7 +58,7 @@ void main() {
 
             case 0:
                 if (s != NULL) free(s);
-                return; 
+                return 0; 
 
             default:
                 printf("Команда не распознана!\n");
@@ -104,7 +104,7 @@ void replaceStars(char *s) {
         memmove(pos + 1, pos + 3, strlen(pos + 3) + 1);
     }
     printf("Полученная строка: %s\n", s);
-    printf("Вес строки: %dБайт", strlen(s)+1);
+    printf("Вес строки: %d Байт", strlen(s)+1);
 }
 
 void outputBeforeSpace(char *s) {
