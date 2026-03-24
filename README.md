@@ -39,6 +39,10 @@
     }
 }
 ```
+## Языки программирования, которые изучил/изучаю:
+[![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,julia)](https://skillicons.dev)
+
+<hr color='#8a2de0'>
 
 # SevSU
 In this repository, you can find the results of my studies at Sevastopol State University. 
@@ -81,3 +85,5 @@ In this repository, you can find the results of my studies at Sevastopol State U
     }
 }
 ```
+## Programming languages I've learned/am learning:
+[![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,julia)](https://skillicons.dev)
