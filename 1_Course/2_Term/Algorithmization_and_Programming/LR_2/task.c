@@ -20,7 +20,7 @@ int main() {
         printf("4. Заменить все \"***\" на \"/\"\n");
         printf("5. Вывести подстроку до первого символа \" \"\n");
         printf("0. Выход из программы\n");
-        printf("-> "); 
+        printf("-> ");
         fflush(stdin);
         scanf("%d", &choice);
         switch (choice) {
@@ -30,32 +30,28 @@ int main() {
                 break;
 
             case 2:
-                if (s == NULL) printf("Строка не введена!\n");
-                else outputString(s);
+                outputString(s);
                 break;
 
             case 3:
-                if (s == NULL) printf("Строка не введена!\n");
+                if (isByeEnd(s)) {
+                    printf("Текущая строка заканчивается на \"Bye\"\n");
+                }
                 else {
-                    if (isByeEnd(s)) {
-                        printf("Текущая строка заканчивается на \"Bye\"\n");
-                    }
-                    else {
-                        printf("Текущая строка НЕ заканчивается на \"Bye\"\n");
-                    }
+                    printf("Текущая строка НЕ заканчивается на \"Bye\"\n");
                 }
                 break;
 
             case 4:
+                replaceStars(s);
                 break;
 
             case 5:
-                if (s == NULL) printf("Строка не введена!\n");
-                else outputBeforeSpace(s);
+                outputBeforeSpace(s);
                 break;
 
             case 0:
-                if (s != NULL) free(s);
+                free(s);
                 return 0; 
 
             default:
@@ -75,21 +71,39 @@ char *readString() {
 }
 
 void outputString(char *s) {
+    if (s == NULL) printf("Строка не введена!\n");
     printf("Введённая строка: %s\n", s);
     printf("Вес строки: %d Байт\n", strlen(s)+1);
 }
 
 int isByeEnd(char *s) {
+    if (s == NULL) {
+        printf("Строка не введена!\n");
+        return 0;
+    }
     if (strlen(s) < 3) return 0;
     if (strcmp(&s[strlen(s)-3] , "Bye")==0) return 1;
     return 0;
 }
 
 void replaceStars(char *s) {
-    if (s == NULL) return;
+    if (s == NULL) {
+        printf("Строка не введена!\n");
+        return;
+    }
     char *pos;
     while ((pos = strstr(s, "***")) != NULL) {
         *pos = '/';
         memmove(pos + 1, pos + 3, strlen(pos + 3) + 1);
     }
+    printf("Полученная строка: %s\n", s);
+    printf("Вес строки: %d Байт", strlen(s)+1);
+}
+
+void outputBeforeSpace(char *s) {
+    int flag = strcspn(s, " ");
+    for (int i=0; i<flag; i++) {
+        printf("%c", s[i]);
+    }
+    printf("\n");
 }
