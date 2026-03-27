@@ -23,16 +23,17 @@ struct list {
 };
 
 // Functions
+
 struct scientist readData();
 struct list *createList(struct list *s);
 void viewList(struct list *b);
 void freeMemory(struct list *s);
 
-// Main
+/// Main function
 int main() {
     int choice;
-    struct list *s;
-    s = NULL;
+    struct list *head;
+    head = NULL;
     while (1) {
         printf("\n================ МЕНЮ ================\n");
         printf(":: Организация списка\n");
@@ -48,16 +49,16 @@ int main() {
         
         switch (choice) {  
             case 1:
-                s = createList(s);
+                head = createList(head);
                 break;
 
             case 2:
-                if (s!=NULL) viewList(s);
+                if (head != NULL) viewList(head);
                 else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
             
             case 0:
-                freeMemory(s);
+                freeMemory(head);
                 printf("\n\n\nВыход из программы...");
                 return 0;
 
@@ -67,6 +68,7 @@ int main() {
     }
 }
 
+/// Функция чтения данных с клавиатуры
 struct scientist readData() {
     struct scientist data;
     static int nextID = 1;
@@ -118,19 +120,17 @@ struct list *addLast(struct list *s, struct scientist data) {
 struct list *createList(struct list *s) {
     int choice = 0;
     do {
-        if (s == NULL) {
-            s = addFirst(s, readData());
-        }
-        else {
-            addLast(s, readData());
-        }
+        if (s == NULL) s = addFirst(s, readData());
+        
+        else addLast(s, readData());
+
         printf("Ввести ещё? \n1. да \n0. нет \n-> ");
         scanf("%d", &choice);
     } while (choice);
     return s;
 }
 
-// Функция вывода таблицы по 15 элементов на страницу, со скроллингом
+/// Функция вывода таблицы по `STEP` (global variable `int STEP`) элементов на страницу, со скроллингом
 void viewList(struct list *beg) {
     struct list *temp = beg;
     int page = 1;
