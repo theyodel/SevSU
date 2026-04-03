@@ -40,7 +40,17 @@
 }
 ```
 ## Языки программирования, которые изучил/изучаю:
-[![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,julia)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,html,css,julia)](https://skillicons.dev)
+
+## Фреймворки, которые использую/изучил/изучаю:
+[![My Frameworks](https://skillicons.dev/icons?i=vscode,jupyter,engee)](https://skillicons.dev)
+
+Jupyter, Engee
+
+## Другие программы:
+[![My Programms](https://skillicons.dev/icons?i=photoshop,illustrator,figma,proteus)](https://skillicons.dev)
+
+ProteusLab
 
 <hr color='#8a2de0'>
  
@@ -85,5 +95,18 @@ In this repository, you can find the results of my studies at Sevastopol State U
     }
 }
 ```
-## Programming languages I've learned/am learning:
-[![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,julia)](https://skillicons.dev)
+## Programming languages I have learned/am learning:
+[![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,html,css,julia)](https://skillicons.dev)
+
+## Frameworks I use/have learned/am learning:
+[![My Frameworks](https://skillicons.dev/icons?i=vscode,jupyter,engee)](https://skillicons.dev)
+
+Jupyter, Engee
+
+## Other programs:
+[![My Programs](https://skillicons.dev/icons?i=photoshop,illustrator,figma,proteus)](https://skillicons.dev)
+
+ProteusLab
+
+
+<image src='sevsu.png' alt='Тут должна быть картинка типо универ в жизни и универ в майнкрафте (главный "Южный" кампус)' />
