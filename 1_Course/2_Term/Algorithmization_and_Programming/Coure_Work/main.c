@@ -29,7 +29,7 @@ struct list *addFirst(struct list *s, struct scientist data);
 struct list *addLast(struct list *s, struct scientist data);
 // void viewList(struct list *b);
 void exportToTxt(struct list *head);
-// void exportToBin(struct list *head);
+void exportToBin(struct list *head);
 void freeMemory(struct list *s);
 
 /// Main function
@@ -47,12 +47,10 @@ int main() {
         printf("   4. Добавить нового учёного с файла\n");
         printf("   5. Удалить учёного\n");
         
-
         printf(":: Вывод информации\n");
         printf("   6. Вывести таблицу учёных на экран\n");
         printf("   7. Экспортировать таблицу учёных в файл\n");
 
-        printf("\n");
         printf("0. Выход из программы\n");
         printf("Выберите действие (0-7) -> ");
         scanf("%d", &choice);
@@ -125,7 +123,7 @@ int main() {
                                 break;
                         
                             case 2:
-                                // head = addLast(head, readData());
+                                exportToBin(head);
                                 goto cancel;
                                 break;
 
@@ -202,23 +200,23 @@ struct list *addLast(struct list *s, struct scientist data) {
 }
 
 /// @brief Функция создания списка с клавиатуры
-struct list *createListKeyboard(struct list *s) {
+struct list *createListKeyboard(struct list *head) {
     int choice = 0;
     do {
-        if (s == NULL) s = addFirst(s, readData());
-        
-        else addLast(s, readData());
+        if (head == NULL) head = addFirst(head, readData());
+        else addLast(head, readData());
 
         printf("Ввести ещё? \n1. да \n0. нет \n-> ");
         scanf("%d", &choice);
     } while (choice);
-    return s;
+    return head;
 }
 
 /// Функция вывода таблицы по `STEP` (global variable `int STEP`) элементов на страницу, со скроллингом
 
 
-/// @brief Функция экспорта в .TXT файл
+/// @brief Функция экспорта таблицы в .txt файл
+/// @param head Указатель на начало списка
 void exportToTxt(struct list *head) {
     int choice;
     static int version = 1;
@@ -227,7 +225,7 @@ void exportToTxt(struct list *head) {
         printf("\n\n\n================ Экспорт таблицы в текстовый файл ================\n");
         printf("1. Экспортировать в существующий файл\n");
         printf("2. Экспортировать в новый файл\n");
-        printf("0. В меню\n->");
+        printf("0. В меню\n-> ");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -293,12 +291,60 @@ void exportToTxt(struct list *head) {
     } 
 }
 
-void freeMemory(struct list *s) {
-    if (s == NULL) {
+/// @brief Функция экспорта таблицы в .bin файл
+/// @param head Указатель на начало списка
+void exportToBin(struct list *head) {
+    int choice;
+    static int version = 1;
+    struct list *temp = head;
+    while (1) {
+        printf("\n\n\n================ Экспорт таблицы в текстовый файл ================\n");
+        printf("1. Экспортировать в существующий файл\n");
+        printf("2. Экспортировать в новый файл\n");
+        printf("0. В меню\n-> ");
+        scanf("%d", &choice);
+    
+        switch (choice) {
+            case 1:
+                char nameFile1[] = "";
+                printf("Введите название файла (с указанием расширения .bin) -> ");
+                fflush(stdin);
+                scanf("%s", &nameFile1);
+                FILE *firstFile = fopen(nameFile1, "wb");
+                
+                fclose(firstFile);
+                return;
+            
+            case 2:
+                char textVersion[] = "";
+                itoa(version, textVersion, 10);
+                char nameFile2[] = "-SCIENTISTS-LIST.bin";
+                strcat(textVersion, nameFile2);
+                FILE *file = fopen(textVersion, "wb");
+
+                fclose(file);
+                version++;
+                return;
+            
+            case 0:
+                return;
+            
+            default:
+                printf("Команда не распознана!\n");
+                break;
+        }
+    }
+}
+
+/// @brief Функция очистки памяти
+/// @param head Указатель на начало списка
+/// @attention Вызывается единожды во время работы программы - пункт "Выход из программы"
+void freeMemory(struct list *head) {
+    if (head == NULL) {
         printf("Список пуст...\n");
         return;
     }
-    struct list *temp=s, *n;
+    struct list *temp=head, *n;
     int c = 0;
     n = temp->next;
     while (temp != NULL) {

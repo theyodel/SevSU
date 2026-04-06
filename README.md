@@ -48,9 +48,9 @@
 Jupyter, Engee
 
 ## Другие программы:
-[![My Programms](https://skillicons.dev/icons?i=photoshop,illustrator,figma,proteus)](https://skillicons.dev)
+[![My Programms](https://skillicons.dev/icons?i=photoshop,illustrator,figma,pixso,proteus)](https://skillicons.dev)
 
-ProteusLab
+Pixso, ProteusLab
 
 <hr color='#8a2de0'>
  
