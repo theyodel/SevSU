@@ -105,7 +105,7 @@ string readString()
 void outputString(string s)
 {
     cout << "Введённая вами строка: " << s << endl;
-    cout << "Вес строки: " << s.length() + 1 << " Байт" << endl;
+    cout << "Вес строки: " << sizeof(s) << " Байт" << endl;
 }
 
 int isByeEnd(string s)
