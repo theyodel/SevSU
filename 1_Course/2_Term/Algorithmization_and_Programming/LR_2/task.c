@@ -4,7 +4,7 @@
 #include <windows.h>
 
 char *readString();
-void outputString(char s);
+void outputString(char *s);
 void replaceStars(char *s);
 void outputBeforeSpace(char *s);
 int isByeEnd(char *s);
@@ -70,7 +70,7 @@ char *readString() {
     return s;
 }
 
-void outputString(char s) {
+void outputString(char *s) {
     if (s == NULL) printf("Строка не введена!\n");
     printf("Введённая строка: %s\n", s);
     printf("Вес строки: %d Байт\n", strlen(s)+1);
