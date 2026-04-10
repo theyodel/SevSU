@@ -1,3 +1,33 @@
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            Севастопольский государственный университет
+           Кафедра "Информационные технологии и системы"
+
+          Программа для работы с базой сведений об учёных
+                         Текст программы
+                            РАЗРАБОТАЛ
+                     Студент гр. ИИ/б-25-6-о
+                           Заварзин А.В.
+                               2026
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    Программа работает с базой данных об учёных, которая считывается из
+текстового файла. Каждая строка файла содержит запись об одном учёном, 
+для которой указывается ФИО учёного (75 символов), научная область, учёная степень,
+количество статей и цитирований, индекс Хирша.
+    Основные функции программы:
+- вывод базы на экран
+- добавление записи о телефоне в базу;
+- исправление записи о телефоне в базе;
+- удаление записи о телефоне из базы;
+- поиск записи о телефоне в базе;
+- выбор записей о моделях телефонов, попадающих в заданный пользователем
+диапазон цен.
+
+Вариант задания 4. Утверждено 18.02.2026
+Среда программирования Visual Studio Code version 1.115.0
+Дата последней коррекции: 10.04.2026.
+Версия 1.0
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,33 +36,33 @@
 // TEMPORARY VARIABLES
 int STEP = 2;
 
-struct scientist {
-    int id;
-    char name[76];
-    char area[26];
-    char degree[26];
-    unsigned int articles;
-    unsigned int quotes;
-    unsigned int hirshIndex;
+//-----------------------------типы и глобальные переменные-----------------------------
+struct scientist {              // Структура для хранения данных об учёном
+    int id;                     // ID
+    char name[76];              // ФИО
+    char area[26];              // Научная область
+    char degree[26];            // Учёная степень
+    unsigned int articles;      // Количество статей
+    unsigned int quotes;        // Количество цитирований
+    unsigned int hirshIndex;    // Индекс Хирша
 };
 
-struct list {
-    struct scientist info;
-    struct list *prev, *next;
+struct list {                   // Элемент 2- направленного списка
+    struct scientist info;      // Данные об учёном
+    struct list *prev;          // Указатель на элемент слева (предыдущий)
+    struct list *next;          // Указатель на элемент справа (следующий)
 };
 
-// Functions
-
+//-----------------------------прототипы функций-----------------------------
 struct scientist readData();
 struct list *createListKeyboard(struct list *s);
 struct list *addFirst(struct list *s, struct scientist data);
 struct list *addLast(struct list *s, struct scientist data);
-// void viewList(struct list *b);
 void exportToTxt(struct list *head);
 void exportToBin(struct list *head);
 void freeMemory(struct list *s);
 
-/// Main function
+//-----------------------------главная функция-----------------------------
 int main() {
     int choice;
     struct list *head;
@@ -218,122 +248,66 @@ struct list *createListKeyboard(struct list *head) {
 /// @brief Функция экспорта таблицы в .txt файл
 /// @param head Указатель на начало списка
 void exportToTxt(struct list *head) {
-    int choice;
-    static int version = 1;
+    char nameFile[101];
     struct list *temp = head;
-    while (1) {
-        printf("\n\n\n================ Экспорт таблицы в текстовый файл ================\n");
-        printf("1. Экспортировать в существующий файл\n");
-        printf("2. Экспортировать в новый файл\n");
-        printf("0. В меню\n-> ");
-        scanf("%d", &choice);
+    printf("Введите название файла (без указания расширения .txt) -> ");
+    fflush(stdin);
+    scanf("%s", nameFile);
+    strcat(nameFile, ".txt");
+    FILE *file = fopen(nameFile, "wt");
+    if (file == NULL) {
+        printf("Файл %s не найден! Он будет создан в корне текущей папки", nameFile);
+    }
+    fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+    fprintf(file, "|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+    fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
 
-        switch (choice) {
-            case 1:
-                char nameFile1[] = "";
-                printf("Введите название файла (с указанием расширения .txt) -> ");
-                fflush(stdin);
-                scanf("%s", &nameFile1);
-                FILE *firstFile = fopen(nameFile1, "wt");
-                fprintf(firstFile, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-                fprintf(firstFile, "|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
-                fprintf(firstFile, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-
-                for (; temp != NULL; temp = temp->next) {
-                    fprintf(firstFile, "| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
-                             temp->info.id,
-                             temp->info.name,
-                             temp->info.degree,
-                             temp->info.area,
-                             temp->info.articles,
-                             temp->info.quotes,
-                             temp->info.hirshIndex);
-                    fprintf(firstFile, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-                }
-                printf("Информация записана в файл %s", nameFile1);
-                fclose(firstFile);
-                return;
-            
-            case 2:
-                char textVersion[] = "";
-                itoa(version, textVersion, 10);
-                char nameFile2[] = "-SCIENTISTS-LIST.txt";
-                strcat(textVersion, nameFile2);
-
-                FILE *file = fopen(textVersion, "wt");
-                fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-                fprintf(file, "|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
-                fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-
-                for (; temp != NULL; temp = temp->next) {
-                    fprintf(file, "| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
-                             temp->info.id,
-                             temp->info.name,
-                             temp->info.degree,
-                             temp->info.area,
-                             temp->info.articles,
-                             temp->info.quotes,
-                             temp->info.hirshIndex);
-                    fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n", file);
-                }
-                printf("Информация записана в файл %s", textVersion);
-                fclose(file);
-                version++;
-                return;
-            
-            case 0:
-                return;
-            
-            default:
-                printf("Команда не распознана!\n");
-                break;
-        }
-    } 
+    for (; temp != NULL; temp = temp->next) {
+        fprintf(file, "| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+         temp->info.id,
+         temp->info.name,
+         temp->info.degree,
+         temp->info.area,
+         temp->info.articles,
+         temp->info.quotes,
+         temp->info.hirshIndex);
+        fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+    }
+    printf("Информация записана в файл %s", nameFile);
+    fclose(file);
+    return;
 }
 
 /// @brief Функция экспорта таблицы в .bin файл
 /// @param head Указатель на начало списка
 void exportToBin(struct list *head) {
-    int choice;
-    static int version = 1;
-    struct list *temp = head;
-    while (1) {
-        printf("\n\n\n================ Экспорт таблицы в текстовый файл ================\n");
-        printf("1. Экспортировать в существующий файл\n");
-        printf("2. Экспортировать в новый файл\n");
-        printf("0. В меню\n-> ");
-        scanf("%d", &choice);
-    
-        switch (choice) {
-            case 1:
-                char nameFile1[] = "";
-                printf("Введите название файла (с указанием расширения .bin) -> ");
-                fflush(stdin);
-                scanf("%s", &nameFile1);
-                FILE *firstFile = fopen(nameFile1, "wb");
-                
-                fclose(firstFile);
-                return;
-            
-            case 2:
-                char textVersion[] = "";
-                itoa(version, textVersion, 10);
-                char nameFile2[] = "-SCIENTISTS-LIST.bin";
-                strcat(textVersion, nameFile2);
-                FILE *file = fopen(textVersion, "wb");
-
-                fclose(file);
-                version++;
-                return;
-            
-            case 0:
-                return;
-            
-            default:
-                printf("Команда не распознана!\n");
-                break;
-        }
+    char nameFile[101];
+    printf("Введите название файла (без указания расширения .bin) -> ");
+    fflush(stdin);
+    scanf("%s", nameFile);
+    strcat(nameFile, ".bin");
+    FILE *file = fopen(nameFile, "wb");
+    if (file == NULL) {
+        printf("Файл %s не найден! Он будет создан в корне текущей папки", nameFile);
     }
+
+    fclose(file);
+    return;
+}
+
+struct list *importFromTxt(struct list *head) {
+    start:
+    char fileName[101];
+    printf("Введите названия файла (без указания расширения .txt) -> ");
+    fflush(stdin);
+    scanf("%s", fileName);
+    strcat(fileName, ".txt");
+    FILE *file = fopen(fileName, "rt");
+    if (file == NULL) {
+        printf("Файл %s не найден! Введите корректное название снова", fileName);
+        goto start;
+    }
+    
 }
 
 /// @brief Функция очистки памяти
