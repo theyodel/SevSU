@@ -242,10 +242,20 @@ struct list *createListKeyboard(struct list *head) {
     return head;
 }
 
-/// Функция вывода таблицы по `STEP` (global variable `int STEP`) элементов на страницу, со скроллингом
+/// @brief Функция вывода таблицы по `STEP` (global variable `int STEP`) элементов на страницу, со скроллингом
+/// @param head - Указатель на начало списка
+void outputList(struct list *head) {
+    struct list *temp = head;
+    int count = 0,
+        page  = 1;
+    for (; temp->next != NULL; temp = temp->next) count++; // Подсчёт кол-ва записей
 
+    for (int i=0; i<STEP, temp->next != NULL; temp=temp->next, i++) {
+        
+    }
+}
 
-/// @brief Функция экспорта таблицы в .txt файл
+/// @brief Функция экспорта таблицы в `.txt` файл
 /// @param head Указатель на начало списка
 void exportToTxt(struct list *head) {
     char nameFile[101];
@@ -278,7 +288,7 @@ void exportToTxt(struct list *head) {
     return;
 }
 
-/// @brief Функция экспорта таблицы в .bin файл
+/// @brief Функция экспорта таблицы в `.bin` файл
 /// @param head Указатель на начало списка
 void exportToBin(struct list *head) {
     char nameFile[101];
@@ -295,6 +305,8 @@ void exportToBin(struct list *head) {
     return;
 }
 
+/// @brief Функция импорта таблицы из текстового (`.txt`) файла
+/// @param head Указатель на начало списка
 struct list *importFromTxt(struct list *head) {
     start:
     char fileName[101];
