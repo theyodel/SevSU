@@ -12,7 +12,7 @@ println("+--------+----------+")
 
 for x in -1.0:0.1:0.0
     if 1 - 3*x != 0.0
-        f = cos(π * x^2) / sqrt(1 - 3*x)
+        f = cos(pi * x^2) / sqrt(1 - 3*x)
         push!(xValues, x)
         push!(functionValues, f)
         @printf("| %-6.2f | %-7.4f  |\n", x, f)

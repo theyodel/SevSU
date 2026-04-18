@@ -1,0 +1,9 @@
+blockdiag {
+    args [label="Аргументы"]
+    function [label="Функция"]
+    sideffects [label="Сторонние эффекты"]
+    output [label="Возвращаемое значение"]
+
+    args -> function -> output;
+    function -> sideffects;
+}
