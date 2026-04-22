@@ -2,6 +2,7 @@
 #include <string>
 #include <stdlib.h>
 #include <limits>
+#include <windows.h>
 
 using namespace std;
 
@@ -12,11 +13,13 @@ string replaceStars(string s);
 void outputBeforeSpace(string s);
 
 int main()
-{
+{   
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     int choice;
     string s = "";
     while (1)
-    {
+    {   
         cout << endl;
         cout << "================ МЕНЮ ================" << endl;
         cout << "1. Записать новую строку" << endl;

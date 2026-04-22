@@ -10,6 +10,8 @@ void outputBeforeSpace(char *s);
 int isByeEnd(char *s);
 
 int main() {
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     int choice;
     char *s = NULL;
     while (1) {

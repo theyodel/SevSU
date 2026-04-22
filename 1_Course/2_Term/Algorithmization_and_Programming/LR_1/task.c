@@ -123,8 +123,7 @@ struct list *createList(struct list *s) {
 }
 
 struct list *addFirst(struct list *s, struct scientist data) {
-    struct list *temp;
-    temp = (struct list*)malloc(sizeof(struct list));
+    struct list *temp = (struct list*)malloc(sizeof(struct list));
     temp->info = data;
     temp->next = s;
     return temp;

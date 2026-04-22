@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 
 // Funcs
 int countDots(char *fileName);
 void copyWithUppercase(char *fromFile, char *toFile);
 
 int main() {
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     int choice;
     while (1)
     {
@@ -19,7 +22,7 @@ int main() {
         switch (choice) {
         case 1:
             char fileName[100];
-            printf("Введите название файла (без указания расширения .txt):: ");
+            printf("Введите название файла (без указания расширения .txt): ");
             scanf("%s", fileName);
             strcat(fileName, ".txt");
             printf("В файле %d многоточий\n", countDots(fileName));
@@ -29,7 +32,7 @@ int main() {
             char fromFile[100], toFile[100];
             printf("Введите название исходного файла (без указания расширения .txt): ");
             scanf("%s", fromFile);
-            printf("Введите название копии файла (без указания расширения .txt):: ");
+            printf("Введите название копии файла (без указания расширения .txt): ");
             scanf("%s", toFile);
             strcat(fromFile, ".txt");
             strcat(toFile, ".txt");

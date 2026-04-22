@@ -32,11 +32,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
+#define STEP 2
 
-// TEMPORARY VARIABLES
-int STEP = 2;
-
-//-----------------------------типы и глобальные переменные-----------------------------
+//-----------------------------структуры данных------------------------------
 struct scientist {              // Структура для хранения данных об учёном
     int id;                     // ID
     char name[76];              // ФИО
@@ -54,58 +53,65 @@ struct list {                   // Элемент 2- направленного 
 };
 
 //-----------------------------прототипы функций-----------------------------
-struct scientist readData();
-struct list *createListKeyboard(struct list *s);
-struct list *addFirst(struct list *s, struct scientist data);
-struct list *addLast(struct list *s, struct scientist data);
-void exportToTxt(struct list *head);
-void exportToBin(struct list *head);
-void freeMemory(struct list *s);
 
-//-----------------------------главная функция-----------------------------
+struct scientist readData();
+struct list *createListKeyboard(struct list *);
+struct list *addFirst(struct list *, struct scientist);
+struct list *addLast(struct list *, struct scientist);
+void viewList(struct list*);
+void exportToTxt(struct list *);
+void exportToBin(struct list *);
+struct list *importFromTxt(struct list *);
+void findScientist(struct list *, int);
+int freeMemory(struct list *);
+
+//------------------------------главная функция------------------------------
 int main() {
-    int choice;
+    SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+    int mainChoice, secondChoice;
     struct list *head;
     head = NULL;
     while (1) {
         cancel:
-        printf("\n\n\n================ МЕНЮ ================\n");
-        printf(":: Организация списка\n");
-        printf("   1. Создать таблицу учёных с клавиатуры\n");
-        printf("   2. Создать таблицу учёных с файла\n");
-        printf("   3. Добавить нового учёного с клавиатуры\n");
-        printf("   4. Добавить нового учёного с файла\n");
-        printf("   5. Удалить учёного\n");
-        
-        printf(":: Вывод информации\n");
-        printf("   6. Вывести таблицу учёных на экран\n");
-        printf("   7. Экспортировать таблицу учёных в файл\n");
+        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ МЕНЮ ================\n");
+        printf("1. Организация списка\n");
+        printf("2. Просмотр таблицы\n");
+        printf("3. Добавление новой записи в таблицу\n");
+        printf("4. Удаление записи из таблицы\n");
+        printf("5. Корректировка записи в таблице\n");
+        printf("6. Сортировка данных в таблице\n");
+        printf("7. Поиск записи в таблице\n");
+        printf("8. Сохранить таблицу в файл\n");
+        printf("9. Чтение таблицы из файла\n");
+        printf("10. Обработка таблицы и просмотр результатов обработки в таблицу\n");
 
         printf("0. Выход из программы\n");
         printf("Выберите действие (0-7) -> ");
-        scanf("%d", &choice);
-        fflush(stdin);
+        scanf("%d", &mainChoice);
         
-        switch (choice) {  
+        switch (mainChoice) {  
             case 1:
                 head = createListKeyboard(head);
                 break;
 
             case 2:
+                if (head != NULL) viewList(head);
+                else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
+                
             
             case 3:
                 if (head != NULL) {
-                    int tempChoice;
                     while (1) {
-                        printf("================ Считывание данных об учёном с клавиатуры ================\n");
-                        printf("   1. Добавить в начало\n");
-                        printf("   2. Добавить в конец\n");
-                        printf("   0. В меню\n");
+                        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Считывание данных об учёном с клавиатуры ================\n");
+                        printf("1. Добавить в начало\n");
+                        printf("2. Добавить в конец\n");
+                        printf("0. В меню\n");
                         printf("Выберите действие (0-2) -> ");
-                        scanf("%d", &tempChoice);
+                        scanf("%d", &secondChoice);
 
-                        switch (tempChoice) {
+                        switch (secondChoice) {
                             case 1:
                                 head = addFirst(head, readData());
                                 goto cancel;
@@ -129,24 +135,48 @@ int main() {
                 break;
 
             
-            // case 6:
-            //     if (head != NULL) viewList(head);
-            //     else printf("Список пуст!\nРекомендуемое действие: 1.");
-            //     break;
+            case 5:
+                if (head == NULL) {
+                    printf("Список пуст!")
+                }
+                printf("Введите ID записи, которую хотите скорректировать -> "); scanf("%d", &secondChoice);
+
+                break;
+                
             
             case 7:
+                if (head == NULL) {
+                    printf("Таблица пуста!\n");
+                } else {
+                    int c;
+                    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Экспорт таблицы в файл ================\n");
+                    printf("1. Поиск по ID\n");
+                    printf("2. Поиск по ФИО\n");
+                    printf("3. Поиск по Учёной степени\n");
+                    printf("4. Поиск по Области наук\n");
+                    printf("5. Поиск по Количеству статей\n");
+                    printf("6. Поиск по Количеству цитирований\n");
+                    printf("7. Поиск по Индексу Хирша\n");
+                    printf("0. Выход\n");
+                    printf("Выберите действие (0-7) -> ");
+                    scanf("%d", &c);
+                    if (c == 0) goto cancel;
+                    findScientist(head, c);
+                }
+                break;
+            
+            case 8:
                 if (head != NULL) {
-                    int tempChoice;
                     while (1) {
-                        printf("================ Экспорт таблицы в файл ================\n");
-                        printf("   1. Экспортировать в текстовый файл (.txt)\n");
-                        printf("   2. Экспортировать в бинарный файл (.bin)\n");
-                        printf("   0. В меню\n");
+                        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Экспорт таблицы в файл ================\n");
+                        printf("1. Экспортировать в текстовый файл (.txt)\n");
+                        printf("2. Экспортировать в бинарный файл (.bin)\n");
+                        printf("0. В меню\n");
                         printf("[ ! ] Внимание! При экспорте в бинарный файл вы сможете взаимодействовать с ним только через данную программу!\n");
                         printf("Выберите действие (0-2) -> ");
-                        scanf("%d", &tempChoice);
+                        scanf("%d", &secondChoice);
 
-                        switch (tempChoice) {
+                        switch (secondChoice) {
                             case 1:
                                 exportToTxt(head);
                                 goto cancel;
@@ -168,10 +198,63 @@ int main() {
                 }
                 else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
+
+            case 9:
+                if (head != NULL) {
+                    char word[10];
+                    printf("[ ! ] Внимание! У Вас есть несохранённый список! Если Вы хотите перезаписать данные, то напишите слово 'yes'");
+                    scanf("%s", word);
+                    if (strcmp(word, "yes")==0) {
+                        while (1) {
+                    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
+                    printf("1. Импортировать из текстового файла (.txt)\n");
+                    printf("2. Импортировать из бинарного файла (.bin)\n");
+                    printf("0. В меню\nВыберите действие (0-2) -> ");
+                    scanf("%d", &secondChoice);
+                    switch (secondChoice) {
+                        case 1:
+                            head = importFromTxt(head);
+                            printf("Таблица успешно экспортирована!\n");
+                                goto cancel;
+                                break;
+
+                            case 0:
+                                goto cancel;
+
+                            default:
+                                printf("Команда не распознана!");
+                                break;
+                        }
+                    }
+                    }
+                }
+                while (1) {
+                    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
+                    printf("1. Импортировать из текстового файла (.txt)\n");
+                    printf("2. Импортировать из бинарного файла (.bin)\n");
+                    printf("0. В меню\nВыберите действие (0-2) -> ");
+                    scanf("%d", &secondChoice);
+                    switch (secondChoice) {
+                        case 1:
+                            head = importFromTxt(head);
+                            printf("Таблица успешно экспортирована!\n");
+                            goto cancel;
+                            break;
+
+                        case 0:
+                            goto cancel;
+
+                        default:
+                            printf("Команда не распознана!");
+                            break;
+                    }
+                }
+                break;
             
             case 0:
-                freeMemory(head);
-                printf("\n\n\nВыход из программы...");
+                int count = freeMemory(head);
+                printf("Было удалено %d записей", count);
+                printf("\nВыход из программы...");
                 return 0;
 
             default:
@@ -180,7 +263,7 @@ int main() {
     }
 }
 
-/// Функция чтения данных с клавиатуры
+/// @brief Функция чтения данных с клавиатуры
 struct scientist readData() {
     struct scientist data;
     static int nextID = 1;
@@ -206,30 +289,37 @@ struct scientist readData() {
     return data;
 }
 
-struct list *addFirst(struct list *s, struct scientist data) {
+/// @brief Функция добавления в начало списка
+/// @param head начало списка
+/// @param data данные об учённом
+struct list *addFirst(struct list *head, struct scientist data) {
     struct list *temp;
     temp = (struct list*)malloc(sizeof(struct list));
     temp->info = data;
-    temp->next = s;
+    temp->next = head;
     temp->prev = NULL;
     return temp;
 }
 
-struct list *addLast(struct list *s, struct scientist data) {
+/// @brief Функция добавления в конец списка
+/// @param head начало списка
+/// @param data данные об учённом
+struct list *addLast(struct list *head, struct scientist data) {
     struct list *temp, *e;
     temp = (struct list*)malloc(sizeof(struct list));
     temp->info = data;
     temp->next = NULL;
-    if (s == NULL) s = temp;
+    if (head == NULL) head = temp;
     else {
-        for (e = s; e->next != NULL; e = e->next);
+        for (e = head; e->next != NULL; e = e->next);
         temp->prev = e;
         e->next = temp;
     }
-    return s;
+    return head;
 }
 
 /// @brief Функция создания списка с клавиатуры
+/// @param head указатель на начало списка
 struct list *createListKeyboard(struct list *head) {
     int choice = 0;
     do {
@@ -244,18 +334,32 @@ struct list *createListKeyboard(struct list *head) {
 
 /// @brief Функция вывода таблицы по `STEP` (global variable `int STEP`) элементов на страницу, со скроллингом
 /// @param head - Указатель на начало списка
-void outputList(struct list *head) {
-    struct list *temp = head;
-    int count = 0,
-        page  = 1;
-    for (; temp->next != NULL; temp = temp->next) count++; // Подсчёт кол-ва записей
-
-    for (int i=0; i<STEP, temp->next != NULL; temp=temp->next, i++) {
-        
+void viewList(struct list *head) {
+    if (head == NULL) {
+        printf("Список не введён!\n");
+        return;
+    }
+    struct list *temp;
+    temp = head;
+    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+    printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+    while (temp != NULL) {
+        printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+          temp->info.id,
+          temp->info.name,
+          temp->info.degree,
+          temp->info.area,
+          temp->info.articles,
+          temp->info.quotes,
+          temp->info.hirshIndex
+        );
+        temp = temp->next;
+        printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
     }
 }
 
-/// @brief Функция экспорта таблицы в `.txt` файл
+/// @brief Функция экспорта таблицы в текстовый (`.txt`) файл
 /// @param head Указатель на начало списка
 void exportToTxt(struct list *head) {
     char nameFile[101];
@@ -266,14 +370,10 @@ void exportToTxt(struct list *head) {
     strcat(nameFile, ".txt");
     FILE *file = fopen(nameFile, "wt");
     if (file == NULL) {
-        printf("Файл %s не найден! Он будет создан в корне текущей папки", nameFile);
+        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", nameFile);
     }
-    fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    fprintf(file, "|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
-    fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-
     for (; temp != NULL; temp = temp->next) {
-        fprintf(file, "| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+        fprintf(file, "%d %s %s %s %d %d %d\n",
          temp->info.id,
          temp->info.name,
          temp->info.degree,
@@ -281,9 +381,8 @@ void exportToTxt(struct list *head) {
          temp->info.articles,
          temp->info.quotes,
          temp->info.hirshIndex);
-        fprintf(file, "+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
     }
-    printf("Информация записана в файл %s", nameFile);
+    printf("Информация записана в файл '%s'", nameFile);
     fclose(file);
     return;
 }
@@ -298,9 +397,8 @@ void exportToBin(struct list *head) {
     strcat(nameFile, ".bin");
     FILE *file = fopen(nameFile, "wb");
     if (file == NULL) {
-        printf("Файл %s не найден! Он будет создан в корне текущей папки", nameFile);
+        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", nameFile);
     }
-
     fclose(file);
     return;
 }
@@ -308,27 +406,39 @@ void exportToBin(struct list *head) {
 /// @brief Функция импорта таблицы из текстового (`.txt`) файла
 /// @param head Указатель на начало списка
 struct list *importFromTxt(struct list *head) {
-    start:
-    char fileName[101];
+    char fileName[101], name[25], otch[25];
+    struct scientist data;
+    
     printf("Введите названия файла (без указания расширения .txt) -> ");
-    fflush(stdin);
     scanf("%s", fileName);
     strcat(fileName, ".txt");
     FILE *file = fopen(fileName, "rt");
     if (file == NULL) {
-        printf("Файл %s не найден! Введите корректное название снова", fileName);
-        goto start;
+        printf("Файл '%s' не найден! Введите корректное название снова", fileName);
+        return head;
+    } else {
+        while (fscanf(file, "%d %s %s %s %s %s %u %u %u", &data.id, data.name, name, otch, data.degree, data.area, &data.articles, &data.quotes, &data.hirshIndex) != EOF) {
+            strcat(data.name, " ");
+            strcat(data.name, name);
+            strcat(data.name, " ");
+            strcat(data.name, otch);
+            if (head != NULL) {
+                head = addLast(head, data);
+            }
+            else {
+                head = addFirst(head, data);
+            }
+        }
     }
-    
+    return head;
 }
 
 /// @brief Функция очистки памяти
 /// @param head Указатель на начало списка
-/// @attention Вызывается единожды во время работы программы - пункт "Выход из программы"
-void freeMemory(struct list *head) {
+int freeMemory(struct list *head) {
     if (head == NULL) {
         printf("Список пуст...\n");
-        return;
+        return 0;
     }
     struct list *temp=head, *n;
     int c = 0;
@@ -339,5 +449,131 @@ void freeMemory(struct list *head) {
         temp = n;
         c++;
     }
-    printf("Было удалено %d записей...\nПамять освобождена...\n", c);
+    return c;
+}
+
+/// @brief Функция поиска данных в таблице
+/// @param head указатель на начало списка
+/// @param choice поле для поиска
+void findScientist(struct list *head, int choice) {
+    struct list *temp = head;
+    int key, count = 0;
+    char kWord[75];
+    switch (choice) {
+        case 1:
+            printf("Введите ID -> "); scanf("%d", &key);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            for (; temp != NULL; temp = temp->next, count++) {
+                if (temp->info.id == key) {
+                    printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                        temp->info.id, temp->info.name, temp->info.degree, temp->info.area, temp->info.articles, temp->info.quotes, temp->info.hirshIndex
+                    );
+                   printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n"); 
+                }
+            }
+            printf("Найдено %d записей с ID '%d'", count, key);
+            break;
+        
+        case 2:
+            printf("Введите ФИО -> "); fgets(kWord, sizeof(kWord), stdin);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            for (; temp != NULL; temp = temp->next, count++) {
+                if (strcmp(temp->info.name, kWord) == 0) {
+                    printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                        temp->info.id, temp->info.name, temp->info.degree, temp->info.area, temp->info.articles, temp->info.quotes, temp->info.hirshIndex
+                    );
+                   printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n"); 
+                }
+            }
+            printf("Найдено %d записей с ФИО '%s'", count, kWord);
+            break;
+        
+        case 3:
+            printf("Введите Учёную степень -> "); fgets(kWord, sizeof(kWord), stdin);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            for (; temp != NULL; temp = temp->next, count++) {
+                if (strcmp(temp->info.degree, kWord) == 0) {
+                    printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                        temp->info.id, temp->info.name, temp->info.degree, temp->info.area, temp->info.articles, temp->info.quotes, temp->info.hirshIndex
+                    );
+                   printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n"); 
+                }
+            }
+            printf("Найдено %d записей с Учёной степенью '%s'", count, kWord);
+            break;
+    
+        case 4:
+            printf("Введите Область наук -> "); fgets(kWord, sizeof(kWord), stdin);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            for (; temp != NULL; temp = temp->next, count++) {
+                if (strcmp(temp->info.degree, kWord) == 0) {
+                    printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                        temp->info.id, temp->info.name, temp->info.degree, temp->info.area, temp->info.articles, temp->info.quotes, temp->info.hirshIndex
+                    );
+                   printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n"); 
+                }
+            }
+            printf("Найдено %d записей с Областью наук '%s'", count, kWord);
+            break;
+
+        case 5:
+            printf("Введите Кол-во статей -> "); scanf("%d", &key);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            for (; temp != NULL; temp = temp->next, count++) {
+                if (temp->info.articles == key) {
+                    printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                        temp->info.id, temp->info.name, temp->info.degree, temp->info.area, temp->info.articles, temp->info.quotes, temp->info.hirshIndex
+                    );
+                   printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n"); 
+                }
+            }
+            printf("Найдено %d записей с Кол-вом статей '%d'", count, key);
+            break;
+
+        case 6:
+            printf("Введите Кол-во цитирований -> "); scanf("%d", &key);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            for (; temp != NULL; temp = temp->next, count++) {
+                if (temp->info.articles == key) {
+                    printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                        temp->info.id, temp->info.name, temp->info.degree, temp->info.area, temp->info.articles, temp->info.quotes, temp->info.hirshIndex
+                    );
+                   printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n"); 
+                }
+            }
+            printf("Найдено %d записей с Кол-вом цитирований '%d'", count, key);
+            break;
+
+        case 7:
+            printf("Введите Индекс Хирша -> "); scanf("%d", &key);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            for (; temp != NULL; temp = temp->next, count++) {
+                if (temp->info.articles == key) {
+                    printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                        temp->info.id, temp->info.name, temp->info.degree, temp->info.area, temp->info.articles, temp->info.quotes, temp->info.hirshIndex
+                    );
+                   printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n"); 
+                }
+            }
+            printf("Найдено %d записей с Индексом Хирша '%d'", count, key);
+            break;
+
+        default:
+            printf("Ошибка выбора!\n");
+            break;
+    }
 }
