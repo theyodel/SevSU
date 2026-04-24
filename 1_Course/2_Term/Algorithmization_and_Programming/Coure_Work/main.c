@@ -69,11 +69,10 @@ int freeMemory(struct list *);
 int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
-    int mainChoice, secondChoice;
+    int mainChoice, secondChoice, flag = 1, saved = 0;
     struct list *head;
     head = NULL;
     while (1) {
-        cancel:
         printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ МЕНЮ ================\n");
         printf("1. Организация списка\n");
         printf("2. Просмотр таблицы\n");
@@ -85,14 +84,14 @@ int main() {
         printf("8. Сохранить таблицу в файл\n");
         printf("9. Чтение таблицы из файла\n");
         printf("10. Обработка таблицы и просмотр результатов обработки в таблицу\n");
-
         printf("0. Выход из программы\n");
-        printf("Выберите действие (0-7) -> ");
+        printf("Выберите действие (0-10) -> ");
         scanf("%d", &mainChoice);
         
         switch (mainChoice) {  
             case 1:
                 head = createListKeyboard(head);
+                saved = 0;
                 break;
 
             case 2:
@@ -103,7 +102,7 @@ int main() {
             
             case 3:
                 if (head != NULL) {
-                    while (1) {
+                    while (flag) {
                         printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Считывание данных об учёном с клавиатуры ================\n");
                         printf("1. Добавить в начало\n");
                         printf("2. Добавить в конец\n");
@@ -114,22 +113,24 @@ int main() {
                         switch (secondChoice) {
                             case 1:
                                 head = addFirst(head, readData());
-                                goto cancel;
+                                flag = 0;
                                 break;
                         
                             case 2:
                                 head = addLast(head, readData());
-                                goto cancel;
+                                flag = 0;
                                 break;
 
                             case 0:
-                                goto cancel;
+                                flag = 0;
                                 break;
 
                             default:
                                 printf("Команда не распознана!\n");
                         }
                     }
+                    flag = 1;
+                    saved = 0;
                 }
                 else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
@@ -137,10 +138,10 @@ int main() {
             
             case 5:
                 if (head == NULL) {
-                    printf("Список пуст!")
+                    printf("Список пуст!");
+                } else {
+                    printf("Введите ID записи, которую хотите скорректировать -> "); scanf("%d", &secondChoice);
                 }
-                printf("Введите ID записи, которую хотите скорректировать -> "); scanf("%d", &secondChoice);
-
                 break;
                 
             
@@ -160,14 +161,16 @@ int main() {
                     printf("0. Выход\n");
                     printf("Выберите действие (0-7) -> ");
                     scanf("%d", &c);
-                    if (c == 0) goto cancel;
+                    if (c == 0) flag = 0;
                     findScientist(head, c);
+                    saved = 0;
                 }
+                flag = 1;
                 break;
             
             case 8:
                 if (head != NULL) {
-                    while (1) {
+                    while (flag) {
                         printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Экспорт таблицы в файл ================\n");
                         printf("1. Экспортировать в текстовый файл (.txt)\n");
                         printf("2. Экспортировать в бинарный файл (.bin)\n");
@@ -179,75 +182,80 @@ int main() {
                         switch (secondChoice) {
                             case 1:
                                 exportToTxt(head);
-                                goto cancel;
+                                flag = 0;
                                 break;
                         
                             case 2:
                                 exportToBin(head);
-                                goto cancel;
+                                flag = 0;
                                 break;
 
                             case 0:
-                                goto cancel;
+                                flag = 0;
                                 break;
 
                             default:
                                 printf("Команда не распознана!\n");
                         }
                     }
+                    saved = 1;
+                    flag = 1;
                 }
                 else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
 
             case 9:
-                if (head != NULL) {
+                if (head != NULL && saved == 0) {
                     char word[10];
                     printf("[ ! ] Внимание! У Вас есть несохранённый список! Если Вы хотите перезаписать данные, то напишите слово 'yes'");
                     scanf("%s", word);
                     if (strcmp(word, "yes")==0) {
-                        while (1) {
-                    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
-                    printf("1. Импортировать из текстового файла (.txt)\n");
-                    printf("2. Импортировать из бинарного файла (.bin)\n");
-                    printf("0. В меню\nВыберите действие (0-2) -> ");
-                    scanf("%d", &secondChoice);
-                    switch (secondChoice) {
-                        case 1:
-                            head = importFromTxt(head);
-                            printf("Таблица успешно экспортирована!\n");
-                                goto cancel;
+                        while (flag) {
+                            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
+                            printf("1. Импортировать из текстового файла (.txt)\n");
+                            printf("2. Импортировать из бинарного файла (.bin)\n");
+                            printf("0. В меню\nВыберите действие (0-2) -> ");
+                            scanf("%d", &secondChoice);
+                            switch (secondChoice) {
+                                case 1:
+                                    head = importFromTxt(head);
+                                    printf("Таблица успешно импортирована!\n");
+                                    flag = 0;
+                                    break;
+
+                                case 0:
+                                    flag = 0;
+                                    break;
+
+                                default:
+                                    printf("Команда не распознана!");
+                            }
+                        }
+                        flag = 1;
+                    }
+                } else {
+                    while (flag) {
+                        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
+                        printf("1. Импортировать из текстового файла (.txt)\n");
+                        printf("2. Импортировать из бинарного файла (.bin)\n");
+                        printf("0. В меню\nВыберите действие (0-2) -> ");
+                        scanf("%d", &secondChoice);
+                        switch (secondChoice) {
+                            case 1:
+                                head = importFromTxt(head);
+                                printf("Таблица успешно экспортирована!\n");
+                                flag = 0;
                                 break;
 
                             case 0:
-                                goto cancel;
-
-                            default:
-                                printf("Команда не распознана!");
+                                flag = 0;
                                 break;
+                                default:
+                                    printf("Команда не распознана!");
                         }
                     }
-                    }
-                }
-                while (1) {
-                    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
-                    printf("1. Импортировать из текстового файла (.txt)\n");
-                    printf("2. Импортировать из бинарного файла (.bin)\n");
-                    printf("0. В меню\nВыберите действие (0-2) -> ");
-                    scanf("%d", &secondChoice);
-                    switch (secondChoice) {
-                        case 1:
-                            head = importFromTxt(head);
-                            printf("Таблица успешно экспортирована!\n");
-                            goto cancel;
-                            break;
-
-                        case 0:
-                            goto cancel;
-
-                        default:
-                            printf("Команда не распознана!");
-                            break;
-                    }
+                    flag = 1;
+                    saved = 0;
                 }
                 break;
             
