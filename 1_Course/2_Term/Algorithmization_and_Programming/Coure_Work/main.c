@@ -73,6 +73,8 @@ int main() {
     struct list *head;
     head = NULL;
     while (1) {
+        flag = 1; // возобновляем флаг для циклов подменю
+
         printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ МЕНЮ ================\n");
         printf("1. Организация списка\n");
         printf("2. Просмотр таблицы\n");
@@ -129,7 +131,6 @@ int main() {
                                 printf("Команда не распознана!\n");
                         }
                     }
-                    flag = 1;
                     saved = 0;
                 }
                 else printf("Список пуст!\nРекомендуемое действие: 1.");
@@ -165,7 +166,6 @@ int main() {
                     findScientist(head, c);
                     saved = 0;
                 }
-                flag = 1;
                 break;
             
             case 8:
@@ -199,7 +199,6 @@ int main() {
                         }
                     }
                     saved = 1;
-                    flag = 1;
                 }
                 else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
@@ -231,7 +230,6 @@ int main() {
                                     printf("Команда не распознана!");
                             }
                         }
-                        flag = 1;
                     }
                 } else {
                     while (flag) {
@@ -254,7 +252,6 @@ int main() {
                                     printf("Команда не распознана!");
                         }
                     }
-                    flag = 1;
                     saved = 0;
                 }
                 break;
