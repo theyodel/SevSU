@@ -1,4 +1,6 @@
-/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
             Севастопольский государственный университет
            Кафедра "Информационные технологии и системы"
 
@@ -15,25 +17,24 @@
 количество статей и цитирований, индекс Хирша.
     Основные функции программы:
 - вывод базы на экран
-- добавление записи о телефоне в базу;
-- исправление записи о телефоне в базе;
-- удаление записи о телефоне из базы;
-- поиск записи о телефоне в базе;
-- выбор записей о моделях телефонов, попадающих в заданный пользователем
-диапазон цен.
+- добавление записи об учёном в базу;
+- исправление записи об учёном в базе;
+- удаление записи об учёном из базы;
+- поиск записи об учёном в базе;
+- сортировка записей об учёных;
 
 Вариант задания 4. Утверждено 18.02.2026
-Среда программирования Visual Studio Code version 1.115.0
-Дата последней коррекции: 10.04.2026.
+Среда программирования Visual Studio Code version 1.117.0
+Дата последней коррекции: 27.04.2026.
 Версия 1.0
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <windows.h>
-#define STEP 2
 
 //-----------------------------структуры данных------------------------------
 struct scientist {              // Структура для хранения данных об учёном
@@ -62,8 +63,10 @@ void viewList(struct list*);
 void exportToTxt(struct list *);
 void exportToBin(struct list *);
 struct list *importFromTxt(struct list *);
+struct list *importFromBin(struct list *);
 void findScientist(struct list *, int);
-int freeMemory(struct list *);
+struct list *editElement(struct list *, unsigned int);
+int freeMemory(struct list *, int);
 
 //------------------------------главная функция------------------------------
 int main() {
@@ -73,19 +76,19 @@ int main() {
     struct list *head;
     head = NULL;
     while (1) {
-        flag = 1; // возобновляем флаг для циклов подменю
+        flag = 1;
 
         printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ МЕНЮ ================\n");
         printf("1. Организация списка\n");
-        printf("2. Просмотр таблицы\n");
+        printf("2. Просмотр таблицы\n");                    // добавить скроллинг
         printf("3. Добавление новой записи в таблицу\n");
         printf("4. Удаление записи из таблицы\n");
         printf("5. Корректировка записи в таблице\n");
-        printf("6. Сортировка данных в таблице\n");
+        printf("6. Сортировка данных в таблице\n");         // целиком написать
         printf("7. Поиск записи в таблице\n");
         printf("8. Сохранить таблицу в файл\n");
-        printf("9. Чтение таблицы из файла\n");
-        printf("10. Обработка таблицы и просмотр результатов обработки в таблицу\n");
+        printf("9. Чтение таблицы из файла\n");             // переделать логику возвращаемого значения (идея - возвращаться будет максимальный ID для обнуления счётчика ID в функции readData())
+        printf("10. Обработка таблицы и просмотр результатов обработки в таблицу\n"); // целиком написать
         printf("0. Выход из программы\n");
         printf("Выберите действие (0-10) -> ");
         scanf("%d", &mainChoice);
@@ -136,16 +139,31 @@ int main() {
                 else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
 
-            
+            case 4:
+                if (head == NULL) printf("Список пуст!\nРекомендуемое действие: 1.");
+                else {
+                    printf("Введите ID удаляемой записи или 0 если хотите удалить все записи -> ");
+                    scanf("%d", &secondChoice);
+                    if (freeMemory(head, secondChoice) == -1) {
+                        printf("Возникла ошибка при удалении записи!\n");
+                    } else {
+                        flag = freeMemory(head, secondChoice);
+                    }
+                }
+                break;
+          
             case 5:
                 if (head == NULL) {
                     printf("Список пуст!");
                 } else {
                     printf("Введите ID записи, которую хотите скорректировать -> "); scanf("%d", &secondChoice);
+                    head = editElement(head, secondChoice);
                 }
                 break;
                 
-            
+            case 6:
+                break;
+
             case 7:
                 if (head == NULL) {
                     printf("Таблица пуста!\n");
@@ -159,7 +177,7 @@ int main() {
                     printf("5. Поиск по Количеству статей\n");
                     printf("6. Поиск по Количеству цитирований\n");
                     printf("7. Поиск по Индексу Хирша\n");
-                    printf("0. Выход\n");
+                    printf("0. В меню\n");
                     printf("Выберите действие (0-7) -> ");
                     scanf("%d", &c);
                     if (c == 0) flag = 0;
@@ -199,8 +217,7 @@ int main() {
                         }
                     }
                     saved = 1;
-                }
-                else printf("Список пуст!\nРекомендуемое действие: 1.");
+                } else printf("Список пуст!\nРекомендуемое действие: 1.");
                 break;
 
             case 9:
@@ -218,6 +235,12 @@ int main() {
                             switch (secondChoice) {
                                 case 1:
                                     head = importFromTxt(head);
+                                    printf("Таблица успешно импортирована!\n");
+                                    flag = 0;
+                                    break;
+
+                                case 2:
+                                    head = importFromBin(head);
                                     printf("Таблица успешно импортирована!\n");
                                     flag = 0;
                                     break;
@@ -245,11 +268,18 @@ int main() {
                                 flag = 0;
                                 break;
 
+                            case 2:
+                                head = importFromBin(head);
+                                printf("Таблица успешно импортирована!\n");
+                                flag = 0;
+                                break;
+
                             case 0:
                                 flag = 0;
                                 break;
-                                default:
-                                    printf("Команда не распознана!");
+
+                            default:
+                                printf("Команда не распознана!");
                         }
                     }
                     saved = 0;
@@ -257,18 +287,20 @@ int main() {
                 break;
             
             case 0:
-                int count = freeMemory(head);
+                int count = freeMemory(head, 0);
                 printf("Было удалено %d записей", count);
                 printf("\nВыход из программы...");
                 return 0;
 
             default:
                 printf("Команда не распознана!\n");
+                break;
         }
     }
 }
 
 /// @brief Функция чтения данных с клавиатуры
+/// @return Данные об учёном
 struct scientist readData() {
     struct scientist data;
     static int nextID = 1;
@@ -297,6 +329,7 @@ struct scientist readData() {
 /// @brief Функция добавления в начало списка
 /// @param head начало списка
 /// @param data данные об учённом
+/// @return Указатель на начало списка (указатель на добавленный в начало элемент)
 struct list *addFirst(struct list *head, struct scientist data) {
     struct list *temp;
     temp = (struct list*)malloc(sizeof(struct list));
@@ -309,6 +342,7 @@ struct list *addFirst(struct list *head, struct scientist data) {
 /// @brief Функция добавления в конец списка
 /// @param head начало списка
 /// @param data данные об учённом
+/// @return Указатель на начало списка
 struct list *addLast(struct list *head, struct scientist data) {
     struct list *temp, *e;
     temp = (struct list*)malloc(sizeof(struct list));
@@ -325,6 +359,7 @@ struct list *addLast(struct list *head, struct scientist data) {
 
 /// @brief Функция создания списка с клавиатуры
 /// @param head указатель на начало списка
+/// @return Указатель на начало списка
 struct list *createListKeyboard(struct list *head) {
     int choice = 0;
     do {
@@ -344,12 +379,12 @@ void viewList(struct list *head) {
         printf("Список не введён!\n");
         return;
     }
-    struct list *temp;
-    temp = head;
+    struct list *temp = head;
+    int count = 1;
     printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
     printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
     printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    while (temp != NULL) {
+    while (temp != NULL && count<=15) {
         printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
           temp->info.id,
           temp->info.name,
@@ -360,6 +395,7 @@ void viewList(struct list *head) {
           temp->info.hirshIndex
         );
         temp = temp->next;
+        count++;
         printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
     }
 }
@@ -367,15 +403,15 @@ void viewList(struct list *head) {
 /// @brief Функция экспорта таблицы в текстовый (`.txt`) файл
 /// @param head Указатель на начало списка
 void exportToTxt(struct list *head) {
-    char nameFile[101];
+    char fileName[101];
     struct list *temp = head;
     printf("Введите название файла (без указания расширения .txt) -> ");
     fflush(stdin);
-    scanf("%s", nameFile);
-    strcat(nameFile, ".txt");
-    FILE *file = fopen(nameFile, "wt");
+    scanf("%s", fileName);
+    strcat(fileName, ".txt");
+    FILE *file = fopen(fileName, "wt");
     if (file == NULL) {
-        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", nameFile);
+        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", fileName);
     }
     for (; temp != NULL; temp = temp->next) {
         fprintf(file, "%d %s %s %s %d %d %d\n",
@@ -387,7 +423,7 @@ void exportToTxt(struct list *head) {
          temp->info.quotes,
          temp->info.hirshIndex);
     }
-    printf("Информация записана в файл '%s'", nameFile);
+    printf("Информация записана в файл '%s'", fileName);
     fclose(file);
     return;
 }
@@ -395,21 +431,26 @@ void exportToTxt(struct list *head) {
 /// @brief Функция экспорта таблицы в `.bin` файл
 /// @param head Указатель на начало списка
 void exportToBin(struct list *head) {
-    char nameFile[101];
-    printf("Введите название файла (без указания расширения .bin) -> ");
+    char fileName[101];
+    printf("Введите название файла -> ");
     fflush(stdin);
-    scanf("%s", nameFile);
-    strcat(nameFile, ".bin");
-    FILE *file = fopen(nameFile, "wb");
+    scanf("%s", fileName);
+    if (fileName[strlen(fileName)-4]!='.' && fileName[strlen(fileName)-3]!='b' && fileName[strlen(fileName)-2]!='i' && fileName[strlen(fileName)-1]!='n') strcat(fileName, ".bin");
+    FILE *file = fopen(fileName, "ab");
     if (file == NULL) {
-        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", nameFile);
+        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", fileName);
     }
+    for (struct list *temp = head; temp!=NULL; temp=temp->next) {
+        fwrite(&temp->info, sizeof(struct scientist), 1, file);
+    }
+    printf("Таблица успешно экспортирована в файл '%s'", fileName);
     fclose(file);
     return;
 }
 
 /// @brief Функция импорта таблицы из текстового (`.txt`) файла
 /// @param head Указатель на начало списка
+/// @return Указатель на начало списка
 struct list *importFromTxt(struct list *head) {
     char fileName[101], name[25], otch[25];
     struct scientist data;
@@ -429,8 +470,7 @@ struct list *importFromTxt(struct list *head) {
             strcat(data.name, otch);
             if (head != NULL) {
                 head = addLast(head, data);
-            }
-            else {
+            } else {
                 head = addFirst(head, data);
             }
         }
@@ -438,23 +478,140 @@ struct list *importFromTxt(struct list *head) {
     return head;
 }
 
+/// @brief Функция импорта таблицы из бинарного (`.bin`) файла
+/// @param head Указатель на начало списка
+/// @return Указатель на начало списка
+struct list *importFromBin(struct list *head) {
+    char fileName[101];
+    printf("Введите название файла -> ");
+    fflush(stdin);
+    scanf("%s", fileName);
+    struct scientist data;
+    if (fileName[strlen(fileName)-4]!='.' && fileName[strlen(fileName)-3]!='b' && fileName[strlen(fileName)-2]!='i' && fileName[strlen(fileName)-1]!='n') strcat(fileName, ".bin");
+    FILE *file = fopen(fileName, "rb");
+    if (file == NULL) {
+        printf("Файл '%s' не найден!", fileName);
+    } else {
+        while (fread(&data, sizeof(struct scientist), 1, file) == 1) {
+            if (head == NULL) {
+                head = addFirst(head, data);
+            } else {
+                head = addLast(head, data);
+            }
+        }
+        fclose(file);
+    }
+    return head;
+}
+
 /// @brief Функция очистки памяти
 /// @param head Указатель на начало списка
-int freeMemory(struct list *head) {
-    if (head == NULL) {
-        printf("Список пуст...\n");
-        return 0;
+/// @return Кол-во удалённых записей
+int freeMemory(struct list *head, int choice) {
+    struct list *temp=head;
+    switch (choice) {
+        case 0:
+            if (head == NULL) {
+                printf("Список пуст...\n");
+                return 0;
+            }        
+            int c = 0;
+            while (head != NULL) {
+                head = head->next;
+                free(temp);
+                temp = NULL; 
+                temp = head;
+                c++;
+            }
+            return c;
+        
+        default:
+            struct list* toDel = head;
+            while (toDel->info.id != choice)  toDel = toDel->next;
+            if (toDel == NULL) return -1;
+            temp = toDel->prev;
+            temp->next = toDel->next;
+            temp->next->prev = temp;
+            free(toDel);
+            toDel = NULL;
+            return 1;
     }
-    struct list *temp=head, *n;
-    int c = 0;
-    n = temp->next;
-    while (temp != NULL) {
-        n = temp->next;
-        free(temp);
-        temp = n;
-        c++;
+}
+
+/// @brief Функция корректировки данных об учёном по его ID
+/// @param head Указатель на начало списка
+/// @param id ID записи, которая будет откорректирована
+/// @return Указатель на начало списка
+struct list *editElement(struct list *head, unsigned int id) {
+    int choice, oldInt;
+    char oldLine[76];
+    struct list *temp = head;
+    for (; temp->info.id != id; temp = temp->next);
+    if (temp != NULL) {
+        printf("Запись с ID '%d' найдена!\n");
+        printf("Выберите поле, которое хотите изменить\n");
+        printf("1. ФИО\n");
+        printf("2. Учёная степень\n");
+        printf("3. Область науки\n");
+        printf("4. Кол-во статей\n");
+        printf("5. Кол-во цитирований\n");
+        printf("6. Индекс Хирша\n");
+        printf("0. В меню\n");
+        printf("Выберите действие (0-6) -> ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Введите ФИО -> ");
+                strcpy(oldLine, temp->info.name);
+                fgets(temp->info.name, 75, stdin);
+                printf("ФИО успешно изменено!\n");
+                printf("%s  ->  %s\n", oldLine, temp->info.name);
+                break;
+            
+            case 2:
+                printf("Введите Учёную сепень -> ");
+                strcpy(oldLine, temp->info.degree);
+                fgets(temp->info.degree, 75, stdin);
+                printf("Учёная степень успешно изменена!\n");
+                printf("%s  ->  %s\n", oldLine, temp->info.degree);
+                break;
+
+            case 3:
+                printf("Введите Область наук -> ");
+                strcpy(oldLine, temp->info.area);
+                fgets(temp->info.area, 75, stdin);
+                printf("Учёная степень успешно изменена!\n");
+                printf("%s  ->  %s\n", oldLine, temp->info.area);
+                break;
+
+            case 4:
+                printf("Введите Кол-во статей -> ");
+                oldInt = temp->info.articles;
+                scanf("%d", &temp->info.articles);
+                printf("Кол-во статей успешно изменено!\n");
+                printf("%d  ->  %d\n", oldInt, temp->info.articles);
+                break;
+
+            case 5:
+                printf("Введите Кол-во цитирований -> ");
+                oldInt = temp->info.quotes;
+                scanf("%d", &temp->info.quotes);
+                printf("Кол-во цитирований успешно изменено!\n");
+                printf("%d  ->  %d\n", oldInt, temp->info.quotes);
+                break;
+
+            case 6:
+                printf("Введите Индекс Хирша -> ");
+                oldInt = temp->info.hirshIndex;
+                scanf("%d", &temp->info.hirshIndex);
+                printf("Индекс Хирша успешно изменён!\n");
+                printf("%d  ->  %d\n", oldInt, temp->info.hirshIndex);
+                break;
+        }
+    } else {
+        printf("Запись с ID '%d' не найдена!", id);
     }
-    return c;
+    return head;
 }
 
 /// @brief Функция поиска данных в таблице
