@@ -4,46 +4,60 @@
 #include <windows.h>
 
 struct scientist {
-    char name[76];
-    char area[26];
-    char degree[26];
-    int quotes;
-    int articles;
-    int hirshIndex;
+    char name[76], area[26], degree[26];
+    int quotes, articles, hirshIndex, id;
+};
+
+struct list {
+    struct scientist info;
+    struct list *prev, *next;
 };
 
 struct scientist readData();
-FILE *createBinFile(char *, struct scientist);
+void createBinFile(struct list *);
+int maxHirsh(struct list *);
+void viewList(struct list *);
+struct list *importFromBin(struct list *);
+void freeMemory(struct list *);
 
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
-    FILE *file;
-    int choice;
-    while (1)
-    {
+    int choice, flag;
+    struct list *head = NULL;
+    
+    while (1) {
         printf("\n\n\n================ МЕНЮ ================\n");
-        printf("1. Запись файла\n");
+        printf("1. Запись файла\n"); //
         printf("2. Сортировка по полю \"Кол-во цитирований\"\n");
-        printf("3. Вывести учёного с наибольшим индексом Хирша\n");
-        printf("4. Вывести таблицу на экран\n");
-        printf("0. Выход\n-> ");
+        printf("3. Вывести учёного с наибольшим индексом Хирша\n"); //
+        printf("4. Вывести таблицу на экран\n"); //
+        printf("5, Чтение таблицы из файла\n"); //
+        printf("0. Выход\n-> "); //
         scanf("%d", &choice);
 
         switch (choice) {
         case 1:
-            char fileName[100];
-            printf("Введите название файла (без расширения .bin): ");
-            scanf("%s", fileName);
-            strcat(fileName, ".bin");
-            file = createBinFile(fileName, readData());
+            createBinFile(head);
             break;
         
         case 2:
-            
+            break;
+        
+        case 3:
+            flag = maxHirsh(head);
+            break;
+
+        case 4:
+            viewList(head);
+            break;
+
+        case 5:
+            head = importFromBin(head);
             break;
         
         case 0:
+            freeMemory(head);
             printf("\n\n\nВыход из программы...");
             return 0;
 
@@ -73,7 +87,120 @@ struct scientist readData() {
     return data;
 }
 
-FILE *createBinFile(char *fileName, struct scientist data) {
-    FILE *file = open(fileName, "wb");
-    
+struct list *addFirst(struct list *head, struct scientist data) {
+    struct list *temp;
+    temp = (struct list*)malloc(sizeof(struct list));
+    temp->info = data;
+    temp->next = head;
+    temp->prev = NULL;
+    return temp;
+}
+
+struct list *addLast(struct list *head, struct scientist data) {
+    struct list *temp, *e;
+    temp = (struct list*)malloc(sizeof(struct list));
+    temp->info = data;
+    temp->next = NULL;
+    if (head == NULL) head = temp;
+    else {
+        for (e = head; e->next != NULL; e = e->next);
+        temp->prev = e;
+        e->next = temp;
+    }
+    return head;
+}
+
+void createBinFile(struct list *head) {
+    char fileName[101];
+    struct list *temp = head;
+    printf("Введите название файла -> ");
+    fflush(stdin);
+    scanf("%s", fileName);
+    if (fileName[strlen(fileName)-4]!='.' && fileName[strlen(fileName)-3]!='b' && fileName[strlen(fileName)-2]!='i' && fileName[strlen(fileName)-1]!='n') strcat(fileName, ".bin");
+    FILE *file = fopen(fileName, "ab");
+    if (file == NULL) {
+        printf("Файл '%s' будет создан в корне текущей папки.", fileName);
+    }
+    for (struct list *temp = head; temp!=NULL; temp=temp->next) {
+        fwrite(&temp->info, sizeof(struct scientist), 1, file);
+    }
+    printf("Таблица успешно экспортирована в файл '%s'", fileName);
+    fclose(file);
+    return;
+}
+
+struct list *importFromBin(struct list *head) {
+    char fileName[101];
+    printf("Введите название файла -> ");
+    fflush(stdin);
+    scanf("%s", fileName);
+    struct scientist data;
+    if (fileName[strlen(fileName)-4]!='.' && fileName[strlen(fileName)-3]!='b' && fileName[strlen(fileName)-2]!='i' && fileName[strlen(fileName)-1]!='n') strcat(fileName, ".bin");
+    FILE *file = fopen(fileName, "rb");
+    if (file == NULL) {
+        printf("Файл '%s' не найден!", fileName);
+    } else {
+        while (fread(&data, sizeof(struct scientist), 1, file) == 1) {
+            if (head == NULL) {
+                head = addFirst(head, data);
+            } else {
+                head = addLast(head, data);
+            }
+        }
+        fclose(file);
+    }
+    return head;
+}
+
+void viewList(struct list *head) {
+    if (head == NULL) {
+        printf("Список не введён!\n");
+        return;
+    }
+    struct list *temp = head;
+    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+    printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+    while (temp != NULL) {
+        printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+          temp->info.id,
+          temp->info.name,
+          temp->info.degree,
+          temp->info.area,
+          temp->info.articles,
+          temp->info.quotes,
+          temp->info.hirshIndex
+        );
+        temp = temp->next;
+        printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+    }
+}
+
+int maxHirsh(struct list *head) {
+    if (head == NULL) {
+        printf("Спиок пуст!\n");
+        return 0;
+    }
+    struct list *temp = head;
+    int maxHirsh = 0, id = -1;
+    for (; temp != NULL; temp = temp->next) {
+        if (temp->info.hirshIndex > maxHirsh) {
+            maxHirsh = temp->info.hirshIndex;
+            id = temp->info.id;
+        }
+    }
+    printf("Учёный с максимальным индексом хирша:\n");
+    for (; temp!=NULL && temp->info.id!=id; temp = temp->next);
+    viewList(temp);
+    return maxHirsh;
+}
+
+void freeMemory(struct list *head) {
+    struct list *temp = head;
+    for (; temp != NULL; temp = temp->next) {
+        temp = head;
+        head = temp->next;
+        free(temp);
+        temp = NULL;
+    }
 }
