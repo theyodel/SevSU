@@ -77,7 +77,7 @@ int main() {
     struct list *head = NULL;
 
     while (1) {
-        system("cls");   // ← очистка перед меню
+        system("cls");
         printf("================ МЕНЮ ================\n");
         printf("1. Организация списка\n");
         printf("2. Просмотр таблицы\n");
