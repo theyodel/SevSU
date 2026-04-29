@@ -31,9 +31,9 @@
 */
 
 #include <stdio.h>
+#include <conio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <windows.h>
 
 //-----------------------------структуры данных------------------------------
@@ -60,6 +60,7 @@ struct list *createListKeyboard(struct list *);
 struct list *addFirst(struct list *, struct scientist);
 struct list *addLast(struct list *, struct scientist);
 void viewList(struct list*);
+void checkFileExt(char *, const char *);
 void exportToTxt(struct list *);
 void exportToBin(struct list *);
 struct list *importFromTxt(struct list *);
@@ -72,229 +73,218 @@ int freeMemory(struct list *, int);
 int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
-    int mainChoice, secondChoice, flag = 1, saved = 0;
-    struct list *head;
-    head = NULL;
-    while (1) {
-        flag = 1;
+    int mainChoice, secondChoice; 
+    int flag, saved = 0;
+    struct list *head = NULL;
 
-        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ МЕНЮ ================\n");
+    while (1) {
+        system("cls");   // ← очистка перед меню
+        printf("================ МЕНЮ ================\n");
         printf("1. Организация списка\n");
-        printf("2. Просмотр таблицы\n");                    // добавить скроллинг
-        printf("3. Добавление новой записи в таблицу\n");
-        printf("4. Удаление записи из таблицы\n");
-        printf("5. Корректировка записи в таблице\n");
-        printf("6. Сортировка данных в таблице\n");         // целиком написать
-        printf("7. Поиск записи в таблице\n");
+        printf("2. Просмотр таблицы\n");
+        printf("3. Добавление новой записи\n");
+        printf("4. Удаление записи\n");
+        printf("5. Корректировка записи\n");
+        printf("6. Сортировка данных\n");
+        printf("7. Поиск записи\n");
         printf("8. Сохранить таблицу в файл\n");
-        printf("9. Чтение таблицы из файла\n");             // переделать логику возвращаемого значения (идея - возвращаться будет максимальный ID для обнуления счётчика ID в функции readData())
-        printf("10. Обработка таблицы и просмотр результатов обработки в таблицу\n"); // целиком написать
-        printf("0. Выход из программы\n");
-        printf("Выберите действие (0-10) -> ");
-        scanf("%d", &mainChoice);
-        
+        printf("9. Чтение таблицы из файла\n");
+        printf("0. Обработка таблицы\n");
+        printf("ESC. Выход из программы\n");
+        printf("Выберите действие -> \n");
+        mainChoice = getch();
+
         switch (mainChoice) {  
-            case 1:
+            case '1':
                 head = createListKeyboard(head);
                 saved = 0;
                 break;
 
-            case 2:
-                if (head != NULL) viewList(head);
-                else printf("Список пуст!\nРекомендуемое действие: 1.");
-                break;
-                
-            
-            case 3:
+            case '2':
                 if (head != NULL) {
-                    while (flag) {
-                        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Считывание данных об учёном с клавиатуры ================\n");
-                        printf("1. Добавить в начало\n");
-                        printf("2. Добавить в конец\n");
-                        printf("0. В меню\n");
-                        printf("Выберите действие (0-2) -> ");
-                        scanf("%d", &secondChoice);
+                    viewList(head);
+                } else {
+                    printf("Список пуст!\nРекомендуемое действие: 1.");
+                    getch();
+                }
+                break;
 
-                        switch (secondChoice) {
-                            case 1:
-                                head = addFirst(head, readData());
-                                flag = 0;
-                                break;
-                        
-                            case 2:
-                                head = addLast(head, readData());
-                                flag = 0;
-                                break;
-
-                            case 0:
-                                flag = 0;
-                                break;
-
-                            default:
-                                printf("Команда не распознана!\n");
-                        }
+            case '3':
+                if (head == NULL) {
+                    printf("Список пуст!\nРекомендуемое действие: 1.");
+                    getch();
+                    break;
+                }
+                flag = 1;
+                while (flag) {
+                    system("cls");
+                    printf("================ Считывание данных об учёном ================\n");
+                    printf("1. Добавить в начало\n");
+                    printf("2. Добавить в конец\n");
+                    printf("0. В меню\n");
+                    printf("Выберите действие (0-2) -> ");
+                    secondChoice = getch();
+                    switch (secondChoice) {
+                        case '1':
+                            head = addFirst(head, readData());
+                            flag = 0;
+                            break;
+                        case '2':
+                            head = addLast(head, readData());
+                            flag = 0;
+                            break;
+                        case '0':
+                            flag = 0;
+                            break;
+                        default:
+                            printf("\nКоманда не распознана! Нажмите любую клавишу...");
+                            getch();
                     }
-                    saved = 0;
                 }
-                else printf("Список пуст!\nРекомендуемое действие: 1.");
+                saved = 0;
                 break;
 
-            case 4:
-                if (head == NULL) printf("Список пуст!\nРекомендуемое действие: 1.");
-                else {
-                    printf("Введите ID удаляемой записи или 0 если хотите удалить все записи -> ");
-                    scanf("%d", &secondChoice);
-                    flag = freeMemory(head, secondChoice);
-                    if (flag == -1) printf("Возникла ошибка при удалении записи!\n");
+            case '4':
+                if (head == NULL) {
+                    printf("Список пуст!\nРекомендуемое действие: 1.");
+                    getch();
+                    break;
                 }
+                system("cls");
+                printf("Введите ID удаляемой записи или 0 (удалить все) -> ");
+                scanf("%d", &secondChoice);
+                flag = freeMemory(head, secondChoice);
+                if (flag == -1) printf("Ошибка при удалении!\n");
+                getch();
                 break;
-          
-            case 5:
+
+            case '5':
                 if (head == NULL) {
                     printf("Список пуст!");
-                } else {
-                    printf("Введите ID записи, которую хотите скорректировать -> "); scanf("%d", &secondChoice);
-                    head = editElement(head, secondChoice);
+                    getch();
+                    break;
                 }
-                break;
-                
-            case 6:
+                system("cls");
+                printf("Введите ID записи для корректировки -> ");
+                scanf("%d", &secondChoice);
+                head = editElement(head, secondChoice);
+                getch();
                 break;
 
-            case 7:
+            case '6':
+                // TODO: сортировка
+                printf("Функция в разработке.\n");
+                getch();
+                break;
+
+            case '7':
                 if (head == NULL) {
                     printf("Таблица пуста!\n");
-                } else {
-                    int c;
-                    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Экспорт таблицы в файл ================\n");
-                    printf("1. Поиск по ID\n");
-                    printf("2. Поиск по ФИО\n");
-                    printf("3. Поиск по Учёной степени\n");
-                    printf("4. Поиск по Области наук\n");
-                    printf("5. Поиск по Количеству статей\n");
-                    printf("6. Поиск по Количеству цитирований\n");
-                    printf("7. Поиск по Индексу Хирша\n");
-                    printf("0. В меню\n");
+                    getch();
+                    break;
+                }
+                flag = 1;
+                while (flag) {
+                    system("cls");
+                    printf("================ Поиск учёного ================\n");
+                    printf("1. По ID\n2. По ФИО\n3. По учёной степени\n4. По области наук\n");
+                    printf("5. По числу статей\n6. По числу цитирований\n7. По индексу Хирша\n0. В меню\n");
                     printf("Выберите действие (0-7) -> ");
-                    scanf("%d", &c);
-                    if (c == 0) flag = 0;
-                    findScientist(head, c);
-                    saved = 0;
+                    secondChoice = getch();
+                    if (secondChoice == '0') flag = 0;
+                    else findScientist(head, secondChoice);
+                    if (flag) {
+                        printf("\nНажмите любую клавишу для продолжения...");
+                        getch();
+                    }
                 }
                 break;
-            
-            case 8:
-                if (head != NULL) {
-                    while (flag) {
-                        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Экспорт таблицы в файл ================\n");
-                        printf("1. Экспортировать в текстовый файл (.txt)\n");
-                        printf("2. Экспортировать в бинарный файл (.bin)\n");
-                        printf("0. В меню\n");
-                        printf("[ ! ] Внимание! При экспорте в бинарный файл вы сможете взаимодействовать с ним только через данную программу!\n");
-                        printf("Выберите действие (0-2) -> ");
-                        scanf("%d", &secondChoice);
 
-                        switch (secondChoice) {
-                            case 1:
-                                exportToTxt(head);
-                                flag = 0;
-                                break;
-                        
-                            case 2:
-                                exportToBin(head);
-                                flag = 0;
-                                break;
-
-                            case 0:
-                                flag = 0;
-                                break;
-
-                            default:
-                                printf("Команда не распознана!\n");
-                        }
+            case '8':
+                if (head == NULL) {
+                    printf("Список пуст!\n");
+                    getch();
+                    break;
+                }
+                flag = 1;
+                while (flag) {
+                    system("cls");
+                    printf("================ Экспорт таблицы ================\n");
+                    printf("1. В текстовый файл (.txt)\n");
+                    printf("2. В бинарный файл (.bin)\n");
+                    printf("0. В меню\n");
+                    printf("Выберите действие (0-2) -> ");
+                    secondChoice = getch();
+                    switch (secondChoice) {
+                        case '1':
+                            exportToTxt(head);
+                            flag = 0;
+                            break;
+                        case '2':
+                            exportToBin(head);
+                            flag = 0;
+                            break;
+                        case '0':
+                            flag = 0;
+                            break;
+                        default:
+                            printf("\nНеверный выбор! Нажмите любую клавишу...");
+                            getch();
                     }
-                    saved = 1;
-                } else printf("Список пуст!\nРекомендуемое действие: 1.");
+                }
+                saved = 1;
                 break;
 
-            case 9:
+            case '9':
                 if (head != NULL && saved == 0) {
                     char word[10];
-                    printf("[ ! ] Внимание! У Вас есть несохранённый список! Если Вы хотите перезаписать данные, то напишите слово 'yes'");
+                    system("cls");
+                    printf("[!] Внимание! Есть несохранённые данные.\nВведите 'yes' для перезаписи: ");
                     scanf("%s", word);
-                    if (strcmp(word, "yes")==0) {
-                        while (flag) {
-                            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
-                            printf("1. Импортировать из текстового файла (.txt)\n");
-                            printf("2. Импортировать из бинарного файла (.bin)\n");
-                            printf("0. В меню\nВыберите действие (0-2) -> ");
-                            scanf("%d", &secondChoice);
-                            switch (secondChoice) {
-                                case 1:
-                                    head = importFromTxt(head);
-                                    printf("Таблица успешно импортирована!\n");
-                                    flag = 0;
-                                    break;
-
-                                case 2:
-                                    head = importFromBin(head);
-                                    printf("Таблица успешно импортирована!\n");
-                                    flag = 0;
-                                    break;
-
-                                case 0:
-                                    flag = 0;
-                                    break;
-
-                                default:
-                                    printf("Команда не распознана!");
-                            }
-                        }
-                    }
-                } else {
-                    while (flag) {
-                        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n================ Импорт таблицы из файла ================\n");
-                        printf("1. Импортировать из текстового файла (.txt)\n");
-                        printf("2. Импортировать из бинарного файла (.bin)\n");
-                        printf("0. В меню\nВыберите действие (0-2) -> ");
-                        scanf("%d", &secondChoice);
-                        switch (secondChoice) {
-                            case 1:
-                                head = importFromTxt(head);
-                                printf("Таблица успешно экспортирована!\n");
-                                flag = 0;
-                                break;
-
-                            case 2:
-                                head = importFromBin(head);
-                                printf("Таблица успешно импортирована!\n");
-                                flag = 0;
-                                break;
-
-                            case 0:
-                                flag = 0;
-                                break;
-
-                            default:
-                                printf("Команда не распознана!");
-                        }
-                    }
-                    saved = 0;
+                    if (strcmp(word, "yes") != 0) break;
                 }
+                flag = 1;
+                while (flag) {
+                    system("cls");
+                    printf("================ Импорт таблицы ================\n");
+                    printf("1. Из текстового файла (.txt)\n");
+                    printf("2. Из бинарного файла (.bin)\n");
+                    printf("0. В меню\n");
+                    printf("Выберите действие (0-2) -> ");
+                    secondChoice = getch();
+                    switch (secondChoice) {
+                        case '1':
+                            head = importFromTxt(head);
+                            printf("Импорт завершён.\n");
+                            flag = 0;
+                            break;
+                        case '2':
+                            head = importFromBin(head);
+                            printf("Импорт завершён.\n");
+                            flag = 0;
+                            break;
+                        case '0':
+                            flag = 0;
+                            break;
+                        default:
+                            printf("\nНеверный выбор! Нажмите любую клавишу...");
+                            getch();
+                    }
+                }
+                saved = 0;
                 break;
 
-            case 10:
+            case '0':
                 break;
-            
-            case 0:
+
+            case 27:
                 int count = freeMemory(head, 0);
-                printf("Было удалено %d записей", count);
-                printf("\nВыход из программы...");
+                printf("\nУдалено %d записей. Выход...\n", count);
                 return 0;
 
             default:
-                printf("Команда не распознана!\n");
-                break;
+                printf("\nКоманда не распознана! Нажмите любую клавишу...");
+                getch();
         }
     }
 }
@@ -379,24 +369,78 @@ void viewList(struct list *head) {
         printf("Список не введён!\n");
         return;
     }
-    struct list *temp = head;
-    int count = 1;
-    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
-    printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    while (temp != NULL && count<=15) {
-        printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
-          temp->info.id,
-          temp->info.name,
-          temp->info.degree,
-          temp->info.area,
-          temp->info.articles,
-          temp->info.quotes,
-          temp->info.hirshIndex
-        );
-        temp = temp->next;
-        count++;
+
+    int total = 0;
+    struct list *cur = head;
+    while (cur) {
+        total++;
+        cur = cur->next;
+    }
+
+    const int PAGE_SIZE = 15;
+    int start = 0;
+    char key;
+
+    do {
+        system("cls");
+
         printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+        printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
+        printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+
+        struct list *temp = head;
+        int idx = 0;
+        while (temp && idx < start) {
+            temp = temp->next;
+            idx++;
+        }
+
+        int printed = 0;
+        while (temp != NULL && printed < PAGE_SIZE) {
+            printf("| %-4d | %-75s | %-25s | %-25s | %-13d | %-18d | %-12d |\n",
+                   temp->info.id,
+                   temp->info.name,
+                   temp->info.degree,
+                   temp->info.area,
+                   temp->info.articles,
+                   temp->info.quotes,
+                   temp->info.hirshIndex);
+            printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
+            temp = temp->next;
+            printed++;
+        }
+
+        if (printed == 0) break;
+
+        int first = start + 1;
+        int last = (start + printed < total) ? start + printed : total;
+        printf("\nСтраница: %d-%d из %d. Используйте W (вверх), S (вниз), Q (выход): ", first, last, total);
+
+        key = getch();
+
+        if (key == 'w' || key == 'W') {
+            int new_start = start - PAGE_SIZE;
+            if (new_start < 0) new_start = 0;
+            start = new_start;
+        }
+        else if (key == 's' || key == 'S') {
+            int new_start = start + PAGE_SIZE;
+            int max_start = total - PAGE_SIZE;
+            if (max_start < 0) max_start = 0;
+            if (new_start > max_start) new_start = max_start;
+            start = new_start;
+        }
+        else if (key == 'q' || key == 'Q' || key == 27) {
+            break;
+        }
+    } while (1);
+}
+
+/// @brief Проверяет и добавляет расширение файла, если его нет
+void checkFileExt(char *filename, const char *ext) {
+    int len = strlen(filename);
+    if (len < 4 || strcmp(filename + len - 4, ext) != 0) {
+        strcat(filename, ext);
     }
 }
 
@@ -405,76 +449,93 @@ void viewList(struct list *head) {
 void exportToTxt(struct list *head) {
     char fileName[101];
     struct list *temp = head;
-    printf("Введите название файла (без указания расширения .txt) -> ");
+    
+    printf("\nВведите название файла -> ");
+    int c;
     fflush(stdin);
-    scanf("%s", fileName);
-    strcat(fileName, ".txt");
+    fgets(fileName, sizeof(fileName), stdin);
+    fileName[strcspn(fileName, "\n")] = '\0';
+    
+    checkFileExt(fileName, ".txt");
+    
     FILE *file = fopen(fileName, "wt");
     if (file == NULL) {
-        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", fileName);
+        printf("Ошибка создания файла '%s'!\n", fileName);
+        return;
     }
+    
     for (; temp != NULL; temp = temp->next) {
-        fprintf(file, "%d %s %s %s %d %d %d\n",
-         temp->info.id,
-         temp->info.name,
-         temp->info.degree,
-         temp->info.area,
-         temp->info.articles,
-         temp->info.quotes,
-         temp->info.hirshIndex);
+        fprintf(file, "%d\t%s\t%s\t%s\t%d\t%d\t%d\n",
+                temp->info.id,
+                temp->info.name,
+                temp->info.degree,
+                temp->info.area,
+                temp->info.articles,
+                temp->info.quotes,
+                temp->info.hirshIndex);
     }
-    printf("Информация записана в файл '%s'", fileName);
+    
+    printf("Информация записана в файл '%s'\n", fileName);
     fclose(file);
-    return;
 }
 
 /// @brief Функция экспорта таблицы в `.bin` файл
 /// @param head Указатель на начало списка
 void exportToBin(struct list *head) {
     char fileName[101];
-    printf("Введите название файла -> ");
+    printf("\nВведите название файла -> ");
+    int c;
     fflush(stdin);
-    scanf("%s", fileName);
-    if (fileName[strlen(fileName)-4]!='.' && fileName[strlen(fileName)-3]!='b' && fileName[strlen(fileName)-2]!='i' && fileName[strlen(fileName)-1]!='n') strcat(fileName, ".bin");
-    FILE *file = fopen(fileName, "ab");
+    fgets(fileName, sizeof(fileName), stdin);
+    fileName[strcspn(fileName, "\n")] = '\0';
+    
+    checkFileExt(fileName, ".bin");
+    
+    FILE *file = fopen(fileName, "wb");
     if (file == NULL) {
-        printf("Файл '%s' не найден! Он будет создан в корне текущей папки", fileName);
+        printf("Ошибка создания файла '%s'!\n", fileName);
+        return;
     }
-    for (struct list *temp = head; temp!=NULL; temp=temp->next) {
+    
+    for (struct list *temp = head; temp != NULL; temp = temp->next) {
         fwrite(&temp->info, sizeof(struct scientist), 1, file);
     }
-    printf("Таблица успешно экспортирована в файл '%s'", fileName);
+    
+    printf("Таблица успешно экспортирована в файл '%s'\n", fileName);
     fclose(file);
-    return;
 }
 
 /// @brief Функция импорта таблицы из текстового (`.txt`) файла
 /// @param head Указатель на начало списка
 /// @return Указатель на начало списка
 struct list *importFromTxt(struct list *head) {
-    char fileName[101], name[25], otch[25];
+    char fileName[101];
     struct scientist data;
     
-    printf("Введите названия файла (без указания расширения .txt) -> ");
-    scanf("%s", fileName);
-    strcat(fileName, ".txt");
+    printf("\nВведите название файла -> ");
+    int c;
+    fflush(stdin);
+    fgets(fileName, sizeof(fileName), stdin);
+    fileName[strcspn(fileName, "\n")] = '\0';
+    
+    checkFileExt(fileName, ".txt");
+    
     FILE *file = fopen(fileName, "rt");
     if (file == NULL) {
-        printf("Файл '%s' не найден! Введите корректное название снова", fileName);
+        printf("Файл '%s' не найден!\n", fileName);
         return head;
-    } else {
-        while (fscanf(file, "%d %s %s %s %s %s %u %u %u", &data.id, data.name, name, otch, data.degree, data.area, &data.articles, &data.quotes, &data.hirshIndex) != EOF) {
-            strcat(data.name, " ");
-            strcat(data.name, name);
-            strcat(data.name, " ");
-            strcat(data.name, otch);
-            if (head != NULL) {
-                head = addLast(head, data);
-            } else {
-                head = addFirst(head, data);
-            }
-        }
     }
+    
+    while (fscanf(file, "%d\t%[^\t]\t%[^\t]\t%[^\t]\t%d\t%d\t%d\n",
+                  &data.id, data.name, data.degree, data.area,
+                  &data.articles, &data.quotes, &data.hirshIndex) == 7) {
+        if (head == NULL)
+            head = addFirst(head, data);
+        else
+            head = addLast(head, data);
+    }
+    
+    fclose(file);
     return head;
 }
 
@@ -483,24 +544,30 @@ struct list *importFromTxt(struct list *head) {
 /// @return Указатель на начало списка
 struct list *importFromBin(struct list *head) {
     char fileName[101];
-    printf("Введите название файла -> ");
-    fflush(stdin);
-    scanf("%s", fileName);
     struct scientist data;
-    if (fileName[strlen(fileName)-4]!='.' && fileName[strlen(fileName)-3]!='b' && fileName[strlen(fileName)-2]!='i' && fileName[strlen(fileName)-1]!='n') strcat(fileName, ".bin");
+    
+    printf("\nВведите название файла -> ");
+    int c;
+    fflush(stdin);
+    fgets(fileName, sizeof(fileName), stdin);
+    fileName[strcspn(fileName, "\n")] = '\0';
+    
+    checkFileExt(fileName, ".bin");
+    
     FILE *file = fopen(fileName, "rb");
     if (file == NULL) {
-        printf("Файл '%s' не найден!", fileName);
-    } else {
-        while (fread(&data, sizeof(struct scientist), 1, file) == 1) {
-            if (head == NULL) {
-                head = addFirst(head, data);
-            } else {
-                head = addLast(head, data);
-            }
-        }
-        fclose(file);
+        printf("Файл '%s' не найден!\n", fileName);
+        return head;
     }
+    
+    while (fread(&data, sizeof(struct scientist), 1, file) == 1) {
+        if (head == NULL)
+            head = addFirst(head, data);
+        else
+            head = addLast(head, data);
+    }
+    
+    fclose(file);
     return head;
 }
 
@@ -566,9 +633,9 @@ struct list *editElement(struct list *head, unsigned int id) {
         printf("6. Индекс Хирша\n");
         printf("0. В меню\n");
         printf("Выберите действие (0-6) -> ");
-        scanf("%d", &choice);
+        choice = getch();
         switch (choice) {
-            case 1:
+            case '1':
                 printf("Введите ФИО -> ");
                 strcpy(oldLine, temp->info.name);
                 fgets(temp->info.name, 75, stdin);
@@ -576,7 +643,7 @@ struct list *editElement(struct list *head, unsigned int id) {
                 printf("%s  ->  %s\n", oldLine, temp->info.name);
                 break;
             
-            case 2:
+            case '2':
                 printf("Введите Учёную сепень -> ");
                 strcpy(oldLine, temp->info.degree);
                 fgets(temp->info.degree, 75, stdin);
@@ -584,7 +651,7 @@ struct list *editElement(struct list *head, unsigned int id) {
                 printf("%s  ->  %s\n", oldLine, temp->info.degree);
                 break;
 
-            case 3:
+            case '3':
                 printf("Введите Область наук -> ");
                 strcpy(oldLine, temp->info.area);
                 fgets(temp->info.area, 75, stdin);
@@ -592,7 +659,7 @@ struct list *editElement(struct list *head, unsigned int id) {
                 printf("%s  ->  %s\n", oldLine, temp->info.area);
                 break;
 
-            case 4:
+            case '4':
                 printf("Введите Кол-во статей -> ");
                 oldInt = temp->info.articles;
                 scanf("%d", &temp->info.articles);
@@ -600,7 +667,7 @@ struct list *editElement(struct list *head, unsigned int id) {
                 printf("%d  ->  %d\n", oldInt, temp->info.articles);
                 break;
 
-            case 5:
+            case '5':
                 printf("Введите Кол-во цитирований -> ");
                 oldInt = temp->info.quotes;
                 scanf("%d", &temp->info.quotes);
@@ -608,7 +675,7 @@ struct list *editElement(struct list *head, unsigned int id) {
                 printf("%d  ->  %d\n", oldInt, temp->info.quotes);
                 break;
 
-            case 6:
+            case '6':
                 printf("Введите Индекс Хирша -> ");
                 oldInt = temp->info.hirshIndex;
                 scanf("%d", &temp->info.hirshIndex);
@@ -630,7 +697,7 @@ void findScientist(struct list *head, int choice) {
     int key, count = 0;
     char kWord[75];
     switch (choice) {
-        case 1:
+        case '1':
             printf("Введите ID -> "); scanf("%d", &key);
             printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
             printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
@@ -646,7 +713,7 @@ void findScientist(struct list *head, int choice) {
             printf("Найдено %d записей с ID '%d'", count, key);
             break;
         
-        case 2:
+        case '2':
             printf("Введите ФИО -> "); fgets(kWord, sizeof(kWord), stdin);
             printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
             printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
@@ -662,7 +729,7 @@ void findScientist(struct list *head, int choice) {
             printf("Найдено %d записей с ФИО '%s'", count, kWord);
             break;
         
-        case 3:
+        case '3':
             printf("Введите Учёную степень -> "); fgets(kWord, sizeof(kWord), stdin);
             printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
             printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
@@ -678,7 +745,7 @@ void findScientist(struct list *head, int choice) {
             printf("Найдено %d записей с Учёной степенью '%s'", count, kWord);
             break;
     
-        case 4:
+        case '4':
             printf("Введите Область наук -> "); fgets(kWord, sizeof(kWord), stdin);
             printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
             printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
@@ -694,7 +761,7 @@ void findScientist(struct list *head, int choice) {
             printf("Найдено %d записей с Областью наук '%s'", count, kWord);
             break;
 
-        case 5:
+        case '5':
             printf("Введите Кол-во статей -> "); scanf("%d", &key);
             printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
             printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
@@ -710,7 +777,7 @@ void findScientist(struct list *head, int choice) {
             printf("Найдено %d записей с Кол-вом статей '%d'", count, key);
             break;
 
-        case 6:
+        case '6':
             printf("Введите Кол-во цитирований -> "); scanf("%d", &key);
             printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
             printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
@@ -726,7 +793,7 @@ void findScientist(struct list *head, int choice) {
             printf("Найдено %d записей с Кол-вом цитирований '%d'", count, key);
             break;
 
-        case 7:
+        case '7':
             printf("Введите Индекс Хирша -> "); scanf("%d", &key);
             printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
             printf("|  ID  |                             Фамилия Имя Отчество                            |       Учёная Степень      |        Область Науки      | Кол-во статей | Кол-во цитирований | Индекс Хирша |\n");
