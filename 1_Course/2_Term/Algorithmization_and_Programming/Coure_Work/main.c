@@ -144,11 +144,8 @@ int main() {
                 else {
                     printf("Введите ID удаляемой записи или 0 если хотите удалить все записи -> ");
                     scanf("%d", &secondChoice);
-                    if (freeMemory(head, secondChoice) == -1) {
-                        printf("Возникла ошибка при удалении записи!\n");
-                    } else {
-                        flag = freeMemory(head, secondChoice);
-                    }
+                    flag = freeMemory(head, secondChoice);
+                    if (flag == -1) printf("Возникла ошибка при удалении записи!\n");
                 }
                 break;
           
@@ -285,6 +282,9 @@ int main() {
                     saved = 0;
                 }
                 break;
+
+            case 10:
+                break;
             
             case 0:
                 int count = freeMemory(head, 0);
@@ -372,7 +372,7 @@ struct list *createListKeyboard(struct list *head) {
     return head;
 }
 
-/// @brief Функция вывода таблицы по `STEP` (global variable `int STEP`) элементов на страницу, со скроллингом
+/// @brief Функция вывода таблицы со скроллингом
 /// @param head - Указатель на начало списка
 void viewList(struct list *head) {
     if (head == NULL) {
@@ -524,6 +524,14 @@ int freeMemory(struct list *head, int choice) {
                 c++;
             }
             return c;
+
+        case 1:
+            temp = head;
+            head = head->next;
+            head->prev = NULL;
+            free(temp);
+            temp = NULL;
+            return 1;
         
         default:
             struct list* toDel = head;
