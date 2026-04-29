@@ -25,7 +25,7 @@
 
 Вариант задания 4. Утверждено 18.02.2026
 Среда программирования Visual Studio Code version 1.117.0
-Дата последней коррекции: 27.04.2026.
+Дата последней коррекции: 29.04.2026.
 Версия 1.0
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
@@ -56,7 +56,7 @@ struct list {                   // Элемент 2- направленного 
 //-----------------------------прототипы функций-----------------------------
 
 struct scientist readData();
-struct list *createListKeyboard(struct list *);
+struct list *createListFromKeyboard(struct list *);
 struct list *addFirst(struct list *, struct scientist);
 struct list *addLast(struct list *, struct scientist);
 void viewList(struct list*);
@@ -96,7 +96,7 @@ int main() {
 
         switch (mainChoice) {  
             case '1':
-                head = createListKeyboard(head);
+                head = createListFromKeyboard(head);
                 saved = 0;
                 break;
 
@@ -350,7 +350,7 @@ struct list *addLast(struct list *head, struct scientist data) {
 /// @brief Функция создания списка с клавиатуры
 /// @param head указатель на начало списка
 /// @return Указатель на начало списка
-struct list *createListKeyboard(struct list *head) {
+struct list *createListFromKeyboard(struct list *head) {
     int choice = 0;
     do {
         if (head == NULL) head = addFirst(head, readData());
