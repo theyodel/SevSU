@@ -34,6 +34,7 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <windows.h>
 
 //-----------------------------структуры данных------------------------------
@@ -280,6 +281,7 @@ int main() {
             case 27:
                 int count = freeMemory(head, 0);
                 printf("\nУдалено %d записей. Выход...\n", count);
+                Sleep(300);
                 return 0;
 
             default:
@@ -357,7 +359,8 @@ struct list *createListFromKeyboard(struct list *head) {
         else addLast(head, readData());
 
         printf("Ввести ещё? \n1. да \n0. нет \n-> ");
-        scanf("%d", &choice);
+        choice = getch();
+        if (choice == '0') choice = 0;
     } while (choice);
     return head;
 }
@@ -461,6 +464,7 @@ void exportToTxt(struct list *head) {
     FILE *file = fopen(fileName, "wt");
     if (file == NULL) {
         printf("Ошибка создания файла '%s'!\n", fileName);
+        Sleep(300);
         return;
     }
     
@@ -476,6 +480,7 @@ void exportToTxt(struct list *head) {
     }
     
     printf("Информация записана в файл '%s'\n", fileName);
+    Sleep(300);
     fclose(file);
 }
 
@@ -494,6 +499,7 @@ void exportToBin(struct list *head) {
     FILE *file = fopen(fileName, "wb");
     if (file == NULL) {
         printf("Ошибка создания файла '%s'!\n", fileName);
+        Sleep(300);
         return;
     }
     
@@ -502,6 +508,7 @@ void exportToBin(struct list *head) {
     }
     
     printf("Таблица успешно экспортирована в файл '%s'\n", fileName);
+    Sleep(300);
     fclose(file);
 }
 
@@ -523,6 +530,7 @@ struct list *importFromTxt(struct list *head) {
     FILE *file = fopen(fileName, "rt");
     if (file == NULL) {
         printf("Файл '%s' не найден!\n", fileName);
+        Sleep(300);
         return head;
     }
     
@@ -557,6 +565,7 @@ struct list *importFromBin(struct list *head) {
     FILE *file = fopen(fileName, "rb");
     if (file == NULL) {
         printf("Файл '%s' не найден!\n", fileName);
+        Sleep(300);
         return head;
     }
     
@@ -579,7 +588,7 @@ int freeMemory(struct list *head, int choice) {
     switch (choice) {
         case 0:
             if (head == NULL) {
-                printf("Список пуст...\n");
+                printf("\nСписок пуст...\n");
                 return 0;
             }        
             int c = 0;
