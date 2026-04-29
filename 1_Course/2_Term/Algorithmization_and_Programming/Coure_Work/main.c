@@ -34,7 +34,6 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <windows.h>
 
 //-----------------------------структуры данных------------------------------
@@ -74,8 +73,7 @@ int freeMemory(struct list *, int);
 int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
-    int mainChoice, secondChoice; 
-    int flag, saved = 0;
+    int mainChoice, secondChoice, flag, saved = 0;
     struct list *head = NULL;
 
     while (1) {
