@@ -30,7 +30,6 @@ int main()
         cout << "0. Выход из программы" << endl;
         cout << "-> ";
         cin >> choice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка буфера
         switch (choice)
         {
         case 1:

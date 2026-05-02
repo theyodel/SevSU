@@ -5,6 +5,8 @@
 int countDots(char *fileName);
 void copyWithUppercase(char *fromFile, char *toFile);
 
+/// @brief главная функция
+/// @return `0`
 int main() {
     int choice;
     while (1) {
@@ -52,7 +54,10 @@ int main() {
     }
 }
 
-
+/// @brief Функция подсчёта многоточий в каждой строке файла и во всём файле в целом
+/// @param fileName Имя файла, в котором будет производится подсчёт многоточий
+/// @return Кол-во всех многоточий (`...`) в файле
+/// @attention Имя файла должно передаваться в функцию с расширением `.txt`
 int countDots(char *fileName) {
     int allDots = 0, line = 1, count = 0, flag = 0;
     FILE *file = fopen(fileName, "r");
@@ -86,6 +91,10 @@ int countDots(char *fileName) {
     return allDots;
 }
 
+/// @brief Функция копирования содержимого одного текстового файла в другой с изменением регистра гласных букв согласно варианту задания (alAa -> AlAA)
+/// @param fromFile Имя исходного файла
+/// @param toFile Имя файла, куда будет скопирован исправленный текст исходного файла
+/// @attention Имена файлов должны передаваться в функцию с расширением `.txt`
 void copyWithUppercase(char *fromFile, char *toFile) {
     FILE *sourceFile, *copyFile;
     sourceFile = fopen(fromFile, "rt");

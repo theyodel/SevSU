@@ -14,10 +14,12 @@ struct list {
 };
 
 struct scientist readData();
+struct list *createListFromKeyboard(struct list *);
 void createBinFile(struct list *);
 int maxHirsh(struct list *);
 void viewList(struct list *);
 struct list *importFromBin(struct list *);
+struct list *sortList(struct list *);
 void freeMemory(struct list *);
 
 int main() {
@@ -110,6 +112,19 @@ struct list *addLast(struct list *head, struct scientist data) {
     return head;
 }
 
+struct list *createListFromKeyboard(struct list *head) {
+    int choice = 0;
+    do {
+        if (head == NULL) head = addFirst(head, readData());
+        else addLast(head, readData());
+
+        printf("Ввести ещё? \n1. да \n0. нет \n-> ");
+        choice = getch();
+        if (choice == '0') choice = 0;
+    } while (choice);
+    return head;
+}
+
 void createBinFile(struct list *head) {
     char fileName[101];
     struct list *temp = head;
@@ -117,7 +132,7 @@ void createBinFile(struct list *head) {
     fflush(stdin);
     scanf("%s", fileName);
     if (fileName[strlen(fileName)-4]!='.' && fileName[strlen(fileName)-3]!='b' && fileName[strlen(fileName)-2]!='i' && fileName[strlen(fileName)-1]!='n') strcat(fileName, ".bin");
-    FILE *file = fopen(fileName, "ab");
+    FILE *file = fopen(fileName, "wbb");
     if (file == NULL) {
         printf("Файл '%s' будет создан в корне текущей папки.", fileName);
     }
@@ -193,6 +208,20 @@ int maxHirsh(struct list *head) {
     for (; temp!=NULL && temp->info.id!=id; temp = temp->next);
     viewList(temp);
     return maxHirsh;
+}
+
+struct list *sortList(struct list *head) {
+    struct list *all = head->next;
+    struct scientist data = head->info;
+    for (; all != NULL; all = all->next) {
+        for (struct list *sorted = all->next; sorted != NULL; sorted = sorted->next) {
+            if (sorted->info.quotes > all->info.quotes) {
+                data = sorted->info;
+                sorted->info = all->info;
+                all->info = data;
+            }
+        }
+    }
 }
 
 void freeMemory(struct list *head) {
