@@ -61,14 +61,17 @@ struct list *createListFromKeyboard(struct list *);
 struct list *addFirst(struct list *, struct scientist);
 struct list *addLast(struct list *, struct scientist);
 void viewList(struct list*);
-void checkFileExt(char *, const char *);
+int freeMemory(struct list *, int);
+struct list *editElement(struct list *, unsigned int);
+void findScientist(struct list *, const int);
 void exportToTxt(struct list *);
 void exportToBin(struct list *);
 struct list *importFromTxt(struct list *);
 struct list *importFromBin(struct list *);
-void findScientist(struct list *, const int);
-struct list *editElement(struct list *, unsigned int);
-int freeMemory(struct list *, int);
+
+void printTableHeader();
+void printNode(struct list *);
+void checkFileExt(char *, const char *);
 
 //------------------------------главная функция------------------------------
 int main() {
