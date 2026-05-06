@@ -228,7 +228,7 @@ void sortInFile() {
                 fclose(file);
                 return;
             }
-            if (f.quotes > s.quotes) {
+            if (f.quotes < s.quotes) { // от большего к меньшему
                 fseek(file, j * elementSize, SEEK_SET);
                 fwrite(&s, elementSize, 1, file);
                 fwrite(&f, elementSize, 1, file);
