@@ -9,6 +9,7 @@ struct scientist {
 };
 
 struct scientist readData();
+void checkFileExt(char *);
 void createBinFile();
 void maxHirsh();
 void readFile();
@@ -56,7 +57,7 @@ struct scientist readData() {
     struct scientist data;
     static int nextID = 1;
     data.id = nextID++;
-    fflush(stdin);
+    while (getchar() != '\n');
     printf("Введите ФИО: ");
     fgets(data.name, 75, stdin);
     data.name[strcspn(data.name, "\n")] = '\0';
@@ -77,6 +78,13 @@ struct scientist readData() {
     return data;
 }
 
+void checkFileExt(char *fileName) {
+    int len = strlen(fileName);
+    if (len < 4 || strcmp(fileName + len - 4, ".bin") != 0) {
+        strcat(fileName, ".bin");
+    }
+}
+
 void createBinFile() {
     char fileName[101];
     printf("Введите название файла -> ");
@@ -85,8 +93,7 @@ void createBinFile() {
     fileName[strcspn(fileName, "\n")] = '\0';
     
     // Добавляем .bin, если нет расширения
-    if (strlen(fileName) < 4 || strcmp(fileName + strlen(fileName) - 4, ".bin") != 0)
-        strcat(fileName, ".bin");
+    checkFileExt(fileName);
     
     FILE *file = fopen(fileName, "wb");
     if (file == NULL) {
@@ -94,25 +101,29 @@ void createBinFile() {
         return;
     }
     
-    int flag = 1;
+    int choice = 1;
     struct scientist data;
     while (1) {
         printf("1. Ввести запись\n");
         printf("0. Сохранить файл\n");
         printf("-> ");
-        scanf("%d", &flag);
+        scanf("%d", &choice);
         while (getchar() != '\n');
-        if (flag == 1) {
+        switch (choice) {
+        case 1:
             data = readData();
             fwrite(&data, sizeof(struct scientist), 1, file);
-        } else if (flag == 0) {
             break;
-        } else {
-            printf("Некорректный ввод! Повторите.\n");
+
+        case 0:
+            printf("Таблица успешно экспортирована в файл '%s'", fileName);
+            fclose(file);
+            return;
+
+        default:
+            printf("Команда не распознана!\n");
         }
     }
-    printf("Таблица успешно экспортирована в файл '%s'", fileName);
-    fclose(file);
 }
 
 void readFile() {
@@ -122,8 +133,7 @@ void readFile() {
     fgets(fileName, 100, stdin);
     fileName[strcspn(fileName, "\n")] = '\0';
     
-    if (strlen(fileName) < 4 || strcmp(fileName + strlen(fileName) - 4, ".bin") != 0)
-        strcat(fileName, ".bin");
+    checkFileExt(fileName);
     
     FILE *file = fopen(fileName, "rb");
     struct scientist data;
@@ -153,8 +163,7 @@ void maxHirsh() {
     fgets(fileName, 100, stdin);
     fileName[strcspn(fileName, "\n")] = '\0';
     
-    if (strlen(fileName) < 4 || strcmp(fileName + strlen(fileName) - 4, ".bin") != 0)
-        strcat(fileName, ".bin");
+    checkFileExt(fileName);
     
     FILE *file = fopen(fileName, "rb");
     if (file == NULL) {
@@ -162,9 +171,8 @@ void maxHirsh() {
         return;
     }
     
-    struct scientist data, max = {0};
-    int maxHirshVal = -1;
-    int recordsFound = 0;
+    struct scientist data, max;
+    int maxHirshVal = -1, recordsFound = 0;
 
     while (fread(&data, sizeof(struct scientist), 1, file) == 1) {
         if (data.hirshIndex > maxHirshVal) {
@@ -173,10 +181,11 @@ void maxHirsh() {
             recordsFound = 1;
         }
     }
-    
+
+    fclose(file);
+
     if (!recordsFound) {
         printf("Файл '%s' не содержит записей.\n", fileName);
-        fclose(file);
         return;
     }
     
@@ -187,7 +196,7 @@ void maxHirsh() {
             max.id, max.name, max.degree, max.area,
             max.articles, max.quotes, max.hirshIndex);
     printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
-    fclose(file);
+    
 }
 
 void sortInFile() {
@@ -197,8 +206,7 @@ void sortInFile() {
     fgets(fileName, 100, stdin);
     fileName[strcspn(fileName, "\n")] = '\0';
     
-    if (strlen(fileName) < 4 || strcmp(fileName + strlen(fileName) - 4, ".bin") != 0)
-        strcat(fileName, ".bin");
+    checkFileExt(fileName);
     
     FILE *file = fopen(fileName, "rb+");
     if (file == NULL) {
