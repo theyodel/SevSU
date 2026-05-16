@@ -69,6 +69,7 @@ void exportToTxt(struct list *);
 void exportToBin(struct list *);
 struct list *importFromTxt(struct list *);
 struct list *importFromBin(struct list *);
+void highestHirsh(struct list *);
 
 void printTableHeader();
 void printNode(struct list *);
@@ -78,6 +79,7 @@ void checkFileExt(char *, const char *);
 int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
+    
     int mainChoice, secondChoice, flag, saved = 0;
     struct list *head = NULL;
 
@@ -93,9 +95,9 @@ int main() {
         printf("7. Поиск записи\n");
         printf("8. Сохранить таблицу в файл\n");
         printf("9. Чтение таблицы из файла\n");
-        printf("0. Обработка таблицы\n");
+        printf("0. Вывести учёного(ых) с наибольшим индексом Хирша\n");
         printf("ESC. Выход из программы\n");
-        printf("\n\nВыберите действие -> ");
+        printf("\nВыберите действие -> ");
         mainChoice = getch();
 
         switch (mainChoice) {  
@@ -115,7 +117,8 @@ int main() {
 
             case '3':
                 if (head == NULL) {
-                    printf("Список пуст!\nРекомендуемое действие: 1.");
+                    printf("Список пуст!\nРекомендуемое действие: 1.\n\n");
+                    printf("Нажмите любую клавишу для выхода в меню...");
                     getch();
                     break;
                 }
@@ -232,7 +235,7 @@ int main() {
                             flag = 0;
                             break;
                         default:
-                            printf("\nНеверный выбор! Нажмите любую клавишу...");
+                            printf("\n\nНеверный выбор! Нажмите любую клавишу...");
                             getch();
                     }
                 }
@@ -259,19 +262,17 @@ int main() {
                     switch (secondChoice) {
                         case '1':
                             head = importFromTxt(head);
-                            printf("Импорт завершён.\n");
                             flag = 0;
                             break;
                         case '2':
                             head = importFromBin(head);
-                            printf("Импорт завершён.\n");
                             flag = 0;
                             break;
                         case '0':
                             flag = 0;
                             break;
                         default:
-                            printf("\nНеверный выбор! Нажмите любую клавишу...");
+                            printf("\n\nНеверный выбор! Нажмите любую клавишу...");
                             getch();
                     }
                 }
@@ -279,20 +280,24 @@ int main() {
                 break;
 
             case '0':
-                // TODO
-                printf("Функция в разработке.");
+                if (head == NULL) {
+                    printf("Список пуст!\n");
+                    getch();
+                    break;
+                }
+                highestHirsh(head);
                 getch();
                 break;
 
             case 27:
                 int count = freeMemory(head, 0);
                 printf("\nУдалено %d записей. Выход...\n", count);
-                // Sleep(3000);
+                Sleep(3000);
                 return 0;
 
             default:
-                printf("\nКоманда не распознана! Нажмите любую клавишу...");
-                getch();
+                printf("\nКоманда не распознана!");
+                break;
         }
     }
 }
@@ -364,12 +369,14 @@ struct list *addLast(struct list *head, struct scientist data) {
     temp = (struct list*)malloc(sizeof(struct list));
     temp->info = data;
     temp->next = NULL;
+
     if (head == NULL) head = temp;
     else {
         for (e = head; e->next != NULL; e = e->next);
         temp->prev = e;
         e->next = temp;
     }
+
     return head;
 }
 
@@ -378,6 +385,7 @@ struct list *addLast(struct list *head, struct scientist data) {
 /// @return Указатель на начало списка
 struct list *createListFromKeyboard(struct list *head) {
     int choice = 0;
+
     do {
         if (head == NULL) head = addFirst(head, readData());
         else addLast(head, readData());
@@ -386,6 +394,7 @@ struct list *createListFromKeyboard(struct list *head) {
         choice = getch();
         if (choice == '0') choice = 0;
     } while (choice);
+
     return head;
 }
 
@@ -431,7 +440,7 @@ void viewList(struct list *head) {
 
         int first = start + 1;
         int last = (start + printed < total) ? start + printed : total;
-        printf("\nСтраница: %d-%d из %d. Используйте W (вверх), S (вниз), Q (выход): ", first, last, total);
+        printf("\nСтраница: %d-%d из %d. Используйте W (вверх), S (вниз), ESC (выход): ", first, last, total);
 
         key = getch();
 
@@ -447,7 +456,7 @@ void viewList(struct list *head) {
             if (new_start > max_start) new_start = max_start;
             start = new_start;
         }
-        else if (key == 'q' || key == 'Q' || key == 27) {
+        else if (key == 'q' || key == 'Q' || key == ESC) {
             break;
         }
     } while (1);
@@ -492,10 +501,11 @@ void exportToTxt(struct list *head) {
                 temp->info.quotes,
                 temp->info.hirshIndex);
     }
-    
-    printf("Информация записана в файл '%s'\n", fileName);
-    Sleep(300);
     fclose(file);
+
+    printf("Информация записана в файл '%s'\n", fileName);
+    printf("Нажмите любую кнопку для возвращения в меню...");
+    getch();
 }
 
 /// @brief Функция экспорта таблицы в `.bin` файл
@@ -520,10 +530,11 @@ void exportToBin(struct list *head) {
     for (struct list *temp = head; temp != NULL; temp = temp->next) {
         fwrite(&temp->info, sizeof(struct scientist), 1, file);
     }
-    
-    printf("Таблица успешно экспортирована в файл '%s'\n", fileName);
-    Sleep(300);
     fclose(file);
+
+    printf("Таблица успешно экспортирована в файл '%s'\n", fileName);
+    printf("Нажмите любую кнопку для возвращения в меню...");
+    getch();
 }
 
 /// @brief Функция импорта таблицы из текстового (`.txt`) файла
@@ -558,6 +569,11 @@ struct list *importFromTxt(struct list *head) {
     }
     
     fclose(file);
+
+    printf("Таблица успешно импортирована из файла '%s'\n", fileName);
+    printf("Нажмите любую кнопку для возвращения в меню...");
+    getch();
+
     return head;
 }
 
@@ -591,6 +607,11 @@ struct list *importFromBin(struct list *head) {
     }
     
     fclose(file);
+
+    printf("Таблица успешно импортирована из файла '%s'\n", fileName);
+    printf("Нажмите любую кнопку для возвращения в меню...");
+    getch();
+
     return head;
 }
 
@@ -599,6 +620,7 @@ struct list *importFromBin(struct list *head) {
 /// @return Кол-во удалённых записей
 int freeMemory(struct list *head, int choice) {
     struct list *temp=head;
+
     switch (choice) {
         case 0:
             if (head == NULL) {
@@ -644,10 +666,12 @@ struct list *editElement(struct list *head, unsigned int id) {
     int choice, oldInt;
     char oldLine[76];
     struct list *temp = head;
+
     for (; temp->info.id != id; temp = temp->next);
+
     if (temp != NULL) {
-        printf("Запись с ID '%d' найдена!\n");
-        printf("Выберите поле, которое хотите изменить\n");
+        printf("Запись с ID '%d' найдена!\n\n");
+        printf("Выберите поле, которое хотите изменить:\n");
         printf("1. ФИО\n");
         printf("2. Учёная степень\n");
         printf("3. Область науки\n");
@@ -655,7 +679,7 @@ struct list *editElement(struct list *head, unsigned int id) {
         printf("5. Кол-во цитирований\n");
         printf("6. Индекс Хирша\n");
         printf("0. В меню\n");
-        printf("Выберите действие (0-6) -> ");
+        printf("Выберите действие (0-6) ->\n");
         choice = getch();
         switch (choice) {
             case '1':
@@ -709,6 +733,10 @@ struct list *editElement(struct list *head, unsigned int id) {
     } else {
         printf("Запись с ID '%d' не найдена!", id);
     }
+
+    printf("\nНажмите любую кнопку для возвращения в меню...");
+    getch();
+
     return head;
 }
 
@@ -719,6 +747,7 @@ void findScientist(struct list *head, const int choice) {
     struct list *temp = head;
     int key, count = 0;
     char kWord[75];
+
     switch (choice) {
         case '1':
             printf("Введите ID -> "); scanf("%d", &key);
@@ -811,4 +840,25 @@ void findScientist(struct list *head, const int choice) {
             printf("Ошибка выбора!\n");
             break;
     }
+
+    printf("\nНажмите любую кнопку для возвращения в меню...");
+    getch();
+}
+
+/// @brief Функция, выводящая на экран учёных с наибольшим индексом Хирша
+/// @param head 
+void highestHirsh(struct list *head) {
+    system("cls");
+    printTableHeader();
+    struct list *temp = head;
+    
+    unsigned int maximum = 0;
+    for (; temp != NULL; temp = temp->next) maximum = temp->info.hirshIndex > maximum ? temp->info.hirshIndex : maximum;
+    
+    for (temp = head; temp != NULL; temp = temp->next) {
+        if (temp->info.hirshIndex == maximum) printNode(temp);
+    }
+
+    printf("\nНажмите любую кнопку для возвращения в меню...");
+    getch();
 }
