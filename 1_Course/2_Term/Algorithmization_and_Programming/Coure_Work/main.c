@@ -13,7 +13,7 @@
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Программа работает с базой данных об учёных, которая считывается из
 текстового файла. Каждая строка файла содержит запись об одном учёном, 
-для которой указывается ФИО учёного (75 символов), научная область, 
+для которой указывается ФИО учёного, научная область, 
 учёная степень, количество статей и цитирований, индекс Хирша.
 
     Основные функции программы:
@@ -25,9 +25,9 @@
 - сортировка записей об учёных;
 
 Вариант задания 4. Утверждено 18.02.2026
-Среда программирования Visual Studio Code version 1.119.0
-Дата последней коррекции: 15.05.2026.
-Версия 1.0
+Среда программирования Visual Studio Code version 1.120.0
+Дата последней коррекции: 16.05.2026.
+Версия 0.5.16
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 
@@ -59,11 +59,12 @@ struct list {                   // Элемент 2- направленного 
 
 struct scientist readData();
 struct list *createListFromKeyboard(struct list *);
-struct list *addFirst(struct list *, struct scientist);
-struct list *addLast(struct list *, struct scientist);
+struct list *addFirst(struct list *, const struct scientist);
+struct list *addLast(struct list *, const struct scientist);
 void viewList(struct list*);
 int freeMemory(struct list *, int);
 struct list *editElement(struct list *, unsigned int);
+struct list *sortTable(struct list *, const int);
 void findScientist(struct list *, const int);
 void exportToTxt(struct list *);
 void exportToBin(struct list *);
@@ -74,6 +75,7 @@ void highestHirsh(struct list *);
 void printTableHeader();
 void printNode(struct list *);
 void checkFileExt(char *, const char *);
+int compareScientist(const struct scientist *, const struct scientist *, const int);
 
 //------------------------------главная функция------------------------------
 int main() {
@@ -97,7 +99,7 @@ int main() {
         printf("9. Чтение таблицы из файла\n");
         printf("0. Вывести учёного(ых) с наибольшим индексом Хирша\n");
         printf("ESC. Выход из программы\n");
-        printf("\nВыберите действие -> ");
+        printf("\nВыберите действие (0-9) -> ");
         mainChoice = getch();
 
         switch (mainChoice) {  
@@ -179,9 +181,31 @@ int main() {
                 break;
 
             case '6':
-                // TODO: сортировка
-                printf("Функция в разработке.\n");
-                getch();
+                system("cls");
+                if (head == NULL || head->next == NULL) {    
+                    printf("Список не нуждается в сортировке или пуст\n\nНажмите любую клавишу, чтобы вернуться в меню...");
+                    getch();
+                    break;
+                }
+                flag = 1;
+                while (flag) {
+                    system("cls");
+                    printf("================ Сортировка таблицы ================\n");
+                    printf("1. По ID\n2. По ФИО\n3. По учёной степени\n4. По области наук\n");
+                    printf("5. По числу статей\n6. По числу цитирований\n7. По индексу Хирша\nESC. В меню\n");
+                    printf("Выберите действие (0-7) -> ");
+                    secondChoice = getch();
+                    if (secondChoice == ESC) flag = 0;
+                    else if ('1' <= secondChoice && secondChoice <= '7') {
+                        sortTable(head, secondChoice);
+                    } else {
+                        printf("Команда не распознана!\n");
+                    }
+                    if (flag) {
+                        printf("\nНажмите любую клавишу для продолжения...");
+                        getch();
+                    }
+                }
                 break;
 
             case '7':
@@ -199,7 +223,11 @@ int main() {
                     printf("Выберите действие (0-7) -> ");
                     secondChoice = getch();
                     if (secondChoice == ESC) flag = 0;
-                    else findScientist(head, secondChoice);
+                    else if ('1' <= secondChoice && secondChoice <= '7') {
+                        findScientist(head, secondChoice);
+                    } else {
+                        printf("Команда не распознана!\n");
+                    }
                     if (flag) {
                         printf("\nНажмите любую клавишу для продолжения...");
                         getch();
@@ -351,7 +379,7 @@ struct scientist readData() {
 /// @param head начало списка
 /// @param data данные об учённом
 /// @return Указатель на начало списка (указатель на добавленный в начало элемент)
-struct list *addFirst(struct list *head, struct scientist data) {
+struct list *addFirst(struct list *head, const struct scientist data) {
     struct list *temp;
     temp = (struct list*)malloc(sizeof(struct list));
     temp->info = data;
@@ -364,7 +392,7 @@ struct list *addFirst(struct list *head, struct scientist data) {
 /// @param head начало списка
 /// @param data данные об учённом
 /// @return Указатель на начало списка
-struct list *addLast(struct list *head, struct scientist data) {
+struct list *addLast(struct list *head, const struct scientist data) {
     struct list *temp, *e;
     temp = (struct list*)malloc(sizeof(struct list));
     temp->info = data;
@@ -734,7 +762,7 @@ struct list *editElement(struct list *head, unsigned int id) {
         printf("Запись с ID '%d' не найдена!", id);
     }
 
-    printf("\nНажмите любую кнопку для возвращения в меню...");
+    printf("\nНажмите любую кнопку для возврата в меню...");
     getch();
 
     return head;
@@ -841,8 +869,47 @@ void findScientist(struct list *head, const int choice) {
             break;
     }
 
-    printf("\nНажмите любую кнопку для возвращения в меню...");
+    printf("\nНажмите любую кнопку для возврата в меню...");
     getch();
+}
+
+/// @brief Функция сравнения двух элементов по выбранному полю (вспомогательная функция для sortTable())
+int compareScientist(const struct scientist *a, const struct scientist *b, const int choice) {
+    switch (choice) {
+        case '1': return a->id - b->id;
+        case '2': return strcmp(a->name, b->name);
+        case '3': return strcmp(a->area, b->area);
+        case '4': return strcmp(a->degree, b->degree);
+        case '5': return a->articles - b->articles;
+        case '6': return a->quotes - b->quotes;
+        case '7': return a->hirshIndex - b->hirshIndex;
+        default: return 0;
+    }
+}
+
+/// @brief Функция сортировки таблицы по указанному полю
+struct list *sortTable(struct list *head, const int choice) {
+    int swapped;
+    struct list *temp;
+    struct list *last = NULL;
+
+    do {
+        swapped = 0;
+        temp = head;
+
+        while (temp->next != last) {
+            if (compareScientist(&temp->info, &temp->next->info, choice) > 0) {
+                struct scientist information = temp->info;
+                temp->info = temp->next->info;
+                temp->next->info = information;
+                swapped = 1;
+            }
+            temp = temp->next;
+        }
+        last = temp;
+    } while (swapped);
+
+    return head;
 }
 
 /// @brief Функция, выводящая на экран учёных с наибольшим индексом Хирша
@@ -859,6 +926,6 @@ void highestHirsh(struct list *head) {
         if (temp->info.hirshIndex == maximum) printNode(temp);
     }
 
-    printf("\nНажмите любую кнопку для возвращения в меню...");
+    printf("\nНажмите любую кнопку для возврата в меню...");
     getch();
 }
