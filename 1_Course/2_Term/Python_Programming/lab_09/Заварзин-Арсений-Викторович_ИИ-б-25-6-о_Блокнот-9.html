@@ -8189,7 +8189,7 @@ a.anchor-link {
 <h2 id="%D0%9C%D0%B5%D1%82%D0%BE%D0%B4%D1%8B-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B0-%D0%B8-%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B">Методы класса и статические методы<a class="anchor-link" href="#%D0%9C%D0%B5%D1%82%D0%BE%D0%B4%D1%8B-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B0-%D0%B8-%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B">¶</a></h2><p>Помимо обычных методов (которые получают <code>self</code> ), есть ещё:</p>
 <ul>
 <li><strong>Методы класса</strong> — получают сам класс ( <code>cls</code> ) вместо экземпляра. Объявляются с помощью <code>@classmethod</code>.</li>
-<li><strong>Статические методы</strong> — не получают ни <code>self</code> , ни <code>cls</code>. Объявляются с помощью @staticmethod . Это просто функции, которые логически принадлежат классу.</li>
+<li><strong>Статические методы</strong> — не получают ни <code>self</code> , ни <code>cls</code>. Объявляются с помощью <code>@staticmethod</code> . Это просто функции, которые логически принадлежат классу.</li>
 </ul>
 </div>
 </div>
@@ -8743,11 +8743,11 @@ Python</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_celsius</span> <span class="o">*</span> <span class="mi">9</span><span class="o">/</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">32</span>
 
 <span class="n">t</span> <span class="o">=</span> <span class="n">Temperature</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">celsius</span><span class="p">)</span> <span class="c1"># ваш комментарий</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">fahrenheit</span><span class="p">)</span> <span class="c1"># ваш комментарий</span>
-<span class="n">t</span><span class="o">.</span><span class="n">celsius</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1"># ваш комментарий</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">celsius</span><span class="p">)</span> <span class="c1"># ваш комментарий</span>
-<span class="n">t</span><span class="o">.</span><span class="n">celsius</span> <span class="o">=</span> <span class="o">-</span><span class="mi">300</span> <span class="c1"># ваш комментарий</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">celsius</span><span class="p">)</span> <span class="c1"># обращаемся к методу как к атрибуту</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">fahrenheit</span><span class="p">)</span> <span class="c1"># обращаемся к методу как к атрибуту</span>
+<span class="n">t</span><span class="o">.</span><span class="n">celsius</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1"># обращаемся к сеттеру celsius и задаём знчаение 30</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">celsius</span><span class="p">)</span> <span class="c1"># снова обращаемся к методу как к атрибуту</span>
+<span class="n">t</span><span class="o">.</span><span class="n">celsius</span> <span class="o">=</span> <span class="o">-</span><span class="mi">300</span> <span class="c1"># обращаемся к сеттеру и ловим ошибку, ведь -300 не попадает под условие &gt;= -273.15</span>
 </pre></div>
 </div>
 </div>
@@ -9840,7 +9840,6 @@ f3 = 2/3 (сокращена)
         <span class="n">total_sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Time</span><span class="o">.</span><span class="n">from_sec</span><span class="p">(</span><span class="n">total_sec</span><span class="p">)</span>
 
-<span class="c1"># Тестирование</span>
 <span class="n">t1</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>        
 <span class="n">t2</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 
