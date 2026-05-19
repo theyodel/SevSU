@@ -9537,18 +9537,23 @@ f3 = 2/3 (сокращена)
         <span class="bp">self</span><span class="o">.</span><span class="n">__balance</span> <span class="o">+=</span> <span class="n">count</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Счёт пополнен на </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> руб! Баланс: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__balance</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__balance</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">withdraw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__balance</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">"На счёте недостаточно средств!"</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__balance</span> <span class="o">-=</span> <span class="n">count</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Снято </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> руб! Баланс: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__balance</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span>
 
 <span class="n">myAcc</span> <span class="o">=</span> <span class="n">BankAccount</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
 <span class="n">myAcc</span><span class="o">.</span><span class="n">withdraw</span><span class="p">(</span><span class="mi">500000</span><span class="p">)</span>
 <span class="n">myAcc</span><span class="o">.</span><span class="n">deposit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Ваш баланс: </span><span class="si">{</span><span class="n">myAcc</span><span class="o">.</span><span class="n">balance</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 <span class="n">myAcc</span><span class="o">.</span><span class="n">withdraw</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Ваш баланс: </span><span class="si">{</span><span class="n">myAcc</span><span class="o">.</span><span class="n">balance</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -9563,14 +9568,10 @@ f3 = 2/3 (сокращена)
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>На счёте недостаточно средств!
 Счёт пополнен на 10 руб! Баланс: 100010
+Ваш баланс: 100010
 Снято 10000 руб! Баланс: 90010
+Ваш баланс: 90010
 </pre>
-</div>
-</div>
-<div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[28]:</div>
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>True</pre>
 </div>
 </div>
 </div>
