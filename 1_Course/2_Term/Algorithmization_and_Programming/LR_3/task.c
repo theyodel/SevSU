@@ -6,7 +6,6 @@ int countDots(char *fileName);
 void copyWithUppercase(char *fromFile, char *toFile);
 
 /// @brief главная функция
-/// @return `0`
 int main() {
     int choice;
     while (1) {
