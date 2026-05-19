@@ -164,6 +164,7 @@ int main() {
                 scanf("%d", &secondChoice);
                 flag = freeMemory(head, secondChoice);
                 if (flag == -1) printf("Ошибка при удалении!\n");
+                printf("Нажмите любую клавишу для выхода в меню...");
                 getch();
                 break;
 
@@ -429,11 +430,6 @@ struct list *createListFromKeyboard(struct list *head) {
 /// @brief Функция вывода таблицы со скроллингом
 /// @param head - Указатель на начало списка
 void viewList(struct list *head) {
-    if (head == NULL) {
-        printf("Список не введён!\n");
-        return;
-    }
-
     int total = 0;
     struct list *cur = head;
     while (cur) {
