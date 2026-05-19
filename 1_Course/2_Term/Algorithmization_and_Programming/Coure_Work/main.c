@@ -317,7 +317,7 @@ int main() {
                 getch();
                 break;
 
-            case 27:
+            case ESC:
                 int count = freeMemory(head, 0);
                 printf("\nУдалено %d записей. Выход...\n", count);
                 Sleep(3000);
@@ -647,7 +647,7 @@ struct list *importFromBin(struct list *head) {
 /// @param head Указатель на начало списка
 /// @return Кол-во удалённых записей
 int freeMemory(struct list *head, int choice) {
-    struct list *temp=head;
+    struct list *temp = head;
 
     switch (choice) {
         case 0:
@@ -659,10 +659,11 @@ int freeMemory(struct list *head, int choice) {
             while (head != NULL) {
                 head = head->next;
                 free(temp);
-                temp = NULL; 
+                temp = NULL;
                 temp = head;
                 c++;
             }
+            head = NULL;
             return c;
 
         case 1:
@@ -671,6 +672,8 @@ int freeMemory(struct list *head, int choice) {
             head->prev = NULL;
             free(temp);
             temp = NULL;
+            temp->next = NULL;
+            temp->prev = NULL;
             return 1;
         
         default:
@@ -682,6 +685,8 @@ int freeMemory(struct list *head, int choice) {
             temp->next->prev = temp;
             free(toDel);
             toDel = NULL;
+            toDel->prev = NULL;
+            toDel->next = NULL;
             return 1;
     }
 }
