@@ -62,7 +62,7 @@ struct list *createListFromKeyboard(struct list *);
 struct list *addFirst(struct list *, const struct scientist);
 struct list *addLast(struct list *, const struct scientist);
 void viewList(struct list*);
-int freeMemory(struct list *, int);
+int freeMemory(struct list **, int);
 struct list *editElement(struct list *, unsigned int);
 struct list *sortTable(struct list *, const int);
 void findScientist(struct list *, const int);
@@ -162,7 +162,7 @@ int main() {
                 system("cls");
                 printf("Введите ID удаляемой записи или 0 (удалить все) -> ");
                 scanf("%d", &secondChoice);
-                flag = freeMemory(head, secondChoice);
+                flag = freeMemory(&head, secondChoice);
                 if (flag == -1) printf("Ошибка при удалении!\n");
                 printf("Нажмите любую клавишу для выхода в меню...");
                 getch();
@@ -319,7 +319,7 @@ int main() {
                 break;
 
             case ESC:
-                int count = freeMemory(head, 0);
+                int count = freeMemory(&head, 0);
                 printf("\nУдалено %d записей. Выход...\n", count);
                 Sleep(3000);
                 return 0;
@@ -642,48 +642,60 @@ struct list *importFromBin(struct list *head) {
 /// @brief Функция очистки памяти
 /// @param head Указатель на начало списка
 /// @return Кол-во удалённых записей
-int freeMemory(struct list *head, int choice) {
-    struct list *temp = head;
+int freeMemory(struct list **head, int choice) {
+    if (head == NULL) return -1;  // Некорректный указатель
+
+    struct list *temp = NULL;
 
     switch (choice) {
-        case 0:
-            if (head == NULL) {
+        case 0: {
+            if (*head == NULL) {
                 printf("\nСписок пуст...\n");
                 return 0;
-            }        
-            int c = 0;
-            while (head != NULL) {
-                head = head->next;
-                free(temp);
-                temp = NULL;
-                temp = head;
-                c++;
             }
-            head = NULL;
-            return c;
+            int count = 0;
+            while (*head != NULL) {
+                temp = *head;
+                *head = (*head)->next;
+                free(temp);
+                count++;
+            }
+            *head = NULL;
+            return count;
+        }
 
-        case 1:
-            temp = head;
-            head = head->next;
-            head->prev = NULL;
+        case 1: {
+            if (*head == NULL) {
+                printf("\nСписок пуст, нечего удалять\n");
+                return -1;
+            }
+            temp = *head;
+            *head = (*head)->next;
+            if (*head != NULL) (*head)->prev = NULL;
             free(temp);
-            temp = NULL;
-            temp->next = NULL;
-            temp->prev = NULL;
             return 1;
-        
-        default:
-            struct list* toDel = head;
-            while (toDel->info.id != choice)  toDel = toDel->next;
-            if (toDel == NULL) return -1;
-            temp = toDel->prev;
-            temp->next = toDel->next;
-            temp->next->prev = temp;
+        }
+
+        default: {
+            struct list *toDel = *head;
+            
+            // Поиск элемента с нужным id
+            while (toDel != NULL && toDel->info.id != choice) toDel = toDel->next;
+            
+            // Элемент не найден
+            if (toDel == NULL) {
+                printf("\nЭлемент с id=%d не найден\n", choice);
+                return -1;
+            }
+            
+            if (toDel->prev != NULL) toDel->prev->next = toDel->next;
+            else *head = toDel->next;
+            
+            if (toDel->next != NULL) toDel->next->prev = toDel->prev;
+            
             free(toDel);
-            toDel = NULL;
-            toDel->prev = NULL;
-            toDel->next = NULL;
             return 1;
+        }
     }
 }
 
@@ -722,7 +734,7 @@ struct list *editElement(struct list *head, unsigned int id) {
             case '2':
                 printf("Введите Учёную сепень -> ");
                 strcpy(oldLine, temp->info.degree);
-                fgets(temp->info.degree, 75, stdin);
+                fgets(temp->info.degree, 25, stdin);
                 printf("Учёная степень успешно изменена!\n");
                 printf("%s  ->  %s\n", oldLine, temp->info.degree);
                 break;
@@ -730,7 +742,7 @@ struct list *editElement(struct list *head, unsigned int id) {
             case '3':
                 printf("Введите Область наук -> ");
                 strcpy(oldLine, temp->info.area);
-                fgets(temp->info.area, 75, stdin);
+                fgets(temp->info.area, 25, stdin);
                 printf("Учёная степень успешно изменена!\n");
                 printf("%s  ->  %s\n", oldLine, temp->info.area);
                 break;
