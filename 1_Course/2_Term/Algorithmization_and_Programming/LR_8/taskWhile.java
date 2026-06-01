@@ -1,9 +1,8 @@
-
 import static java.lang.Math.*;
 import java.util.Locale;
 import java.util.Scanner;
 
-class task {
+public class taskWhile {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         in.useLocale(Locale.US);
@@ -30,7 +29,9 @@ class task {
         System.out.println("|        x       |      f(x)      |");
         System.out.println("+----------------+----------------+");
 
-        for (double now = xStart; now <=xEnd; now += deltaX) {
+        double now = xStart;
+
+        while (now <= xEnd) {
             if (now <= a) {
                 z = 1.7 * sin(now);
             } else if (a < now && now < b) {
@@ -40,6 +41,7 @@ class task {
             }
             System.out.printf("| %-14.4f | %-14.4f |\n", now, z);
             System.out.println("+----------------+----------------+");
+            now += deltaX;
         }
     }
 }
