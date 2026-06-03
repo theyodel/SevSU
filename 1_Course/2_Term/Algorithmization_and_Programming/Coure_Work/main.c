@@ -25,18 +25,22 @@
 - сортировка записей об учёных;
 
 Вариант задания 4. Утверждено 18.02.2026
-Среда программирования Visual Studio Code version 1.120.0
-Дата последней коррекции: 16.05.2026.
-Версия 0.5.16
+Среда программирования Visual Studio Code version 1.123.0
+Дата последней коррекции: 4.06.2026.
+Версия 0.6.64
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 
 #include <stdio.h>
 #include <conio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
 #define ESC (int)27
+#define PGUP (int)72
+#define PGDOWN (int)80
+int nextID = 1;
 
 //-----------------------------структуры данных------------------------------
 struct scientist {              // Структура для хранения данных об учёном
@@ -70,10 +74,12 @@ void exportToTxt(struct list *);
 void exportToBin(struct list *);
 struct list *importFromTxt(struct list *);
 struct list *importFromBin(struct list *);
-void highestHirsh(struct list *);
+void top5ByArea(struct list *);
 
 void printTableHeader();
 void printNode(struct list *);
+int charToInt(char);
+int isNumber(char *);
 void checkFileExt(char *, const char *);
 int compareScientist(const struct scientist *, const struct scientist *, const int);
 
@@ -97,7 +103,7 @@ int main() {
         printf("7. Поиск записи\n");
         printf("8. Сохранить таблицу в файл\n");
         printf("9. Чтение таблицы из файла\n");
-        printf("0. Вывести учёного(ых) с наибольшим индексом Хирша\n");
+        printf("0. Вывести по 5 учёных с наибольшим индексом Хирша и кол-вом цитирований для каждой научной области\n");
         printf("ESC. Выход из программы\n");
         printf("\nВыберите действие (0-9) -> ");
         mainChoice = getch();
@@ -133,6 +139,7 @@ int main() {
                     printf("0. В меню\n");
                     printf("Выберите действие (0-2) -> ");
                     secondChoice = getch();
+                    system("cls");
                     switch (secondChoice) {
                         case '1':
                             head = addFirst(head, readData());
@@ -275,9 +282,9 @@ int main() {
                 if (head != NULL && saved == 0) {
                     char word[10];
                     system("cls");
-                    printf("[!] Внимание! Есть несохранённые данные.\nВведите 'yes' для перезаписи: ");
-                    scanf("%s", word);
-                    if (strcmp(word, "yes") != 0) break;
+                    printf("[!] Внимание! Есть несохранённые данные.\nВведите 'CAPTCHA' для : ");
+                    fgets(word, 10, stdin);
+                    if (strcmp(word, "CAPTCHA") != 0) break;
                 }
                 flag = 1;
                 while (flag) {
@@ -314,7 +321,7 @@ int main() {
                     getch();
                     break;
                 }
-                highestHirsh(head);
+                top5ByArea(head);
                 getch();
                 break;
 
@@ -330,6 +337,8 @@ int main() {
         }
     }
 }
+
+
 
 void printTableHeader() {
     printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
@@ -349,30 +358,109 @@ void printNode(struct list *node) {
     printf("+------+-----------------------------------------------------------------------------+---------------------------+---------------------------+---------------+--------------------+--------------+\n");
 }
 
+void setNewID(struct list *head, const int _mode) {
+    int maxID = -1;
+    struct list *temp = head;
+    if (_mode == 0) {
+        nextID = 1;
+    } else if (_mode == 1) {
+        if (head == NULL) {
+            nextID = 1;
+            return;
+        }
+        for (; temp != NULL; temp = temp->next) {
+            if (maxID < temp->info.id) nextID = temp->info.id + 1;
+        }
+    }
+}
+
+int charToInt(char ch) {
+    switch (ch) {
+        case '0': return 0;
+        case '1': return 1;
+        case '2': return 2;
+        case '3': return 3;
+        case '4': return 4;
+        case '5': return 5;
+        case '6': return 6;
+        case '7': return 7;
+        case '8': return 8;
+        case '9': return 9;
+        default: return -1;
+    }
+}
+
+int isNumber(char *_str) {
+    int itog = 0;
+    for(int i = 0; i < strlen(_str); i++) {
+        if ('0' <= _str[i] && _str[i] <= '9') itog += charToInt(_str[i]) * pow(10, strlen(_str) - 1 - i);
+        else return -1;
+    }
+    return itog;
+}
+
 /// @brief Функция чтения данных с клавиатуры
 /// @return Данные об учёном
 struct scientist readData() {
     struct scientist data;
-    static int nextID = 1;
+    char buffer[25];
+    int flag = 1;
+    
     data.id = nextID++;
-    fflush(stdin);
+    
     printf("Введите ФИО: ");
     fgets(data.name, 75, stdin);
     data.name[strcspn(data.name, "\n")] = '\0';
-
+    
     printf("Введите научную область: ");
     fgets(data.area, 25, stdin);
     data.area[strcspn(data.area, "\n")] = '\0';
-
+    
     printf("Введите учёную степень: ");
     fgets(data.degree, 25, stdin);
     data.degree[strcspn(data.degree, "\n")] = '\0';
     
-    printf("Введите количество научных статей: "); scanf("%d", &data.articles);
-    printf("Введите количество цитирований: "); scanf("%d", &data.quotes);
-    printf("Введите индекс Хирша: "); scanf("%d", &data.hirshIndex);
-    printf("\n");
-    fflush(stdin);
+    while (flag) {
+        printf("Введите количество научных статей: ");
+        fgets(buffer, 25, stdin);
+        buffer[strcspn(buffer, "\n")] = '\0';
+        
+        if (isNumber(buffer) >= 0) {
+            data.articles = isNumber(buffer);
+            flag = 0;
+        } else {
+            printf("\nВведено некорректное число! Повторите ввод\n");
+        }
+    }
+    flag = 1;
+    
+    while (flag) {
+        printf("Введите количество цитирований: ");
+        fgets(buffer, 25, stdin);
+        buffer[strcspn(buffer, "\n")] = '\0';
+        
+        if (isNumber(buffer) >= 0) {
+            data.quotes = isNumber(buffer);
+            flag = 0;
+        } else {
+            printf("\nВведено некорректное число! Повторите ввод\n");
+        }
+    }
+    flag = 1;
+    
+    while (flag) {
+        printf("Введите индекс Хирша: ");
+        fgets(buffer, 25, stdin);
+        buffer[strcspn(buffer, "\n")] = '\0';
+        
+        if (isNumber(buffer) >= 0) {
+            data.hirshIndex = isNumber(buffer);
+            flag = 0;
+        } else {
+            printf("\nВведено некорректное число! Повторите ввод\n");
+        }
+    }
+    
     return data;
 }
 
@@ -415,7 +503,10 @@ struct list *addLast(struct list *head, const struct scientist data) {
 struct list *createListFromKeyboard(struct list *head) {
     int choice = 0;
 
+    setNewID(head, 1);
+
     do {
+        system("cls");
         if (head == NULL) head = addFirst(head, readData());
         else addLast(head, readData());
 
@@ -437,11 +528,11 @@ void viewList(struct list *head) {
         cur = cur->next;
     }
 
-    const int PAGE_SIZE = 15;
+    const int pageSize = 15;
     int start = 0;
     char key;
 
-    do {
+    while (1) {
         system("cls");
 
         printTableHeader();
@@ -454,36 +545,41 @@ void viewList(struct list *head) {
         }
 
         int printed = 0;
-        while (temp != NULL && printed < PAGE_SIZE) {
-            printNode(temp);
-            temp = temp->next;
-            printed++;
-        }
+        for (; temp != NULL && printed < pageSize; temp = temp->next, printed++) printNode(temp);
 
         if (printed == 0) break;
 
         int first = start + 1;
         int last = (start + printed < total) ? start + printed : total;
-        printf("\nСтраница: %d-%d из %d. Используйте W (вверх), S (вниз), ESC (выход): ", first, last, total);
+        printf("\nЗаписи: %d-%d из %d. \nИспользуйте W (предыдущая страница)\t S (следующая страница) \nPageUp (предыдущая запись)\t PageDown (следующая запись) \nESC (выход)", first, last, total);
+        printf("\n\n[ * ] Одна страница занимает %d записей", pageSize);
 
         key = getch();
 
         if (key == 'w' || key == 'W') {
-            int new_start = start - PAGE_SIZE;
+            int new_start = start - pageSize;
             if (new_start < 0) new_start = 0;
             start = new_start;
-        }
-        else if (key == 's' || key == 'S') {
-            int new_start = start + PAGE_SIZE;
-            int max_start = total - PAGE_SIZE;
+        } else if (key == 's' || key == 'S') {
+            int new_start = start + pageSize;
+            int max_start = total - pageSize;
             if (max_start < 0) max_start = 0;
             if (new_start > max_start) new_start = max_start;
             start = new_start;
-        }
-        else if (key == 'q' || key == 'Q' || key == ESC) {
+        } else if (key == PGUP) {
+            int new_start = start - 1;
+            if (new_start < 0) new_start = 0;
+            start = new_start;
+        } else if (key == PGDOWN) {
+            int new_start = start + 1;
+            int max_start = total - 1;
+            if (max_start < 0) max_start = 0;
+            if (new_start > max_start) new_start = max_start;
+            start = new_start;
+        } else if (key == ESC) {
             break;
         }
-    } while (1);
+    };
 }
 
 /// @brief Проверяет и добавляет расширение файла, если его нет
@@ -494,6 +590,18 @@ void checkFileExt(char *filename, const char *ext) {
     }
 }
 
+void writeToTextFile(FILE *file, struct list *node) {
+    fprintf(file, "%d\t%s\t%s\t%s\t%d\t%d\t%d\n",
+            node->info.id,
+            node->info.name,
+            node->info.degree,
+            node->info.area,
+            node->info.articles,
+            node->info.quotes,
+            node->info.hirshIndex
+            );
+}
+
 /// @brief Функция экспорта таблицы в текстовый (`.txt`) файл
 /// @param head Указатель на начало списка
 void exportToTxt(struct list *head) {
@@ -501,8 +609,6 @@ void exportToTxt(struct list *head) {
     struct list *temp = head;
     
     printf("\nВведите название файла -> ");
-    int c;
-    fflush(stdin);
     fgets(fileName, sizeof(fileName), stdin);
     fileName[strcspn(fileName, "\n")] = '\0';
     
@@ -511,19 +617,13 @@ void exportToTxt(struct list *head) {
     FILE *file = fopen(fileName, "wt");
     if (file == NULL) {
         printf("Ошибка создания файла '%s'!\n", fileName);
-        Sleep(300);
+        printf("Нажмите любую кнопку для возвращения в меню...");
+        getch();
         return;
     }
     
     for (; temp != NULL; temp = temp->next) {
-        fprintf(file, "%d\t%s\t%s\t%s\t%d\t%d\t%d\n",
-                temp->info.id,
-                temp->info.name,
-                temp->info.degree,
-                temp->info.area,
-                temp->info.articles,
-                temp->info.quotes,
-                temp->info.hirshIndex);
+        writeToTextFile(file, temp);
     }
     fclose(file);
 
@@ -536,9 +636,7 @@ void exportToTxt(struct list *head) {
 /// @param head Указатель на начало списка
 void exportToBin(struct list *head) {
     char fileName[101];
-    printf("\nВведите название файла -> ");
-    int c;
-    fflush(stdin);
+    printf("\n\nВведите название файла -> ");
     fgets(fileName, sizeof(fileName), stdin);
     fileName[strcspn(fileName, "\n")] = '\0';
     
@@ -547,7 +645,8 @@ void exportToBin(struct list *head) {
     FILE *file = fopen(fileName, "wb");
     if (file == NULL) {
         printf("Ошибка создания файла '%s'!\n", fileName);
-        Sleep(300);
+        printf("Нажмите любую кнопку для возвращения в меню...");
+        getch();
         return;
     }
     
@@ -567,10 +666,9 @@ void exportToBin(struct list *head) {
 struct list *importFromTxt(struct list *head) {
     char fileName[101];
     struct scientist data;
-    
-    printf("\nВведите название файла -> ");
-    int c;
-    fflush(stdin);
+    system("cls");
+    printf("================ Импорт из текстового файла ================\n");
+    printf("Введите название файла -> ");
     fgets(fileName, sizeof(fileName), stdin);
     fileName[strcspn(fileName, "\n")] = '\0';
     
@@ -578,8 +676,9 @@ struct list *importFromTxt(struct list *head) {
     
     FILE *file = fopen(fileName, "rt");
     if (file == NULL) {
-        printf("Файл '%s' не найден!\n", fileName);
-        Sleep(300);
+        printf("\n\nФайл '%s' не найден!\n", fileName);
+        printf("Нажмите любую кнопку для возвращения в меню...");
+        getch();
         return head;
     }
     
@@ -594,7 +693,9 @@ struct list *importFromTxt(struct list *head) {
     
     fclose(file);
 
-    printf("Таблица успешно импортирована из файла '%s'\n", fileName);
+    setNewID(head, 1);
+
+    printf("\nТаблица успешно импортирована из файла '%s'\n", fileName);
     printf("Нажмите любую кнопку для возвращения в меню...");
     getch();
 
@@ -607,10 +708,9 @@ struct list *importFromTxt(struct list *head) {
 struct list *importFromBin(struct list *head) {
     char fileName[101];
     struct scientist data;
-    
-    printf("\nВведите название файла -> ");
-    int c;
-    fflush(stdin);
+    system("cls");
+    printf("================ Импорт из бинарного файла ================\n");
+    printf("Введите название файла -> ");
     fgets(fileName, sizeof(fileName), stdin);
     fileName[strcspn(fileName, "\n")] = '\0';
     
@@ -618,8 +718,9 @@ struct list *importFromBin(struct list *head) {
     
     FILE *file = fopen(fileName, "rb");
     if (file == NULL) {
-        printf("Файл '%s' не найден!\n", fileName);
-        Sleep(300);
+        printf("\n\nФайл '%s' не найден!\n", fileName);
+        printf("Нажмите любую кнопку для возвращения в меню...");
+        getch();
         return head;
     }
     
@@ -632,7 +733,9 @@ struct list *importFromBin(struct list *head) {
     
     fclose(file);
 
-    printf("Таблица успешно импортирована из файла '%s'\n", fileName);
+    setNewID(head, 1);
+
+    printf("\nТаблица успешно импортирована из файла '%s'\n", fileName);
     printf("Нажмите любую кнопку для возвращения в меню...");
     getch();
 
@@ -643,7 +746,7 @@ struct list *importFromBin(struct list *head) {
 /// @param head Указатель на начало списка
 /// @return Кол-во удалённых записей
 int freeMemory(struct list **head, int choice) {
-    if (head == NULL) return -1;  // Некорректный указатель
+    if (head == NULL) return -1;
 
     struct list *temp = NULL;
 
@@ -661,6 +764,7 @@ int freeMemory(struct list **head, int choice) {
                 count++;
             }
             *head = NULL;
+            setNewID(*head, 0);
             return count;
         }
 
@@ -673,6 +777,7 @@ int freeMemory(struct list **head, int choice) {
             *head = (*head)->next;
             if (*head != NULL) (*head)->prev = NULL;
             free(temp);
+            setNewID(*head, 1);
             return 1;
         }
 
@@ -704,8 +809,8 @@ int freeMemory(struct list **head, int choice) {
 /// @param id ID записи, которая будет откорректирована
 /// @return Указатель на начало списка
 struct list *editElement(struct list *head, unsigned int id) {
-    int choice, oldInt;
-    char oldLine[76];
+    int choice, oldInt, flag = 1;
+    char oldLine[76], buffer[25];
     struct list *temp = head;
 
     for (; temp->info.id != id; temp = temp->next);
@@ -748,25 +853,49 @@ struct list *editElement(struct list *head, unsigned int id) {
                 break;
 
             case '4':
-                printf("Введите Кол-во статей -> ");
                 oldInt = temp->info.articles;
-                scanf("%d", &temp->info.articles);
+                while (flag) {
+                    printf("Введите Кол-во статей -> ");
+                    scanf("%25s", buffer);
+                    if (isNumber(buffer)>=0) temp->info.articles = isNumber(buffer);
+                    else {
+                        printf("\nВведено некорректное число в поле 'кол-во научных статей'! Повторите ввод снова\n");
+                        continue;
+                    }
+                    flag = 0;
+                }
                 printf("Кол-во статей успешно изменено!\n");
                 printf("%d  ->  %d\n", oldInt, temp->info.articles);
                 break;
 
             case '5':
-                printf("Введите Кол-во цитирований -> ");
                 oldInt = temp->info.quotes;
-                scanf("%d", &temp->info.quotes);
+                while (flag) {
+                    printf("Введите Кол-во цитирований -> ");
+                    scanf("%25s", buffer);
+                    if (isNumber(buffer)>=0) temp->info.quotes = isNumber(buffer);
+                    else {
+                        printf("\nВведено некорректное число в поле 'кол-во цитирований'! Повторите ввод снова\n");
+                        continue;
+                    }
+                    flag = 0;
+                }
                 printf("Кол-во цитирований успешно изменено!\n");
                 printf("%d  ->  %d\n", oldInt, temp->info.quotes);
                 break;
 
             case '6':
-                printf("Введите Индекс Хирша -> ");
                 oldInt = temp->info.hirshIndex;
-                scanf("%d", &temp->info.hirshIndex);
+                while (flag) {
+                    printf("Введите Кол-во цитирований -> ");
+                    scanf("%25s", buffer);
+                    if (isNumber(buffer)>=0) temp->info.hirshIndex = isNumber(buffer);
+                    else {
+                        printf("\nВведено некорректное число в поле 'индекс Хирша'! Повторите ввод снова\n");
+                        continue;
+                    }
+                    flag = 0;
+                }
                 printf("Индекс Хирша успешно изменён!\n");
                 printf("%d  ->  %d\n", oldInt, temp->info.hirshIndex);
                 break;
@@ -786,12 +915,20 @@ struct list *editElement(struct list *head, unsigned int id) {
 /// @param choice поле для поиска
 void findScientist(struct list *head, const int choice) {
     struct list *temp = head;
-    int key, count = 0;
+    int key, count = 0, flag = 1;
     char kWord[75];
 
     switch (choice) {
         case '1':
-            printf("Введите ID -> "); scanf("%d", &key);
+            while (flag) {
+                printf("Введите ID -> "); fgets(kWord, 75, stdin);
+                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                else {
+                    printf("\nВведено некорректное число в поле 'индекс Хирша'! Повторите ввод снова\n");
+                    continue;
+                }
+                flag = 0;
+            }
             printTableHeader();
             for (; temp != NULL; temp = temp->next) {
                 if (temp->info.id == key) {
@@ -842,7 +979,15 @@ void findScientist(struct list *head, const int choice) {
             return;
 
         case '5':
-            printf("Введите Кол-во статей -> "); scanf("%d", &key);
+            while (flag) {
+                printf("Введите Кол-во статей -> "); fgets(kWord, 75, stdin);
+                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                else {
+                    printf("\nВведено некорректное число в поле 'кол-во статей'! Повторите ввод снова\n");
+                    continue;
+                }
+                flag = 0;
+            }
             printTableHeader();
             for (; temp != NULL; temp = temp->next) {
                 if (temp->info.articles == key) {
@@ -854,7 +999,15 @@ void findScientist(struct list *head, const int choice) {
             return;
 
         case '6':
-            printf("Введите Кол-во цитирований -> "); scanf("%d", &key);
+            while (flag) {
+                printf("Введите Кол-во цитирований -> "); fgets(kWord, 75, stdin);
+                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                else {
+                    printf("\nВведено некорректное число в поле 'кол-во цитирований'! Повторите ввод снова\n");
+                    continue;
+                }
+                flag = 0;
+            }
             printTableHeader();
             for (; temp != NULL; temp = temp->next) {
                 if (temp->info.quotes == key) {
@@ -866,7 +1019,15 @@ void findScientist(struct list *head, const int choice) {
             return;
 
         case '7':
-            printf("Введите Индекс Хирша -> "); scanf("%d", &key);
+            while (flag) {
+                printf("Введите Индекс Хирша -> "); fgets(kWord, 75, stdin);
+                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                else {
+                    printf("\nВведено некорректное число в поле 'индекс Хирша'! Повторите ввод снова\n");
+                    continue;
+                }
+                flag = 0;
+            }
             printTableHeader();
             for (; temp != NULL; temp = temp->next) {
                 if (temp->info.hirshIndex == key) {
@@ -925,20 +1086,129 @@ struct list *sortTable(struct list *head, const int choice) {
     return head;
 }
 
-/// @brief Функция, выводящая на экран учёных с наибольшим индексом Хирша
-/// @param head 
-void highestHirsh(struct list *head) {
-    system("cls");
-    printTableHeader();
-    struct list *temp = head;
+void removeDuplicatesFromFile(const char *filename) {
+    FILE *f = fopen(filename, "rt");
+    if (f == NULL) {
+        printf("Файл %s не найден!\n", filename);
+        return;
+    }
     
-    unsigned int maximum = 0;
-    for (; temp != NULL; temp = temp->next) maximum = temp->info.hirshIndex > maximum ? temp->info.hirshIndex : maximum;
+    char lines[2000][256];
+    int ids[2000];
+    int lineCount = 0;
+    char buffer[256];
     
-    for (temp = head; temp != NULL; temp = temp->next) {
-        if (temp->info.hirshIndex == maximum) printNode(temp);
+    while (fgets(buffer, sizeof(buffer), f)) {
+        buffer[strcspn(buffer, "\n")] = '\0';
+        
+        int id = -1;
+        if (sscanf(buffer, "%d", &id) == 1) {
+            int duplicate = 0;
+            for (int i = 0; i < lineCount; i++) {
+                if (ids[i] == id) {
+                    duplicate = 1;
+                    break;
+                }
+            }
+            if (!duplicate) {
+                ids[lineCount] = id;
+                strcpy(lines[lineCount], buffer);
+                lineCount++;
+            }
+        } else {
+            ids[lineCount] = -1;
+            strcpy(lines[lineCount], buffer);
+            lineCount++;
+        }
+    }
+    fclose(f);
+    
+    f = fopen(filename, "wt");
+    if (f == NULL) {
+        printf("Ошибка записи в файл %s\n", filename);
+        return;
+    }
+    for (int i = 0; i < lineCount; i++) {
+        fprintf(f, "%s\n", lines[i]);
+    }
+    fclose(f);
+}
+
+void top5ByArea(struct list *head) {
+    if (head == NULL) {
+        printf("Список пуст!\n");
+        return;
     }
 
-    printf("\nНажмите любую кнопку для возврата в меню...");
+    system("cls");
+    
+    FILE *file = fopen("0results-success.txt", "wt");
+    
+    struct list *temp = head;
+    
+    while (temp != NULL) {
+        char currentArea[26];
+        strcpy(currentArea, temp->info.area);
+        
+        int processed = 0;
+        struct list *prev = head;
+        while (prev != temp) {
+            if (strcmp(prev->info.area, currentArea) == 0) {
+                processed = 1;
+                break;
+            }
+            prev = prev->next;
+        }
+        
+        if (!processed) {
+            struct list *areaList = NULL;
+            struct list *scan = head;
+            
+            while (scan != NULL) {
+                if (strcmp(scan->info.area, currentArea) == 0) {
+                    struct list *newNode = (struct list*)malloc(sizeof(struct list));
+                    newNode->info = scan->info;
+                    newNode->next = areaList;
+                    newNode->prev = NULL;
+                    if (areaList) areaList->prev = newNode;
+                    areaList = newNode;
+                }
+                scan = scan->next;
+            }
+            
+            areaList = sortTable(areaList, '7');
+            
+            printf("\n\n========== %s ==========\n", currentArea);
+            
+            printf("\nТоп-5 по Хиршу:\n");
+            
+            struct list *show = areaList;
+            printTableHeader();
+            for (int i = 0; i < 5 && show != NULL; i++, show = show->next) {
+                printNode(show);
+                writeToTextFile(file, show);
+            }
+            
+            areaList = sortTable(areaList, '6');
+            
+            printf("\nТоп-5 по цитированиям:\n");
+            
+            show = areaList;
+            printTableHeader();
+            for (int i = 0; i < 5 && show != NULL; i++, show = show->next) {
+                printNode(show);
+                writeToTextFile(file, show);
+            }
+            
+            freeMemory(&areaList, 0);
+        }
+        temp = temp->next;
+    }
+    
+    fclose(file);
+    removeDuplicatesFromFile("0results-success.txt");
+
+    printf("\nРезультаты в файле '0results-success.txt'\n");
+    printf("Нажмите любую кнопку для возвращения в меню...");
     getch();
 }
