@@ -1,4 +1,5 @@
 *.exe
 *.dat
 .vscode
+*.doc
 *.docx

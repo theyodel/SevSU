@@ -164,41 +164,39 @@ int main() {
                     getch();
                     break;
                 }
-                {
-                    const char *addMenu[] = { "Добавить в начало", "Добавить в конец", "Вернуться в меню" };
-                    int addSize = 3, addCur = 0;
-                    int addDone = 0;
-                    while (!addDone) {
-                        system("cls");
-                        printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-                        printf("║                                          ДОБАВЛЕНИЕ ЗАПИСИ                                         ║\n");
-                        printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-                        for (int i = 0; i < addSize; i++) {
-                            printf("  %s %s\n", (i == addCur) ? "\033[35m▻" : " ", addMenu[i]);
-                            printf("\033[0m");
-                        }
-                        printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
-                        int k = getch();
-                        if (k == 224) {
-                            k = getch();
-                            if (k == 72) addCur = (addCur - 1 + addSize) % addSize;
-                            else if (k == 80) addCur = (addCur + 1) % addSize;
-                        } else if (k == ENTER) {
-                            if (addCur == 0) {
-                                head = addFirst(head, readData());
-                                addDone = 1;
-                            } else if (addCur == 1) {
-                                head = addLast(head, readData());
-                                addDone = 1;
-                            } else { // возврат
-                                addDone = 1;
-                            }
-                        } else if (k == ESC) {
+                const char *addMenu[] = { "Добавить в начало", "Добавить в конец", "Вернуться в меню" };
+                int addSize = 3, addCur = 0;
+                int addDone = 0;
+                while (!addDone) {
+                    system("cls");
+                    printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+                    printf("║                                          ДОБАВЛЕНИЕ ЗАПИСИ                                         ║\n");
+                    printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+                    for (int i = 0; i < addSize; i++) {
+                        printf("  %s %s\n", (i == addCur) ? "\033[35m▻" : " ", addMenu[i]);
+                        printf("\033[0m");
+                    }
+                    printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
+                    int k = getch();
+                    if (k == 224) {
+                        k = getch();
+                        if (k == 72) addCur = (addCur - 1 + addSize) % addSize;
+                        else if (k == 80) addCur = (addCur + 1) % addSize;
+                    } else if (k == ENTER) {
+                        if (addCur == 0) {
+                            head = addFirst(head, readData());
+                            addDone = 1;
+                        } else if (addCur == 1) {
+                            head = addLast(head, readData());
+                            addDone = 1;
+                        } else { // возврат
                             addDone = 1;
                         }
+                    } else if (k == ESC) {
+                        addDone = 1;
                     }
-                    saved = 0;
                 }
+                saved = 0;
                 break;
 
             case 4:
@@ -220,7 +218,6 @@ int main() {
                         printf("\nВведено некорректное число! Повторите ввод\n");
                     }
                 }
-                // ----- КАПТЧА ДЛЯ УДАЛЕНИЯ ВСЕХ ЗАПИСЕЙ -----
                 if (secondChoice == 0) {
                     if (!captcha("удаление ВСЕХ записей")) {
                         printf("Нажмите любую клавишу...");
@@ -344,41 +341,39 @@ int main() {
                     getch();
                     break;
                 }
-                {
-                    const char *findMenu[] = {
-                        "По ID", "По ФИО", "По учёной степени", "По области наук",
-                        "По числу статей", "По числу цитирований", "По индексу Хирша", "Вернуться в меню"
-                    };
-                    int findSize = 8, findCur = 0;
-                    int findDone = 0;
-                    while (!findDone) {
-                        system("cls");
-                        printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-                        printf("║                                            ПОИСК УЧЁНОГО                                           ║\n");
-                        printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-                        for (int i = 0; i < findSize; i++) {
-                            printf("  %s %s\n", (i == findCur) ? "\033[35m▻" : " ", findMenu[i]);
-                            printf("\033[0m");
-                        }
-                        printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
-                        int k = getch();
-                        if (k == 224) {
-                            k = getch();
-                            if (k == 72) findCur = (findCur - 1 + findSize) % findSize;
-                            else if (k == 80) findCur = (findCur + 1) % findSize;
-                        } else if (k == ENTER) {
-                            if (findCur >= 0 && findCur <= 6) {
-                                char findChar = '1' + findCur;
-                                findScientist(head, findChar);
-                                printf("\nНажмите любую клавишу для продолжения...");
-                                getch();
-                                findDone = 1;
-                            } else {
-                                findDone = 1;
-                            }
-                        } else if (k == ESC) {
+                const char *findMenu[] = {
+                    "По ID", "По ФИО", "По учёной степени", "По области наук",
+                    "По числу статей", "По числу цитирований", "По индексу Хирша", "Вернуться в меню"
+                };
+                int findSize = 8, findCur = 0;
+                int findDone = 0;
+                while (!findDone) {
+                    system("cls");
+                    printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+                    printf("║                                            ПОИСК УЧЁНОГО                                           ║\n");
+                    printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+                    for (int i = 0; i < findSize; i++) {
+                        printf("  %s %s\n", (i == findCur) ? "\033[35m▻" : " ", findMenu[i]);
+                        printf("\033[0m");
+                    }
+                    printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
+                    int k = getch();
+                    if (k == 224) {
+                        k = getch();
+                        if (k == 72) findCur = (findCur - 1 + findSize) % findSize;
+                        else if (k == 80) findCur = (findCur + 1) % findSize;
+                    } else if (k == ENTER) {
+                        if (findCur >= 0 && findCur <= 6) {
+                            char findChar = '1' + findCur;
+                            findScientist(head, findChar);
+                            printf("\nНажмите любую клавишу для продолжения...");
+                            getch();
+                            findDone = 1;
+                        } else {
                             findDone = 1;
                         }
+                    } else if (k == ESC) {
+                        findDone = 1;
                     }
                 }
                 break;
@@ -389,36 +384,35 @@ int main() {
                     getch();
                     break;
                 }
-                {
-                    const char *exportMenu[] = { "В текстовый файл (.txt)", "В бинарный файл (.bin)", "Вернуться в меню" };
-                    int expSize = 3, expCur = 0;
-                    int expDone = 0;
-                    while (!expDone) {
-                        system("cls");
-                        printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-                        printf("║                                           ЭКСПОРТ ТАБЛИЦЫ                                          ║\n");
-                        printf("╠════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-                        for (int i = 0; i < expSize; i++) {
-                            printf("  %s %s\n", (i == expCur) ? "\033[35m▻" : " ", exportMenu[i]);
-                            printf("\033[0m");
-                        }
-                        printf("");
-                        printf("\n, Enter - выбор, ESC - отмена.\n");
-                        int k = getch();
-                        if (k == 224) {
-                            k = getch();
-                            if (k == 72) expCur = (expCur - 1 + expSize) % expSize;
-                            else if (k == 80) expCur = (expCur + 1) % expSize;
-                        } else if (k == ENTER) {
-                            if (expCur == 0) exportToTxt(head);
-                            else if (expCur == 1) exportToBin(head);
-                            expDone = 1;
-                        } else if (k == ESC) {
-                            expDone = 1;
-                        }
+                const char *exportMenu[] = { "В текстовый файл (.txt)", "В бинарный файл (.bin)", "Вернуться в меню" };
+                int expSize = 3, expCur = 0;
+                int expDone = 0;
+                while (!expDone) {
+                    system("cls");
+                    printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+                    printf("║                                           ЭКСПОРТ ТАБЛИЦЫ                                          ║\n");
+                    printf("╠════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+                    for (int i = 0; i < expSize; i++) {
+                        printf("  %s %s\n", (i == expCur) ? "\033[35m▻" : " ", exportMenu[i]);
+                        printf("\033[0m");
                     }
-                    saved = 1;
+                    printf("");
+                    printf("\n, Enter - выбор, ESC - отмена.\n");
+                    int k = getch();
+                    if (k == 224) {
+                        k = getch();
+                        if (k == 72) expCur = (expCur - 1 + expSize) % expSize;
+                        else if (k == 80) expCur = (expCur + 1) % expSize;
+                    } else if (k == ENTER) {
+                        if (expCur == 0) exportToTxt(head);
+                        else if (expCur == 1) exportToBin(head);
+                        expDone = 1;
+                    } else if (k == ESC) {
+                        expDone = 1;
+                    }
                 }
+                saved = 1;
+                
                 break;
 
             case 9:
@@ -656,7 +650,7 @@ struct list *createListFromKeyboard(struct list *head) {
         if (head == NULL) head = addFirst(head, readData());
         else addLast(head, readData());
 
-        printf("Ввести ещё? \n1. да \n0. нет \n-> ");
+        printf("\nВвести ещё? \n1. да \n0. нет");
         choice = getch();
         if (choice == '0') choice = 0;
     } while (choice);
