@@ -35,6 +35,7 @@
 #include <conio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 #include <windows.h>
 #define ESC (int)27
@@ -46,20 +47,20 @@
 int nextID = 1;
 
 //-----------------------------структуры данных------------------------------
-struct scientist {              // Структура для хранения данных об учёном
-    int id;                     // ID
-    char name[76];              // ФИО
-    char area[26];              // Научная область
-    char degree[26];            // Учёная степень
-    unsigned int articles;      // Количество статей
-    unsigned int quotes;        // Количество цитирований
-    unsigned int hirshIndex;    // Индекс Хирша
+struct scientist {           // Структура для хранения данных об учёном
+    int id;                  // ID
+    char name[76];           // ФИО
+    char area[26];           // Научная область
+    char degree[26];         // Учёная степень
+    int articles;            // Количество статей
+    int quotes;              // Количество цитирований
+    int hirshIndex;          // Индекс Хирша
 };
 
-struct list {                   // Элемент 2- направленного списка
-    struct scientist info;      // Данные об учёном
-    struct list *prev;          // Указатель на элемент слева (предыдущий)
-    struct list *next;          // Указатель на элемент справа (следующий)
+struct list {                // Элемент 2- направленного списка
+    struct scientist info;   // Данные об учёном
+    struct list *prev;       // Указатель на элемент слева (предыдущий)
+    struct list *next;       // Указатель на элемент справа (следующий)
 };
 
 //-----------------------------прототипы функций-----------------------------
@@ -69,9 +70,9 @@ struct list *createListFromKeyboard(struct list *);
 struct list *addFirst(struct list *, const struct scientist);
 struct list *addLast(struct list *, const struct scientist);
 void viewList(struct list*);
-int freeMemory(struct list **, int);
-struct list *editElement(struct list *, unsigned int);
-struct list *sortTable(struct list *, const int);
+int deleteNode(struct list **, int);
+struct list *editElement(struct list *, int);
+struct list *sortTable(struct list *, const int, const int);
 void findScientist(struct list *, const int);
 void exportToTxt(struct list *);
 void exportToBin(struct list *);
@@ -85,16 +86,18 @@ int charToInt(char);
 int isNumber(char *);
 void checkFileExt(char *, const char *);
 int compareScientist(const struct scientist *, const struct scientist *, const int);
+int captcha(const char *);
 
 //------------------------------главная функция------------------------------
 int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
+    srand(time(NULL));
 
     int mainChoice, secondChoice, flag, saved = 0;
     struct list *head = NULL;
+    char buffer[25];
 
-    // ----- Пункты главного меню -----
     const char *mainMenuItems[] = {
         "Организация списка",
         "Просмотр таблицы",
@@ -112,13 +115,13 @@ int main() {
     int currentMainItem = 0;
 
     while (1) {
-        // ----- Отрисовка главного меню -----
         system("cls");
         printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
         printf("║                                                МЕНЮ                                                ║\n");
         printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
         for (int i = 0; i < mainMenuSize; i++) {
-            printf("  %s %s\n", (i == currentMainItem) ? "▻" : " ", mainMenuItems[i]);
+            printf("  %s %s\n", (i == currentMainItem) ? "\033[35m▻" : " ", mainMenuItems[i]);
+            printf("\033[0m");
         }
         printf("\nИспользуйте ↑ ↓ (стрелки вверх/вниз), Enter - выбор, ESC - выход.\n");
 
@@ -136,14 +139,18 @@ int main() {
             continue;
         }
 
-        // ----- Обработка выбранного пункта главного меню -----
         switch (mainChoice) {
-            case 1: // Организация списка
+            case 1:
+                if (head && !saved) {
+                    if (!captcha("создание нового списка (текущие данные будут потеряны)")) {
+                        break;
+                    }
+                }
                 head = createListFromKeyboard(head);
                 saved = 0;
                 break;
 
-            case 2: // Просмотр таблицы
+            case 2:
                 if (head) viewList(head);
                 else {
                     printf("Список пуст!\nРекомендуемое действие: 1.");
@@ -151,7 +158,7 @@ int main() {
                 }
                 break;
 
-            case 3: // Добавление записи (интерактивное подменю)
+            case 3:
                 if (!head) {
                     printf("Список пуст!\nРекомендуемое действие: 1.\nНажмите любую клавишу...");
                     getch();
@@ -167,7 +174,8 @@ int main() {
                         printf("║                                          ДОБАВЛЕНИЕ ЗАПИСИ                                         ║\n");
                         printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
                         for (int i = 0; i < addSize; i++) {
-                            printf("  %s %s\n", (i == addCur) ? "▻" : " ", addMenu[i]);
+                            printf("  %s %s\n", (i == addCur) ? "\033[35m▻" : " ", addMenu[i]);
+                            printf("\033[0m");
                         }
                         printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
                         int k = getch();
@@ -193,16 +201,34 @@ int main() {
                 }
                 break;
 
-            case 4: // Удаление записи (без изменений, здесь не требуется подменю)
+            case 4:
                 if (!head) {
                     printf("Список пуст!\nРекомендуемое действие: 1.");
                     getch();
                     break;
                 }
                 system("cls");
-                printf("Введите ID удаляемой записи или 0 (удалить все) -> ");
-                scanf("%d", &secondChoice);
-                flag = freeMemory(&head, secondChoice);
+                flag = 1;
+                while (flag) {
+                    printf("Введите ID удаляемой записи или 0 (удалить все) -> ");
+                    fgets(buffer, 25, stdin);
+                    buffer[strcspn(buffer, "\n")] = '\0';
+                    if (isNumber(buffer) >= 0) {
+                        secondChoice = isNumber(buffer);
+                        flag = 0;
+                    } else {
+                        printf("\nВведено некорректное число! Повторите ввод\n");
+                    }
+                }
+                // ----- КАПТЧА ДЛЯ УДАЛЕНИЯ ВСЕХ ЗАПИСЕЙ -----
+                if (secondChoice == 0) {
+                    if (!captcha("удаление ВСЕХ записей")) {
+                        printf("Нажмите любую клавишу...");
+                        getch();
+                        break;
+                    }
+                }
+                flag = deleteNode(&head, secondChoice);
                 if (flag == -1) printf("Ошибка при удалении!\n");
                 printf("Нажмите любую клавишу...");
                 getch();
@@ -215,57 +241,104 @@ int main() {
                     break;
                 }
                 system("cls");
-                printf("Введите ID записи для корректировки -> ");
-                scanf("%d", &secondChoice);
+                flag = 1;
+                while (flag) {
+                    printf("Введите ID записи для корректировки -> ");
+                    fgets(buffer, 25, stdin);
+                    buffer[strcspn(buffer, "\n")] = '\0';
+
+                    if (isNumber(buffer) >= 0) {
+                        secondChoice = isNumber(buffer);
+                        flag = 0;
+                    } else {
+                        printf("\nВведено некорректное число! Повторите ввод\n");
+                    }
+                }
                 head = editElement(head, secondChoice);
+                saved = 0;
                 getch();
                 break;
 
-            case 6: // Сортировка данных (интерактивное подменю)
+            case 6:
                 if (!head || !head->next) {
+                    system("cls");
                     printf("Список не нуждается в сортировке или пуст.\nНажмите любую клавишу...");
                     getch();
                     break;
                 }
-                {
-                    const char *sortMenu[] = {
-                        "По ID", "По ФИО", "По учёной степени", "По области наук",
-                        "По числу статей", "По числу цитирований", "По индексу Хирша", "Вернуться в меню"
-                    };
-                    int sortSize = 8, sortCur = 0;
-                    int sortDone = 0;
-                    while (!sortDone) {
-                        system("cls");
-                        printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-                        printf("║                                          СОРТИРОВКА ТАБЛИЦЫ                                        ║\n");
-                        printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-                        for (int i = 0; i < sortSize; i++) {
-                            printf("  %s %s\n", (i == sortCur) ? "▻" : " ", sortMenu[i]);
-                        }
-                        printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
-                        int k = getch();
-                        if (k == 224) {
-                            k = getch();
-                            if (k == 72) sortCur = (sortCur - 1 + sortSize) % sortSize;
-                            else if (k == 80) sortCur = (sortCur + 1) % sortSize;
-                        } else if (k == ENTER) {
-                            if (sortCur >= 0 && sortCur <= 6) {
-                                char sortChar = '1' + sortCur;
-                                sortTable(head, sortChar);
-                                printf("\nСортировка выполнена. Нажмите любую клавишу...");
-                                getch();
-                                sortDone = 1;
-                            } else { // возврат
-                                sortDone = 1;
+                const char *sortMenu[] = {
+                    "По ID", "По ФИО", "По учёной степени", "По области наук",
+                    "По числу статей", "По числу цитирований", "По индексу Хирша", "Вернуться в меню"
+                };
+                int sortSize = 8, sortCur = 0;
+                int sortDone = 0;
+                while (!sortDone) {
+                    system("cls");
+                    printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+                    printf("║                                          СОРТИРОВКА ТАБЛИЦЫ                                        ║\n");
+                    printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+                    for (int i = 0; i < sortSize; i++) {
+                        printf("  %s %s\n", (i == sortCur) ? "\033[35m▻" : " ", sortMenu[i]);
+                        printf("\033[0m");
+                    }
+                    printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
+                    int k = getch();
+                    if (k == 224) {
+                        k = getch();
+                        if (k == 72) sortCur = (sortCur - 1 + sortSize) % sortSize;
+                        else if (k == 80) sortCur = (sortCur + 1) % sortSize;
+                    } else if (k == ENTER) {
+                        if (sortCur >= 0 && sortCur <= 6) {
+                            char sortChar = '1' + sortCur;
+                            const char *orderMenu[] = { "По возрастанию", "По убыванию", "Вернуться к выбору поля" };
+                            int orderSize = 3, orderCur = 0;
+                            int orderDone = 0;
+                            while (!orderDone) {
+                                system("cls");
+                                printf("╔════════════════════════════════════════════════════════════════════════════════════╗\n");
+                                printf("║                             ВЫБЕРИТЕ ПОРЯДОК СОРТИРОВКИ                             ║\n");
+                                printf("╚════════════════════════════════════════════════════════════════════════════════════╝\n");
+                                for (int i = 0; i < orderSize; i++) {
+                                    printf("  %s %s\n", (i == orderCur) ? "\033[35m▻" : " ", orderMenu[i]);
+                                    printf("\033[0m");
+                                }
+                                printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
+                                int ch = getch();
+                                if (ch == 224) {
+                                    ch = getch();
+                                    if (ch == 72) orderCur = (orderCur - 1 + orderSize) % orderSize;
+                                    else if (ch == 80) orderCur = (orderCur + 1) % orderSize;
+                                } else if (ch == ENTER) {
+                                    if (orderCur == 0) {          // по возрастанию
+                                        sortTable(head, sortChar, 0);
+                                        printf("\nСортировка выполнена (по возрастанию). Нажмите любую клавишу...");
+                                        getch();
+                                        sortDone = 1;
+                                        orderDone = 1;
+                                    } else if (orderCur == 1) {   // по убыванию
+                                        sortTable(head, sortChar, 1);
+                                        printf("\nСортировка выполнена (по убыванию). Нажмите любую клавишу...");
+                                        getch();
+                                        sortDone = 1;
+                                        orderDone = 1;
+                                    } else {                      // вернуться к выбору поля
+                                        orderDone = 1;
+                                    }
+                                } else if (ch == ESC) {
+                                    orderDone = 1;   // отмена – возврат к выбору поля
+                                }
                             }
-                        } else if (k == ESC) {
+                            if (sortDone == 1) break;  // если сортировка выполнена, выходим из внешнего цикла
+                        } else { // sortCur == 7 -> возврат в главное меню
                             sortDone = 1;
                         }
+                    } else if (k == ESC) {
+                        sortDone = 1;
                     }
                 }
                 break;
 
-            case 7: // Поиск записи (интерактивное подменю)
+            case 7:
                 if (!head) {
                     printf("Таблица пуста!\n");
                     getch();
@@ -284,7 +357,8 @@ int main() {
                         printf("║                                            ПОИСК УЧЁНОГО                                           ║\n");
                         printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
                         for (int i = 0; i < findSize; i++) {
-                            printf("  %s %s\n", (i == findCur) ? "▻" : " ", findMenu[i]);
+                            printf("  %s %s\n", (i == findCur) ? "\033[35m▻" : " ", findMenu[i]);
+                            printf("\033[0m");
                         }
                         printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
                         int k = getch();
@@ -309,7 +383,7 @@ int main() {
                 }
                 break;
 
-            case 8: // Сохранить таблицу в файл (интерактивное подменю)
+            case 8:
                 if (!head) {
                     printf("Список пуст!\n");
                     getch();
@@ -325,7 +399,8 @@ int main() {
                         printf("║                                           ЭКСПОРТ ТАБЛИЦЫ                                          ║\n");
                         printf("╠════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
                         for (int i = 0; i < expSize; i++) {
-                            printf("  %s %s\n", (i == expCur) ? "▻" : " ", exportMenu[i]);
+                            printf("  %s %s\n", (i == expCur) ? "\033[35m▻" : " ", exportMenu[i]);
+                            printf("\033[0m");
                         }
                         printf("");
                         printf("\n, Enter - выбор, ESC - отмена.\n");
@@ -346,45 +421,43 @@ int main() {
                 }
                 break;
 
-            case 9: // Чтение таблицы из файла (интерактивное подменю)
+            case 9:
                 if (head && saved == 0) {
-                    char word[10];
-                    system("cls");
-                    printf("[!] Внимание! Есть несохранённые данные.\nВведите 'CAPTCHA' для продолжения: ");
-                    fgets(word, 10, stdin);
-                    if (strcmp(word, "CAPTCHA") != 0) break;
-                }
-                {
-                    const char *importMenu[] = { "Из текстового файла (.txt)", "Из бинарного файла (.bin)", "Вернуться в меню" };
-                    int impSize = 3, impCur = 0;
-                    int impDone = 0;
-                    while (!impDone) {
-                        system("cls");
-                        printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-                        printf("║                                           ИМПОРТ ТАБЛИЦЫ                                           ║\n");
-                        printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-                        for (int i = 0; i < impSize; i++) {
-                            printf("  %s %s\n", (i == impCur) ? "▻" : " ", importMenu[i]);
-                        }
-                        printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
-                        int k = getch();
-                        if (k == 224) {
-                            k = getch();
-                            if (k == 72) impCur = (impCur - 1 + impSize) % impSize;
-                            else if (k == 80) impCur = (impCur + 1) % impSize;
-                        } else if (k == ENTER) {
-                            if (impCur == 0) head = importFromTxt(head);
-                            else if (impCur == 1) head = importFromBin(head);
-                            impDone = 1;
-                        } else if (k == ESC) {
-                            impDone = 1;
-                        }
+                    // Уже есть несохранённые данные – требуем каптчу
+                    if (!captcha("импорт таблицы с потерей несохранённых данных")) {
+                        break;
                     }
-                    saved = 0;
                 }
+                const char *importMenu[] = { "Из текстового файла (.txt)", "Из бинарного файла (.bin)", "Вернуться в меню" };
+                int impSize = 3, impCur = 0;
+                int impDone = 0;
+                while (!impDone) {
+                    system("cls");
+                    printf("╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+                    printf("║                                           ИМПОРТ ТАБЛИЦЫ                                           ║\n");
+                    printf("╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+                    for (int i = 0; i < impSize; i++) {
+                        printf("  %s %s\n", (i == impCur) ? "\033[35m▻" : " ", importMenu[i]);
+                        printf("\033[0m");
+                    }
+                    printf("\n\U0001F817 Стрелки \x18 \x19, Enter, ESC - отмена.\n");
+                    int k = getch();
+                    if (k == 224) {
+                        k = getch();
+                        if (k == 72) impCur = (impCur - 1 + impSize) % impSize;
+                        else if (k == 80) impCur = (impCur + 1) % impSize;
+                    } else if (k == ENTER) {
+                        if (impCur == 0) head = importFromTxt(head);
+                        else if (impCur == 1) head = importFromBin(head);
+                        impDone = 1;
+                    } else if (k == ESC) {
+                        impDone = 1;
+                    }
+                }
+                saved = 0;
                 break;
 
-            case 10: // Топ-5 по областям
+            case 10:
                 if (!head) {
                     printf("Список пуст!\n");
                     getch();
@@ -394,8 +467,13 @@ int main() {
                 getch();
                 break;
 
-            case 11: // Выход
-                int cnt = freeMemory(&head, 0);
+            case 11:
+                if (head && !saved) {
+                    if (!captcha("выход без сохранения")) {
+                        break;
+                    }
+                }
+                int cnt = deleteNode(&head, 0);
                 printf("\nУдалено %d записей. Выход...\n", cnt);
                 Sleep(3000);
                 return 0;
@@ -411,7 +489,7 @@ int main() {
 void printTableHeader() {
     printf("╔══════╦═════════════════════════════════════════════════════════════════════════════╦═══════════════════════════╦═══════════════════════════╦═══════════════╦════════════════════╦══════════════╗\n");
     printf("║  ID  ║                             Фамилия Имя Отчество                            ║       Учёная Степень      ║        Область Науки      ║ Кол-во статей ║ Кол-во цитирований ║ Индекс Хирша ║\n");
-    printf("╚══════╩═════════════════════════════════════════════════════════════════════════════╩═══════════════════════════╩═══════════════════════════╩═══════════════╩════════════════════╩══════════════╝\n");
+    printf("╠══════╬═════════════════════════════════════════════════════════════════════════════╬═══════════════════════════╬═══════════════════════════╬═══════════════╬════════════════════╬══════════════╣\n");
 }
 
 void printNode(struct list *node) {
@@ -684,8 +762,8 @@ void exportToTxt(struct list *head) {
     
     FILE *file = fopen(fileName, "wt");
     if (file == NULL) {
-        printf("Ошибка создания файла '%s'!\n", fileName);
-        printf("Нажмите любую кнопку для возвращения в меню...");
+        printf("\033[31mОшибка создания файла '%s'!\n", fileName);
+        printf("\033[0mНажмите любую клавишу для возвращения в меню...");
         getch();
         return;
     }
@@ -695,8 +773,8 @@ void exportToTxt(struct list *head) {
     }
     fclose(file);
 
-    printf("Информация записана в файл '%s'\n", fileName);
-    printf("Нажмите любую кнопку для возвращения в меню...");
+    printf("\033[36mИнформация записана в файл '%s'\n", fileName);
+    printf("\033[0mНажмите любую клавишу для возвращения в меню...");
     getch();
 }
 
@@ -712,8 +790,8 @@ void exportToBin(struct list *head) {
     
     FILE *file = fopen(fileName, "wb");
     if (file == NULL) {
-        printf("Ошибка создания файла '%s'!\n", fileName);
-        printf("Нажмите любую кнопку для возвращения в меню...");
+        printf("\033[31mОшибка создания файла '%s'!\n", fileName);
+        printf("\033[0mНажмите любую клавишу для возвращения в меню...");
         getch();
         return;
     }
@@ -723,8 +801,8 @@ void exportToBin(struct list *head) {
     }
     fclose(file);
 
-    printf("Таблица успешно экспортирована в файл '%s'\n", fileName);
-    printf("Нажмите любую кнопку для возвращения в меню...");
+    printf("\033[36mТаблица успешно экспортирована в файл '%s'\n", fileName);
+    printf("\033[0mНажмите любую клавишу для возвращения в меню...");
     getch();
 }
 
@@ -744,8 +822,8 @@ struct list *importFromTxt(struct list *head) {
     
     FILE *file = fopen(fileName, "rt");
     if (file == NULL) {
-        printf("\n\nФайл '%s' не найден!\n", fileName);
-        printf("Нажмите любую кнопку для возвращения в меню...");
+        printf("\n\n\033[31mФайл '%s' не найден!\n", fileName);
+        printf("\033[0mНажмите любую клавишу для возвращения в меню...");
         getch();
         return head;
     }
@@ -763,8 +841,8 @@ struct list *importFromTxt(struct list *head) {
 
     setNewID(head, 1);
 
-    printf("\nТаблица успешно импортирована из файла '%s'\n", fileName);
-    printf("Нажмите любую кнопку для возвращения в меню...");
+    printf("\n\033[36mТаблица успешно импортирована из файла '%s'\n", fileName);
+    printf("\033[0mНажмите любую клавишу для возвращения в меню...");
     getch();
 
     return head;
@@ -786,25 +864,23 @@ struct list *importFromBin(struct list *head) {
     
     FILE *file = fopen(fileName, "rb");
     if (file == NULL) {
-        printf("\n\nФайл '%s' не найден!\n", fileName);
-        printf("Нажмите любую кнопку для возвращения в меню...");
+        printf("\n\n\033[31mФайл '%s' не найден!\n", fileName);
+        printf("\033[0mНажмите любую клавишу для возвращения в меню...");
         getch();
         return head;
     }
     
     while (fread(&data, sizeof(struct scientist), 1, file) == 1) {
-        if (head == NULL)
-            head = addFirst(head, data);
-        else
-            head = addLast(head, data);
+        if (head == NULL) head = addFirst(head, data);
+        else head = addLast(head, data);
     }
     
     fclose(file);
 
     setNewID(head, 1);
 
-    printf("\nТаблица успешно импортирована из файла '%s'\n", fileName);
-    printf("Нажмите любую кнопку для возвращения в меню...");
+    printf("\n\033[36mТаблица успешно импортирована из файла '%s'\n", fileName);
+    printf("\033[0mНажмите любую клавишу для возвращения в меню...");
     getch();
 
     return head;
@@ -813,7 +889,7 @@ struct list *importFromBin(struct list *head) {
 /// @brief Функция очистки памяти
 /// @param head Указатель на начало списка
 /// @return Кол-во удалённых записей
-int freeMemory(struct list **head, int choice) {
+int deleteNode(struct list **head, int choice) {
     if (head == NULL) return -1;
 
     struct list *temp = NULL;
@@ -852,12 +928,10 @@ int freeMemory(struct list **head, int choice) {
         default: {
             struct list *toDel = *head;
             
-            // Поиск элемента с нужным id
             while (toDel != NULL && toDel->info.id != choice) toDel = toDel->next;
             
-            // Элемент не найден
             if (toDel == NULL) {
-                printf("\nЭлемент с id=%d не найден\n", choice);
+                printf("\nЭлемент с ID '%d' не найден\n", choice);
                 return -1;
             }
             
@@ -876,105 +950,156 @@ int freeMemory(struct list **head, int choice) {
 /// @param head Указатель на начало списка
 /// @param id ID записи, которая будет откорректирована
 /// @return Указатель на начало списка
-struct list *editElement(struct list *head, unsigned int id) {
-    int choice, oldInt, flag = 1;
+struct list *editElement(struct list *head, int id) {
+    int choice = 0;           // 1..6 или 0 (меню)
+    int oldInt, flag;
     char oldLine[76], buffer[25];
     struct list *temp = head;
 
-    for (; temp->info.id != id; temp = temp->next);
+    for (; temp != NULL && temp->info.id != id; temp = temp->next);
 
-    if (temp != NULL) {
-        printf("Запись с ID '%d' найдена!\n\n");
-        printf("Выберите поле, которое хотите изменить:\n");
-        printf("1. ФИО\n");
-        printf("2. Учёная степень\n");
-        printf("3. Область науки\n");
-        printf("4. Кол-во статей\n");
-        printf("5. Кол-во цитирований\n");
-        printf("6. Индекс Хирша\n");
-        printf("0. В меню\n");
-        printf("Выберите действие (0-6) ->\n");
-        choice = getch();
-        switch (choice) {
-            case '1':
-                printf("Введите ФИО -> ");
-                strcpy(oldLine, temp->info.name);
-                fgets(temp->info.name, 75, stdin);
-                printf("ФИО успешно изменено!\n");
-                printf("%s  ->  %s\n", oldLine, temp->info.name);
-                break;
-            
-            case '2':
-                printf("Введите Учёную сепень -> ");
-                strcpy(oldLine, temp->info.degree);
-                fgets(temp->info.degree, 25, stdin);
-                printf("Учёная степень успешно изменена!\n");
-                printf("%s  ->  %s\n", oldLine, temp->info.degree);
-                break;
-
-            case '3':
-                printf("Введите Область наук -> ");
-                strcpy(oldLine, temp->info.area);
-                fgets(temp->info.area, 25, stdin);
-                printf("Учёная степень успешно изменена!\n");
-                printf("%s  ->  %s\n", oldLine, temp->info.area);
-                break;
-
-            case '4':
-                oldInt = temp->info.articles;
-                while (flag) {
-                    printf("Введите Кол-во статей -> ");
-                    scanf("%25s", buffer);
-                    if (isNumber(buffer)>=0) temp->info.articles = isNumber(buffer);
-                    else {
-                        printf("\nВведено некорректное число в поле 'кол-во научных статей'! Повторите ввод снова\n");
-                        continue;
-                    }
-                    flag = 0;
-                }
-                printf("Кол-во статей успешно изменено!\n");
-                printf("%d  ->  %d\n", oldInt, temp->info.articles);
-                break;
-
-            case '5':
-                oldInt = temp->info.quotes;
-                while (flag) {
-                    printf("Введите Кол-во цитирований -> ");
-                    scanf("%25s", buffer);
-                    if (isNumber(buffer)>=0) temp->info.quotes = isNumber(buffer);
-                    else {
-                        printf("\nВведено некорректное число в поле 'кол-во цитирований'! Повторите ввод снова\n");
-                        continue;
-                    }
-                    flag = 0;
-                }
-                printf("Кол-во цитирований успешно изменено!\n");
-                printf("%d  ->  %d\n", oldInt, temp->info.quotes);
-                break;
-
-            case '6':
-                oldInt = temp->info.hirshIndex;
-                while (flag) {
-                    printf("Введите Кол-во цитирований -> ");
-                    scanf("%25s", buffer);
-                    if (isNumber(buffer)>=0) temp->info.hirshIndex = isNumber(buffer);
-                    else {
-                        printf("\nВведено некорректное число в поле 'индекс Хирша'! Повторите ввод снова\n");
-                        continue;
-                    }
-                    flag = 0;
-                }
-                printf("Индекс Хирша успешно изменён!\n");
-                printf("%d  ->  %d\n", oldInt, temp->info.hirshIndex);
-                break;
-        }
-    } else {
+    if (temp == NULL) {
         printf("Запись с ID '%d' не найдена!", id);
+        printf("\nНажмите любую клавишу для возврата в меню...");
+        getch();
+        return head;
     }
 
-    printf("\nНажмите любую кнопку для возврата в меню...");
-    getch();
+    const char *editItems[] = {
+        "ФИО",
+        "Учёная степень",
+        "Область науки",
+        "Кол-во статей",
+        "Кол-во цитирований",
+        "Индекс Хирша",
+        "В меню"
+    };
+    int editSize = sizeof(editItems) / sizeof(editItems[0]);
+    int currentEdit = 0;
 
+    while (1) {
+        system("cls");
+        printf("Запись с ID '%d' найдена!\n\n", id);
+        printf("Выберите поле, которое хотите изменить:\n");
+        for (int i = 0; i < editSize; i++) {
+            printf("  %s %s\n", (i == currentEdit) ? "\033[35m▻" : " ", editItems[i]);
+            printf("\033[0m");
+        }
+        printf("\n\U0001F817 Используйте \x18 \x19 (стрелки вверх/вниз), Enter - выбор, ESC - отмена.\n");
+
+        int key = getch();
+        if (key == 224) {
+            key = getch();
+            if (key == UP)
+                currentEdit = (currentEdit - 1 + editSize) % editSize;
+            else if (key == DOWN)
+                currentEdit = (currentEdit + 1) % editSize;
+        } else if (key == ENTER) {
+            if (currentEdit == editSize - 1) {
+                choice = 0;
+            } else {
+                choice = currentEdit + 1;
+            }
+            break;
+        } else if (key == ESC) {
+            choice = 0;
+            break;
+        }
+    }
+
+    system("cls");
+    switch (choice) {
+        case 1:
+            printf("Введите ФИО -> ");
+            strcpy(oldLine, temp->info.name);
+            fgets(temp->info.name, 75, stdin);
+            temp->info.name[strcspn(temp->info.name, "\n")] = '\0';
+            printf("ФИО успешно изменено!\n");
+            printf("%s  ->  %s\n", oldLine, temp->info.name);
+            break;
+
+        case 2:
+            printf("Введите учёную степень -> ");
+            strcpy(oldLine, temp->info.degree);
+            fgets(temp->info.degree, 25, stdin);
+            temp->info.degree[strcspn(temp->info.degree, "\n")] = '\0';
+            printf("Учёная степень успешно изменена!\n");
+            printf("%s  ->  %s\n", oldLine, temp->info.degree);
+            break;
+
+        case 3:
+            printf("Введите область наук -> ");
+            strcpy(oldLine, temp->info.area);
+            fgets(temp->info.area, 25, stdin);
+            temp->info.area[strcspn(temp->info.area, "\n")] = '\0';
+            printf("Область наук успешно изменена!\n");
+            printf("%s  ->  %s\n", oldLine, temp->info.area);
+            break;
+
+        case 4:
+            oldInt = temp->info.articles;
+            flag = 1;
+            while (flag) {
+                printf("Введите кол-во статей -> ");
+                fgets(buffer, 25, stdin);
+                buffer[strcspn(buffer, "\n")] = '\0';
+                int val = isNumber(buffer);
+                if (val >= 0) {
+                    temp->info.articles = val;
+                    flag = 0;
+                } else {
+                    printf("\nОшибка: введите целое неотрицательное число!\n");
+                }
+            }
+            printf("Кол-во статей успешно изменено!\n");
+            printf("%d  ->  %d\n", oldInt, temp->info.articles);
+            break;
+
+        case 5:
+            oldInt = temp->info.quotes;
+            flag = 1;
+            while (flag) {
+                printf("Введите кол-во цитирований -> ");
+                fgets(buffer, 25, stdin);
+                buffer[strcspn(buffer, "\n")] = '\0';
+                int val = isNumber(buffer);
+                if (val >= 0) {
+                    temp->info.quotes = val;
+                    flag = 0;
+                } else {
+                    printf("\nОшибка: введите целое неотрицательное число!\n");
+                }
+            }
+            printf("Кол-во цитирований успешно изменено!\n");
+            printf("%d  ->  %d\n", oldInt, temp->info.quotes);
+            break;
+
+        case 6:
+            oldInt = temp->info.hirshIndex;
+            flag = 1;
+            while (flag) {
+                printf("Введите индекс Хирша -> ");
+                fgets(buffer, 25, stdin);
+                buffer[strcspn(buffer, "\n")] = '\0';
+                int val = isNumber(buffer);
+                if (val >= 0) {
+                    temp->info.hirshIndex = val;
+                    flag = 0;
+                } else {
+                    printf("\nОшибка: введите целое неотрицательное число!\n");
+                }
+            }
+            printf("Индекс Хирша успешно изменён!\n");
+            printf("%d  ->  %d\n", oldInt, temp->info.hirshIndex);
+            break;
+
+        default:  // choice == 0 или некорректный
+            // Ничего не делаем, просто возвращаемся
+            break;
+    }
+
+    printf("\nНажмите любую клавишу для возврата в меню...");
+    getch();
     return head;
 }
 
@@ -984,15 +1109,17 @@ struct list *editElement(struct list *head, unsigned int id) {
 void findScientist(struct list *head, const int choice) {
     struct list *temp = head;
     int key, count = 0, flag = 1;
-    char kWord[75];
+    char buffer[75];
 
     switch (choice) {
         case '1':
             while (flag) {
-                printf("Введите ID -> "); fgets(kWord, 75, stdin);
-                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                printf("Введите ID -> "); 
+                fgets(buffer, 75, stdin);
+                buffer[strcspn(buffer, "\n")] = '\0';
+                if (isNumber(buffer) > 0) key = isNumber(buffer);
                 else {
-                    printf("\nВведено некорректное число в поле 'индекс Хирша'! Повторите ввод снова\n");
+                    printf("\nВведено некорректное число в поле 'ID'! Повторите ввод снова\n");
                     continue;
                 }
                 flag = 0;
@@ -1008,48 +1135,52 @@ void findScientist(struct list *head, const int choice) {
             return;
         
         case '2':
-            printf("Введите ФИО -> "); fgets(kWord, sizeof(kWord), stdin);
-            kWord[strcspn(kWord, "\n")] = 0;
+            printf("Введите ФИО -> "); 
+            fgets(buffer, sizeof(buffer), stdin);
+            buffer[strcspn(buffer, "\n")] = 0;
             printTableHeader();
             for (; temp != NULL; temp = temp->next) {
-                if (strcmp(temp->info.name, kWord) == 0) {
+                if (strcmp(temp->info.name, buffer) == 0) {
                     printNode(temp);
                     count++;
                 }
             }
-            printf("Найдено %d записей с ФИО '%s'", count, kWord);
+            printf("Найдено %d записей с ФИО '%s'", count, buffer);
             return;
         
         case '3':
-            printf("Введите Учёную степень -> "); fgets(kWord, sizeof(kWord), stdin);
-            kWord[strcspn(kWord, "\n")] = 0;
+            printf("Введите Учёную степень -> "); 
+            fgets(buffer, sizeof(buffer), stdin);
+            buffer[strcspn(buffer, "\n")] = 0;
             printTableHeader();
             for (; temp != NULL; temp = temp->next) {
-                if (strcmp(temp->info.degree, kWord) == 0) {
+                if (strcmp(temp->info.degree, buffer) == 0) {
                     printNode(temp);
                     count++;
                 }
             }
-            printf("Найдено %d записей с Учёной степенью '%s'", count, kWord);
+            printf("Найдено %d записей с Учёной степенью '%s'", count, buffer);
             return;
     
         case '4':
-            printf("Введите Область наук -> "); fgets(kWord, sizeof(kWord), stdin);
-            kWord[strcspn(kWord, "\n")] = 0;
+            printf("Введите Область наук -> "); fgets(buffer, sizeof(buffer), stdin);
+            buffer[strcspn(buffer, "\n")] = 0;
             printTableHeader();
             for (; temp != NULL; temp = temp->next) {
-                if (strcmp(temp->info.area, kWord) == 0) {
+                if (strcmp(temp->info.area, buffer) == 0) {
                     printNode(temp);
                     count++;
                 }
             }
-            printf("Найдено %d записей с Областью наук '%s'", count, kWord);
+            printf("Найдено %d записей с Областью наук '%s'", count, buffer);
             return;
 
         case '5':
             while (flag) {
-                printf("Введите Кол-во статей -> "); fgets(kWord, 75, stdin);
-                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                printf("Введите Кол-во статей -> "); 
+                fgets(buffer, 75, stdin);
+                buffer[strcspn(buffer, "\n")] = '\0';
+                if (isNumber(buffer) >= 1) key = isNumber(buffer);
                 else {
                     printf("\nВведено некорректное число в поле 'кол-во статей'! Повторите ввод снова\n");
                     continue;
@@ -1068,8 +1199,10 @@ void findScientist(struct list *head, const int choice) {
 
         case '6':
             while (flag) {
-                printf("Введите Кол-во цитирований -> "); fgets(kWord, 75, stdin);
-                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                printf("Введите Кол-во цитирований -> ");
+                fgets(buffer, 75, stdin);
+                buffer[strcspn(buffer, "\n")] = '\0';
+                if (isNumber(buffer) >= 1) key = isNumber(buffer);
                 else {
                     printf("\nВведено некорректное число в поле 'кол-во цитирований'! Повторите ввод снова\n");
                     continue;
@@ -1088,8 +1221,10 @@ void findScientist(struct list *head, const int choice) {
 
         case '7':
             while (flag) {
-                printf("Введите Индекс Хирша -> "); fgets(kWord, 75, stdin);
-                if (isNumber(kWord) >= 1) key = isNumber(kWord);
+                printf("Введите Индекс Хирша -> ");
+                fgets(buffer, 75, stdin);
+                buffer[strcspn(buffer, "\n")] = '\0';
+                if (isNumber(buffer) >= 1) key = isNumber(buffer);
                 else {
                     printf("\nВведено некорректное число в поле 'индекс Хирша'! Повторите ввод снова\n");
                     continue;
@@ -1111,7 +1246,7 @@ void findScientist(struct list *head, const int choice) {
             break;
     }
 
-    printf("\nНажмите любую кнопку для возврата в меню...");
+    printf("\nНажмите любую клавишу для возврата в меню...");
     getch();
 }
 
@@ -1130,7 +1265,7 @@ int compareScientist(const struct scientist *a, const struct scientist *b, const
 }
 
 /// @brief Функция сортировки таблицы по указанному полю
-struct list *sortTable(struct list *head, const int choice) {
+struct list *sortTable(struct list *head, const int choice, const int mode) {
     int swapped;
     struct list *temp;
     struct list *last = NULL;
@@ -1139,14 +1274,27 @@ struct list *sortTable(struct list *head, const int choice) {
         swapped = 0;
         temp = head;
 
-        while (temp->next != last) {
-            if (compareScientist(&temp->info, &temp->next->info, choice) > 0) {
-                struct scientist information = temp->info;
-                temp->info = temp->next->info;
-                temp->next->info = information;
-                swapped = 1;
+        for (; temp->next != last; temp = temp->next) {
+            switch (mode) {
+                case 1: // по убыванию
+                    if (compareScientist(&temp->info, &temp->next->info, choice) < 0) {
+                        struct scientist information = temp->info;
+                        temp->info = temp->next->info;
+                        temp->next->info = information;
+                        swapped = 1;
+                    }
+                    break;
+
+                case 0: // по возрастанию
+                    if (compareScientist(&temp->info, &temp->next->info, choice) > 0) {
+                        struct scientist information = temp->info;
+                        temp->info = temp->next->info;
+                        temp->next->info = information;
+                        swapped = 1;
+                    }
+                    break;
             }
-            temp = temp->next;
+            
         }
         last = temp;
     } while (swapped);
@@ -1193,7 +1341,7 @@ void removeDuplicatesFromFile(const char *filename) {
     
     f = fopen(filename, "wt");
     if (f == NULL) {
-        printf("Ошибка записи в файл %s\n", filename);
+        printf("\033[31mОшибка записи в файл %s\n\033[0m", filename);
         return;
     }
     for (int i = 0; i < lineCount; i++) {
@@ -1244,7 +1392,7 @@ void top5ByArea(struct list *head) {
                 scan = scan->next;
             }
             
-            areaList = sortTable(areaList, '7');
+            areaList = sortTable(areaList, '7', 0);
             
             printf("\n\n========== %s ==========\n", currentArea);
             
@@ -1257,7 +1405,7 @@ void top5ByArea(struct list *head) {
                 writeToTextFile(file, show);
             }
             
-            areaList = sortTable(areaList, '6');
+            areaList = sortTable(areaList, '6', 0);
             
             printf("\nТоп-5 по цитированиям:\n");
             
@@ -1268,7 +1416,7 @@ void top5ByArea(struct list *head) {
                 writeToTextFile(file, show);
             }
             
-            freeMemory(&areaList, 0);
+            deleteNode(&areaList, 0);
         }
         temp = temp->next;
     }
@@ -1276,7 +1424,65 @@ void top5ByArea(struct list *head) {
     fclose(file);
     removeDuplicatesFromFile("0results-success.txt");
 
-    printf("\nРезультаты в файле '0results-success.txt'\n");
-    printf("Нажмите любую кнопку для возвращения в меню...");
+    printf("\n\033[36mРезультаты в файле '0results-success.txt'\n");
+    printf("\033[0mНажмите любую клавишу для возвращения в меню...");
     getch();
+}
+
+/// @brief Проверка каптчи для критических действий
+/// @param action описание действия (выводится пользователю)
+/// @return `1` - если проверка пройдена, `0` - если не пройдена или отменено
+int captcha(const char *action) {
+    int a = rand() % 50 + 1;
+    int b = rand() % 50 + 1;
+    int op = rand() % 2;
+    int correctAnswer, answer;
+    char input[10];
+
+    system("cls");
+    
+    if (op == 0) {
+        correctAnswer = a + b;
+        printf("\nПодтверждение действия: %s\n", action);
+        printf("   Для продолжения решите пример: %d + %d = ", a, b);
+    } else {
+        if (a < b) { 
+            int t = a;
+            a = b; 
+            b = t; 
+        }
+        correctAnswer = a - b;
+        printf("\nПодтверждение действия: %s\n", action);
+        printf("   Для продолжения решите пример: %d - %d = ", a, b);
+    }
+    
+    fgets(input, 10, stdin);
+    input[strcspn(input, "\n")] = '\0';
+
+    while (1) {
+        if (isNumber(input) != -1) {
+            answer = isNumber(input);
+            break;
+        }
+        else {
+            printf("Введено некорректное число! Повторите ввод.\n");
+            if (op == 0) {
+                printf("\nПодтверждение действия: %s\n", action);
+                printf("   Для продолжения решите пример: %d + %d = ", a, b);
+            } else {
+                printf("\nПодтверждение действия: %s\n", action);
+                printf("   Для продолжения решите пример: %d - %d = ", a, b);
+            }
+        }
+    }
+    
+    if (answer == correctAnswer) {
+        printf("\033[36mПроверка пройдена. Выполняем...\033[0m\n\n");
+        Sleep(2000);
+        return 1;
+    } else {
+        printf("\033[31mНеверный ответ. Действие отменено.\033[0m\n\n");
+        Sleep(2000);
+        return 0;
+    }
 }
