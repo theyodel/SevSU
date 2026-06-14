@@ -4,32 +4,36 @@ import java.util.Scanner;
 
 class task {
     public static void main(String args[]) {
-        Scanner in = new Scanner(System.in);
-        in.useLocale(Locale.US);
+        Scanner input = new Scanner(System.in);
+        input.useLocale(Locale.US);
 
-        System.out.print("Input a -> ");
-        double a = in.nextDouble();
-        System.out.print("Input b -> ");
-        double b = in.nextDouble();
-        System.out.print("Input x -> ");
-        double x = in.nextDouble();
-        double z;
-
-        if (b < a) {
-            System.err.println("Параметр a должен быть больше чем параметр b!");
-            in.close();
-            return;
+        double z, a, b, x;
+        
+        while (true) {
+            System.out.print("Input a -> ");
+            a = input.nextDouble();
+            System.out.print("Input b -> ");
+            b = input.nextDouble();
+            if (b > a) {
+                break;
+            } else {
+                System.out.println("Параметр a должен быть больше чем параметр b! Повторите ввод...\n");
+            }
         }
+        
+        System.out.print("Input x -> ");
+        x = input.nextDouble();
+        
 
         if (x <= a) {
             z = 1.7 * sin(x);
         } else if (a < x && x < b) {
-            z = cos(x) + pow(x, 2);
+            z = cos(x) + x*x;
         } else {
             z = pow(x, 5);
         }
 
-        System.out.println("z = " + z);
-        in.close();
+        System.out.println("\nz = " + z);
+        input.close();
     }
 }

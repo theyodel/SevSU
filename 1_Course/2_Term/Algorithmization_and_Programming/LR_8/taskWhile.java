@@ -4,27 +4,37 @@ import java.util.Scanner;
 
 public class taskWhile {
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        in.useLocale(Locale.US);
+        Scanner input = new Scanner(System.in);
+        input.useLocale(Locale.US);
 
-        System.out.print("Input a -> ");
-        double a = in.nextDouble();
-        System.out.print("Input b -> ");
-        double b = in.nextDouble();
-        System.out.print("Input x_start -> ");
-        double xStart = in.nextDouble();
-        System.out.print("Input end -> ");
-        double xEnd = in.nextDouble();
-        System.out.print("Input delta_x -> ");
-        double deltaX = in.nextDouble();
-        double z;
-
-        if (b < a) {
-            System.err.println("Параметр a должен быть больше чем параметр b!");
-            in.close();
-            return;
+        double z, a, b, deltaX, xStart, xEnd;
+        
+        while (true) {
+            System.out.print("Input a -> ");
+            a = input.nextDouble();
+            System.out.print("Input b -> ");
+            b = input.nextDouble();
+            if (b > a) break;
+            else System.out.println("Параметр b должен быть больше чем параметр a! Повторите ввод...\n");
+            
         }
 
+        while (true) {
+            System.out.print("Input x_start -> ");
+            xStart = input.nextDouble();
+            System.out.print("Input x_end -> ");
+            xEnd = input.nextDouble();
+            if (xEnd > xStart) break;
+            else System.out.println("Параметр x_end должен быть больше чем параметр x_start! Повторите ввод...\n");
+        }
+        
+        while (true) {
+            System.out.print("Input delta_x -> ");
+            deltaX = input.nextDouble();
+            if (deltaX > 0) break;
+            else System.out.println("Параметр delta_x должен быть больше чем параметр x_start! Повторите ввод...\n");
+        }
+        System.out.println("\n              z = f(x)             ");
         System.out.println("+----------------+----------------+");
         System.out.println("|        x       |      f(x)      |");
         System.out.println("+----------------+----------------+");
@@ -43,5 +53,7 @@ public class taskWhile {
             System.out.println("+----------------+----------------+");
             now += deltaX;
         }
+
+        input.close();
     }
 }
