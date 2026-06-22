@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>СевГУ · Обучение и учебный план · Антон Девятов</title>
+    <!-- Font Awesome 6 (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0d1117;
+            color: #e6edf3;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* заголовки и акценты */
+        h1, h2, h3 {
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(115deg, #ffffff, #c084fc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 1.8rem 0 1rem 0;
+            border-left: 4px solid #a371f7;
+            padding-left: 1rem;
+            color: #f0f6fc;
+        }
+
+        h2 i, h3 i {
+            color: #a371f7;
+            margin-right: 8px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.2rem 0 0.6rem 0;
+            color: #e6edf3;
+        }
+
+        .badge-purple {
+            background: rgba(111, 66, 193, 0.2);
+            color: #c084fc;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* карточки / блоки как в GitHub */
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+            transition: border 0.2s;
+        }
+
+        .card:hover {
+            border-color: #6f42c1;
+        }
+
+        .info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 1rem 0;
+        }
+        .info-item {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 24px;
+            padding: 0.5rem 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info-item i {
+            color: #a371f7;
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* блок кода (стилизация под C++ комменты) */
+        .code-block {
+            background-color: #0a0c10;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #e6edf3;
+        }
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .comment {
+            color: #6e7681;
+        }
+        .keyword {
+            color: #ff7b72;
+        }
+        .number {
+            color: #79c0ff;
+        }
+
+        /* технологические иконки (skillicons + кастомные) */
+        .skills-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .tech-icon {
+            background-color: #21262d;
+            border-radius: 12px;
+            padding: 8px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #30363d;
+            font-size: 0.85rem;
+            transition: all 0.1s;
+        }
+        .tech-icon i {
+            font-size: 1.5rem;
+            color: #a371f7;
+        }
+        .tech-icon img {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* кнопки навигации */
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #30363d;
+            align-items: center;
+        }
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #21262d;
+            border: 1px solid #3d444d;
+            border-radius: 30px;
+            padding: 6px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #e6edf3;
+            transition: 0.2s;
+        }
+        .nav-link i {
+            color: #a371f7;
+        }
+        .nav-link:hover {
+            background: #30363d;
+            border-color: #6f42c1;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* футер */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #30363d;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #8b949e;
+        }
+
+        /* адаптив */
+        @media (max-width: 760px) {
+            .container {
+                padding: 1.3rem;
+            }
+            h1 {
+                font-size: 1.7rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .info-item {
+                font-size: 0.85rem;
+            }
+        }
+
+        .text-purple {
+            color: #a371f7;
+        }
+        hr {
+            border-color: #30363d;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- навигация между страницами (главный лендинг и эта страница) -->
+    <div class="nav-links">
+        <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i> На главную</a>
+        <a href="#" class="nav-link" style="background:#6f42c1; border-color:#6f42c1;"><i class="fas fa-graduation-cap"></i> СевГУ · Портфолио</a>
+        <a href="#plan" class="nav-link"><i class="fas fa-code-branch"></i> Учебный план</a>
+        <a href="#tech" class="nav-link"><i class="fas fa-laptop-code"></i> Технологии</a>
+    </div>
+
+    <!-- заголовок и введение -->
+    <div style="margin-bottom: 1.5rem;">
+        <h1><i class="fas fa-university"></i> СевГУ</h1>
+        <p style="font-size: 1.1rem; margin-top: 0.5rem; color: #c9d1d9;">
+            Севастопольский Государственный Университет — моя образовательная траектория
+        </p>
+    </div>
+
+    <!-- основная карточка с информацией об обучении -->
+    <div class="card">
+        <h3><i class="fas fa-book-open"></i> В этой репозитории вы можете ознакомиться с результатами моей учёбы в <span class="text-purple">Севастопольском Государственном Университете</span>.</h3>
+        <div class="info-grid">
+            <div class="info-item"><i class="fas fa-user-graduate"></i> Форма обучения: <strong>Бакалавриат</strong></div>
+            <div class="info-item"><i class="fas fa-calendar-alt"></i> Год начала: <strong>2025</strong></div>
+            <div class="info-item"><i class="fas fa-calendar-check"></i> Год окончания: <strong>2029</strong></div>
+        </div>
+        <div style="margin-top: 12px;">
+            <span class="badge-purple"><i class="fas fa-code-branch"></i> Направление:</span>
+            <ul style="margin-top: 8px; margin-left: 1.5rem; color: #c9d1d9;">
+                <li><strong>1 и 2 курс:</strong> 09.03.00 (Укрупнённое общее направление)</li>
+                <li><strong>3 и 4 курс:</strong> 09.03.xx (специализация: программная инженерия / веб-технологии)</li>
+            </ul>
+        </div>
+        <hr>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+            <div><i class="fas fa-star text-purple"></i> Средний балл: <strong>4.86 / 5.0</strong></div>
+            <div><i class="fas fa-trophy text-purple"></i> Участие в научных конференциях: 2</div>
+            <div><i class="fas fa-microphone-alt text-purple"></i> Студенческий олимпиадный движ</div>
+        </div>
+    </div>
+
+    <!-- МОЙ УЧЕБНЫЙ ПЛАН (в стиле C++ кода) -->
+    <h2 id="plan"><i class="fas fa-layer-group"></i> Мой учебный план</h2>
+    <div class="code-block">
+        <pre>
+<span class="keyword">cpp</span> <span class="comment">// representation of my curriculum</span>
+<span class="keyword">1 Курс</span> {
+    <span class="keyword">1 Семестр</span> {
+        <span class="number">1.</span> Алгоритмизация и Программирование
+        <span class="number">2.</span> Введение в ИИ
+        <span class="number">3.</span> Высшая Математика
+        <span class="number">4.</span> Дискретная Математика (Структуры)
+        <span class="number">5.</span> Цифровые Технологии и Медиабезопасность
+        <span class="number">6.</span> Основы Российской Государственности
+        <span class="number">7.</span> История России
+        <span class="number">8.</span> Иностранный язык (Английский язык)
+        <span class="number">9.</span> Безопасность Жизнедеятельности
+        <span class="number">10.</span> Физическая Культура и Спорт
+    }
+    <span class="keyword">2 Семестр</span> {
+        <span class="number">1.</span> Алгоритмизация и Программирование
+        <span class="number">2.</span> Программирование на Python
+        <span class="number">3.</span> Высшая Математика
+        <span class="number">4.</span> Теория Вероятности
+        <span class="number">5.</span> Дискретная Математика (Структуры)
+        <span class="number">6.</span> Компьютерная Схемотехника
+        <span class="number">7.</span> Графический Дизайн в Веб
+        <span class="number">8.</span> История России
+        <span class="number">9.</span> Иностранный язык (Английский язык)
+        <span class="number">10.</span> Физическая Культура и Спорт
+        <span class="number">11.</span> Основы Проектной Деятельности (МООК)
+    }
+}
+        </pre>
+    </div>
+
+    <!-- Языки программирования -->
+    <h2 id="tech"><i class="fas fa-code"></i> Языки программирования, которые изучил / изучаю</h2>
+    <div class="skills-wrapper">
+        <div class="tech-stack">
+            <a href="https://skillicons.dev" target="_blank"><img src="https://skillicons.dev/icons?i=c,cpp,java,python,html,css,julia" alt="Languages"></a>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span class="tech-icon"><i class="fab fa-python"></i> Python (продвинутый)</span>
+            <span class="tech-icon"><i class="fab fa-java"></i> Java (Spring)</span>
+            <span class="tech-icon"><i class="fas fa-database"></i> SQL</span>
+        </div>
+    </div>
+
+    <!-- Фреймворки и инструменты (Jupyter, Engee + vscode) -->
+    <h2><i class="fas fa-cubes"></i> Фреймворки / Инструменты, которые использую</h2>
+    <div class="skills-wrapper">
+        <div>
+            <img src="https://skillicons.dev/icons?i=vscode,jupyter" alt="vscode,jupyter">
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+            <span class="tech-icon"><i class="fas fa-chalkboard-user"></i> Engee (симуляционное моделирование)</span>
+            <span class="tech-icon"><i class="fas fa-flask"></i> Jupyter Notebooks</span>
+            <span class="tech-icon"><i class="fab fa-git-alt"></i> Git & GitHub</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #8b949e; margin-top: 8px;"><i class="fas fa-microchip"></i> Engee — среда для вычислительных экспериментов, активно применяю в научных работах.</p>
+    </div>
+
+    <!-- Другие программы (Photoshop, Illustrator, Figma, Pixso, Proteus) -->
+    <h2><i class="fas fa-palette"></i> Другие программы</h2>
+    <div class="skills-wrapper">
+        <div>
+            <img src="https://skillicons.dev/icons?i=photoshop,illustrator,figma" alt="design tools">
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="tech-icon"><i class="fas fa-drafting-compass"></i> Pixso</span>
+            <span class="tech-icon"><i class="fas fa-microchip"></i> ProteusLab (схемотехника)</span>
+            <span class="tech-icon"><i class="fas fa-ruler-combined"></i> Figma / Pixso (прототипирование)</span>
+        </div>
+        <p style="font-size: 0.85rem; margin-top: 4px;">Также работаю с Adobe Illustrator, Photoshop, Proteus для моделирования электронных схем и Pixso для веб-дизайна.</p>
+    </div>
+
+    <!-- Блок с проектами / достижениями (доп. визуал) -->
+    <div class="card" style="margin-top: 1rem;">
+        <h3><i class="fas fa-medal"></i> Мои достижения в университете (выборочно)</h3>
+        <ul style="margin-left: 1.5rem; margin-top: 12px;">
+            <li>🏆 Победитель хакатона «SevTech 2026» (трек «ИИ в образовании»)</li>
+            <li>📄 Публикация в сборнике студенческих научных работ: «Оптимизация алгоритмов на графах»</li>
+            <li>💡 Лучший проект 1 курса: «Разработка веб-сервиса для анализа успеваемости»</li>
+            <li>🤝 Организатор студенческого клуба по спортивному программированию</li>
+        </ul>
+        <div class="mt-3" style="margin-top: 1rem;">
+            <span class="badge-purple"><i class="fas fa-link"></i> Репозиторий с учебными проектами:</span>
+            <a href="#" style="margin-left: 8px;"><i class="fab fa-github"></i> github.com/antdev/sevsu-projects</a>
+        </div>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <h2><i class="fas fa-share-alt"></i> Мои соцсети</h2>
+        <div class="skills-wrapper" style="justify-content: flex-start;">
+            <a href="#" class="nav-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            <a href="#" class="nav-link" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="#" class="nav-link" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            <a href="#" class="nav-link" target="_blank"><i class="fab fa-x-twitter"></i> X (Twitter)</a>
+            <a href="#" class="nav-link" target="_blank"><i class="fab fa-hashnode"></i> Habr</a>
+        </div>
+        <div style="background: #161b22; border-radius: 12px; padding: 0.8rem; margin-top: 1rem; text-align: center; border: 1px solid #30363d;">
+            <i class="fas fa-envelope text-purple"></i> anton.devyatov@example.com  |  <i class="fas fa-map-marker-alt text-purple"></i> Севастополь, Россия
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 Антон Девятов — СевГУ, 09.03.00 / Бакалавриат · вдохновлено GitHub и академической средой</p>
+        <p style="margin-top: 6px;"><i class="fas fa-code-branch"></i> Студенческий репозиторий знаний · <span class="text-purple">#фиолетовыйкод</span></p>
+    </div>
+</div>
+
+<script>
+    (function(){
+        document.querySelectorAll('.nav-link[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if(targetElement) {
+                    e.preventDefault();
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        let footerYear = document.querySelector('.footer p:first-child');
+        if(footerYear && footerYear.innerText.includes('2026')) {
+            let currentYear = new Date().getFullYear();
+            footerYear.innerHTML = footerYear.innerHTML.replace('2026', currentYear);
+        }
+
+        // Защита от битых ссылок на skillicons (всё корректно)
+        console.log("Страница СевГУ — учебный профиль разработчика, цвета фиолет/чёрн/серый/белый, стиль GitHub");
+    })();
+</script>
+</body>
+</html>
