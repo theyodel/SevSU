@@ -99,6 +99,9 @@ void handleAdd(struct list **, int *);
 
 //------------------------------главная функция------------------------------
 int main() {
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
+
     srand(time(NULL));
     struct list *head = NULL;
     int saved = 0;

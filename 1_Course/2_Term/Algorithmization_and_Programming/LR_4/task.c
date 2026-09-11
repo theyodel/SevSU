@@ -28,24 +28,29 @@ int main() {
         printf("4. Вывести таблицу из файла на экран\n");
         printf("0. Выход\n-> ");
         scanf("%d", &choice);
-        while (getchar() != '\n'); // очистка буфера после scanf
+        while (getchar() != '\n');
 
         switch (choice) {
         case 1:
             createBinFile();
             break;
+            
         case 2:
             sortInFile();
             break;
+
         case 3:
             maxHirsh();
             break;
+
         case 4:
             readFile();
             break;
+
         case 0:
             printf("\n\n\nВыход из программы...");
             return 0;
+
         default:
             printf("Команда не распознана!\n");
             break;
@@ -214,7 +219,6 @@ void sortInFile() {
         return;
     }
     
-    // Определяем количество записей
     fseek(file, 0, SEEK_END);
     long fileSize = ftell(file);
     long elementSize = sizeof(struct scientist);
@@ -226,7 +230,6 @@ void sortInFile() {
         return;
     }
     
-    // Пузырьковая сортировка
     struct scientist f, s;
     for (long i = len - 1; i >= 1; i--) {
         for (long j = 0; j <= i - 1; j++) {
@@ -236,7 +239,7 @@ void sortInFile() {
                 fclose(file);
                 return;
             }
-            if (f.quotes < s.quotes) { // от большего к меньшему
+            if (f.quotes < s.quotes) {
                 fseek(file, j * elementSize, SEEK_SET);
                 fwrite(&s, elementSize, 1, file);
                 fwrite(&f, elementSize, 1, file);
