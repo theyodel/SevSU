@@ -1,0 +1,64 @@
+D
+1
+John Michael Smith
+Math
+PhD
+45
+130
+7
+D
+3
+Brian Christopher Roberts
+Engineering
+Professor
+179
+10800
+78
+D
+4
+Petrov Evgeniy Ivanovich
+Math
+Major
+30
+1200
+60
+D
+5
+Ivanov Ivan Ivanovich
+Medicine
+PhD
+10
+48
+1
+N
+D
+6
+KKK
+KKK
+KKK
+23
+23
+23
+N
+N
+N
+N
+D
+2
+Amanda Marie Turner
+Economics
+Senior Researcher
+50
+210
+10
+N
+D
+4
+Stephanie Marie Edwards
+Math
+Dr.Sc.
+120
+120
+120
+N
+N
