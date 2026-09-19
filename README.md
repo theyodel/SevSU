@@ -23,7 +23,7 @@
         8. Иностранный язык (Английский язык)
         9. Безопасность Жизнедеятельности
         10. Физическая Культура и Спорт
-    }
+    };
     2 Семестр {
         1. Алгоритмизация и Программирование
         2. Программирование на Python
@@ -36,8 +36,23 @@
         9. Иностранный язык (Английский язык)
         10. Физическая Культура и Спорт
         11. Основы Проектной Деятельности (МООК)
-    }
-}
+    };
+};
+
+2 Курс {
+    3 Семестр {
+        1. Архитектура ЭВМ
+        2. Веб Дизайн и Разработка
+        3. Высшая Математика
+        4. Математическая Статистика
+        5. Машинное Обучение
+        6. Объектно-Ориентированное Программирование
+        7. Прикладная Математика в ИИ
+        8. Программирование на Python
+        9. Технологии Проектной Деятельности
+        10. Физическая Культура и Спорт
+    };
+};
 ```
 ## Языки программирования, которые изучил/изучаю:
 [![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,html,css,julia)](https://skillicons.dev)
@@ -50,7 +65,7 @@ Jupyter, Engee
 ## Другие программы:
 [![My Programms](https://skillicons.dev/icons?i=photoshop,illustrator,figma,pixso,proteus)](https://skillicons.dev)
 
-Pixso, ProteusLab
+Pixso, ProteusLab, Atanua
 
 <hr color='#8a2de0'>
  
@@ -79,7 +94,7 @@ In this repository, you can find the results of my studies at Sevastopol State U
         8. Foreign Language (English)
         9. Life Safety
         10. Physical Culture and Sports
-    }
+    };
     2 Term {
         1. Algorithmization and Programming
         2. Python Programming
@@ -92,8 +107,23 @@ In this repository, you can find the results of my studies at Sevastopol State U
         9. Foreign Language (English)
         10. Physical Education and Sports
         11. Fundamentals of Project Activities (MOOC)
-    }
-}
+    };
+};
+
+2 Course {
+    3 Term {
+        1. Computer Architecture
+        2. Web Design and Development
+        3. Higher Mathematics
+        4. Mathematical Statistics
+        5. Machine Learning
+        6. Object-Oriented Programming
+        7. Applied Mathematics in AI
+        8. Python Programming
+        9. Project Management Technologies
+        10. Physical Education and Sports
+    };
+};
 ```
 ## Programming languages I have learned/am learning:
 [![My Skills](https://skillicons.dev/icons?i=c,cpp,java,python,html,css,julia)](https://skillicons.dev)
@@ -106,7 +136,7 @@ Jupyter, Engee
 ## Other programs:
 [![My Programs](https://skillicons.dev/icons?i=photoshop,illustrator,figma,proteus)](https://skillicons.dev)
 
-ProteusLab
+Pixso, ProteusLab, Atanua
 
 
 <image src='sevsu.png' alt='Тут должна быть картинка типо универ в жизни и универ в майнкрафте (главный "Южный" кампус)' />
