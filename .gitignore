@@ -1,7 +1,6 @@
 *.exe
 1_Course/1_Term/Algorithmization_and_Programming/.vscode/*
 .idea
-*.py
 */zashita.cpp
 */zashita.c
 */zashita.exe
@@ -10,10 +9,7 @@
 */proba.exe
 1_Course/1_Term/Algorithmization_and_Programming/LR_6
 1_Course/2_Term/Algorithmization_and_Programming/Coure_Work/~$_Заварзин_ИИ-б-25-6-о.docx
-<<<<<<< Updated upstream
 2_Course/3_Term/Python_Programming/.vscode/settings.json
-=======
->>>>>>> Stashed changes
 2_Course/3_Term/Object_Oriented_Programming/.vscode/tasks.json
 1_Course/1_Term/Digital_technologies_and_media-security/PR_4/Part_2/~$дание4-2_Заварзин_ИИ-б-25-6-о.docx
 2_Course/3_Term/Math_Statistics/lab_01/~$1-Заварзин-ИИб-25-6-о.docx
