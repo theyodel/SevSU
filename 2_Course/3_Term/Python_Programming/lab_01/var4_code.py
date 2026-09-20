@@ -1,22 +1,21 @@
 from tkinter import *
 from tkinter.messagebox import *
-from math import pi, atan
+import numpy as np
 
-# ---------- Функция 1 (при x > 1) ----------
-# y(x) = pi/2 + sum_{n=0}^inf (-1)^(n+1) / ((2n+1) * x^(2n+1))
+# ---------- Функция y(x) = ... ----------
 def ArctgXDevx():
     eps = 0.0001
     Lfun = []
     x = Xmin
     while x <= Xmax:
-        an = -1.0 / x          # n = 0
+        an = -1.0 / x
         Sum = an
         n = 0
         while abs(an) > eps:
             an *= -(2 * n + 1) / ((2 * n + 3) * x * x)
             Sum += an
             n += 1
-        Lfun.append((x, pi / 2 + Sum))
+        Lfun.append((x, np.pi / 2 + Sum))
         x += 1 / Kx
     return Lfun
 
@@ -25,7 +24,7 @@ def ArctgXOnX():
     Lfun = []
     x = Xmin
     while x <= Xmax:
-        fun = atan(x) + dY
+        fun = np.atan(x) + dY
         Lfun.append((x, fun))
         x += 1 / Kx
     return Lfun
@@ -223,7 +222,7 @@ ent6 = Entry(root, width=5, font="Ubuntu, 12")
 ent6.grid(row=1, column=7)
 ent6.insert(0, str(dX))
 
-lba7 = Label(root, text="Смещение:", width=10, fg="blue", font="Ubuntu, 12")
+lba7 = Label(root, text="Смещение b:", width=10, fg="blue", font="Ubuntu, 12")
 lba7.grid(row=2, column=6, sticky='e')
 ent7 = Entry(root, width=5, font="Ubuntu, 12")
 ent7.grid(row=2, column=7)
