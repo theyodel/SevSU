@@ -25,7 +25,7 @@ def mainloop():
         c = int(input("-> "))
 
         if c == 5:
-            break
+            return
 
         elif c == 4:
             viewPlot(0)
@@ -58,8 +58,8 @@ def mainloop():
                 iterations += 1
 
             print("\n\nРезультат вычисления по методу деления интервала:")
-            print(f"    Точка минимума функции лежит в интервале [{a}; {b}]")
-            print(f"    Длина данного интервала: L = {l}")
+            print(f"    Точка минимума: x_min = {x_m:.6f}")
+            print(f"    Значение в точке минимума: f(x_min) = {fx_m:.6f}")
             print(f"    Заняло итераций: {iterations}")
             print("==========================================================\n\n")
             viewPlot(1, x_m, fx_m)
