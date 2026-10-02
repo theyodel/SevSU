@@ -60,6 +60,8 @@ def mainloop():
             print("\n\nРезультат вычисления по методу деления интервала:")
             print(f"    Точка минимума: x_min = {x_m:.6f}")
             print(f"    Значение в точке минимума: f(x_min) = {fx_m:.6f}")
+            print(f"    Интервал (границы): [{a:.6f}; {b:.6f}]")
+            print(f"    Длина интервала: {b-a:.6f}")
             print(f"    Заняло итераций: {iterations}")
             print("==========================================================\n\n")
             viewPlot(1, x_m, fx_m)
@@ -69,7 +71,7 @@ def mainloop():
             b = 6
             l = b - a
             iterations = 0
-            ratio = l / eps
+            ratio = l / eps # погрешность учтена тут
             x_min = 10**6
             f_min = x_min
 
@@ -112,6 +114,8 @@ def mainloop():
             print("\n\nРезультат вычисления по методу Фибоначчи:")
             print(f"    Точка минимума: x_min = {x_min:.6f}")
             print(f"    Значение в точке минимума: f(x_min) = {f_min:.6f}")
+            print(f"    Интервал (границы): [{a:.6f}; {b:.6f}]")
+            print(f"    Длина интервала: {np.abs(b-a):.6f}")
             print(f"    Заняло итераций: {iterations}")
             print("==========================================================\n\n")
             viewPlot(1, x_min, f_min)
@@ -157,7 +161,7 @@ def mainloop():
 
                 x_k = (a_next + b_next) / 2
                 if k > 1:
-                    if np.abs(x_prev - x_k) <= eps:
+                    if np.abs(x_prev - x_k) <= eps: # проверка на интервал
                         break
 
                 a = a_next
@@ -175,6 +179,8 @@ def mainloop():
             print("\n\nРезультат вычисления по методу золотого сечения:")
             print(f"    Точка минимума: x_min = {x_min:.6f}")
             print(f"    Значение в точке минимума: f(x_min) = {f_min:.6f}")
+            print(f"    Интервал (границы): [{x_prev:.6f}; {x_k:.6f}]")
+            print(f"    Длина интервала: {np.abs(x_k-x_prev):.6f}")
             print(f"    Заняло итераций: {iterations}")
             print("==========================================================\n\n")
             viewPlot(1, x_min, f_min)
