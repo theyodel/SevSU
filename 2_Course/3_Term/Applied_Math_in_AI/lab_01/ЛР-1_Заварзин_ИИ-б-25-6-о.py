@@ -83,6 +83,7 @@ def mainloop():
             while len(F) <= n + 2:
                 F.append(F[-1] + F[-2])
 
+            print(" № Итерации |    a    |    b    |    x_1    |    f(x_1)    |    x_2    |    f(x_2)    |    x_m    |   f(x_m)    ")
             while n > 1:
                 iterations += 1
                 x_1 = a + (F[n] / F[n + 2]) * (b - a)
@@ -110,6 +111,8 @@ def mainloop():
                         n -= 1
                         x_2 = a + (F[n + 1] / F[n + 2]) * (b - a)
                         fx_2 = f(x_2)
+                print(f" {iterations:10} | {a:7} | {b:7} | {x_1:7} | {fx_1:7} | {x_2:7} | {fx_2:7} | {x_min:7} | {f_min:7}")
+                
 
             print("\n\nРезультат вычисления по методу Фибоначчи:")
             print(f"    Точка минимума: x_min = {x_min:.6f}")
