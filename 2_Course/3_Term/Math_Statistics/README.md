@@ -8,7 +8,7 @@
         <td>1</td> <td>90</td> <td>19.09.26</td>
     </tr>
     <tr>
-        <td>2</td> <td>--</td> <td>--.--.--</td>
+        <td>2</td> <td>90</td> <td>03.10.26</td>
     </tr>
     <tr>
         <td>3</td> <td>--</td> <td>--.--.--</td>
