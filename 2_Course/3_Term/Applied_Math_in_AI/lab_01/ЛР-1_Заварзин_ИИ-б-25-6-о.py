@@ -79,7 +79,7 @@ def mainloop():
             F = [1, 1]
             while F[-1] < ratio:
                 F.append(F[-1] + F[-2])
-            n = len(F)
+            n = len(F) + 1
             while len(F) <= n + 2:
                 F.append(F[-1] + F[-2])
 

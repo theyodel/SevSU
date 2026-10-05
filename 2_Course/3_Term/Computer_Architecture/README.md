@@ -5,10 +5,10 @@
         <th>ЛР №</th> <th>Оценка</th> <th>Дата сдачи</th>
     </tr>
     <tr>
-        <td>1</td> <td>75</td> <td>19.09.26</td>
+        <td>1</td> <td>4</td> <td>19.09.26</td>
     </tr>
     <tr>
-        <td>2</td> <td>--</td> <td>--.--.--</td>
+        <td>2</td> <td>3</td> <td>03.10.26</td>
     </tr>
     <tr>
         <td>3</td> <td>--</td> <td>--.--.--</td>
