@@ -1,8 +1,15 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
+pd.set_option("display.width", 200)
+pd.set_option("display.max_columns", 20)
+pd.set_option("display.expand_frame_repr", False)
+
+
 def f(x):
-    return x**4 + 8*x**3 - 6*x**2 - 72*x + 90
+    return x**4 + 8 * x**3 - 6 * x**2 - 72 * x + 90
+
 
 def viewPlot(flag=0, x=0, y=0):
     arr = np.linspace(-10, 6, 500)
@@ -13,10 +20,27 @@ def viewPlot(flag=0, x=0, y=0):
     plt.legend()
     plt.show()
 
-HEADER = (" № Итерации |    a    |    b    |   x_1   |  f(x_1) |"
-          "   x_2   |  f(x_2) ")
-ROW    = ("{:11d} | {:7.4f} | {:7.4f} | {:7.4f} | {:7.3f} |"
-          " {:7.4f} | {:7.3f} ")
+
+COLS_BASE = ["Итерация", "a", "b", "x_1", "f(x_1)", "x_2", "f(x_2)"]
+COLS_FULL = COLS_BASE + ["x_m", "f(x_m)"]
+
+
+def build_table(rows, columns):
+    """Превращает список строк итераций в DataFrame и печатает его."""
+    df = pd.DataFrame(rows, columns=columns)
+
+    formatters = {}
+    for col in columns:
+        if col == "Итерация":
+            continue
+        if col.startswith("f("):
+            formatters[col] = lambda v: f"{v:.3f}"
+        else:
+            formatters[col] = lambda v: f"{v:.4f}"
+
+    print(df.to_string(index=False, formatters=formatters))
+    return df
+
 
 def print_result(name, x_min, f_min, a, b, iterations):
     print(f"\n\nРезультат вычисления по методу {name}:")
@@ -33,7 +57,8 @@ def method_division(eps):
     x_m = (a + b) / 2
     l = b - a
     iterations = 0
-    print(HEADER)
+    rows = []
+
     while np.abs(l) >= eps:
         iterations += 1
         x_1 = a + l / 4
@@ -41,6 +66,7 @@ def method_division(eps):
         fx_1 = f(x_1)
         fx_2 = f(x_2)
         fx_m = f(x_m)
+
         if fx_1 < fx_m:
             b = x_m
             x_m = x_1
@@ -53,10 +79,14 @@ def method_division(eps):
             a = x_1
             b = x_2
             l = b - a
+
         fx_m = f(x_m)
-        print(ROW.format(iterations, a, b, x_1, fx_1, x_2, fx_2, x_m, fx_m))
+        rows.append([iterations, a, b, x_1, fx_1, x_2, fx_2, x_m, fx_m])
+
+    df = build_table(rows, COLS_FULL)
     print_result("деления интервала", x_m, f(x_m), a, b, iterations)
     viewPlot(1, x_m, f(x_m))
+    return df
 
 
 def method_fibonacci(eps):
@@ -74,14 +104,15 @@ def method_fibonacci(eps):
     while len(F) <= n + 2:
         F.append(F[-1] + F[-2])
 
-    print(HEADER)
+    rows = []
     while n > 1:
         iterations += 1
-        x_1 = a + (F[n]     / F[n + 2]) * (b - a)
+        x_1 = a + (F[n] / F[n + 2]) * (b - a)
         x_2 = a + (F[n + 1] / F[n + 2]) * (b - a)
         fx_1 = f(x_1)
         fx_2 = f(x_2)
-        print(ROW.format(iterations, a, b, x_1, fx_1, x_2, fx_2))
+
+        rows.append([iterations, a, b, x_1, fx_1, x_2, fx_2])
 
         if n == 2:
             if fx_1 <= fx_2:
@@ -103,8 +134,10 @@ def method_fibonacci(eps):
                 x_2 = a + (F[n + 1] / F[n + 2]) * (b - a)
                 fx_2 = f(x_2)
 
+    df = build_table(rows, COLS_BASE)
     print_result("Фибоначчи", x_min, f_min, a, b, iterations)
     viewPlot(1, x_min, f_min)
+    return df
 
 
 def method_golden(eps):
@@ -116,7 +149,7 @@ def method_golden(eps):
     x_2 = b - tau * (b - a)
     fx_1, fx_2 = f(x_1), f(x_2)
 
-    print(HEADER)
+    rows = []
     while np.abs(b - a) > eps:
         iterations += 1
         if fx_1 <= fx_2:
@@ -131,12 +164,14 @@ def method_golden(eps):
             fx_2 = f(x_2)
 
         x_m = (a + b) / 2
-        print(ROW.format(iterations, a, b, x_1, fx_1, x_2, fx_2))
+        rows.append([iterations, a, b, x_1, fx_1, x_2, fx_2])
 
+    df = build_table(rows, COLS_BASE)
     x_min = (a + b) / 2
     f_min = f(x_min)
     print_result("золотого сечения", x_min, f_min, a, b, iterations)
     viewPlot(1, x_min, f_min)
+    return df
 
 
 def mainloop():
@@ -155,12 +190,14 @@ def mainloop():
         elif c == 4:
             viewPlot(0)
         elif c == 1:
-            method_division(eps)
+            df = method_division(eps)
         elif c == 2:
-            method_fibonacci(eps)
+            df = method_fibonacci(eps)
         elif c == 3:
-            method_golden(eps)
+            df = method_golden(eps)
         else:
             print("\n\nНеизвестная команда\n\n")
 
-mainloop()
+
+if __name__ == "__main__":
+    mainloop()
