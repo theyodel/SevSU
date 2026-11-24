@@ -8,10 +8,10 @@
         <td>1</td> <td>95</td> <td>17.10.26</td>
     </tr>
     <tr>
-        <td>2</td> <td>--</td> <td>--.--.--</td>
+        <td>2</td> <td>90</td> <td>31.10.26</td>
     </tr>
     <tr>
-        <td>3</td> <td>--</td> <td>--.--.--</td>
+        <td>3</td> <td>88</td> <td>14.11.26</td>
     </tr>
     <tr>
         <td>4</td> <td>--</td> <td>--.--.--</td>

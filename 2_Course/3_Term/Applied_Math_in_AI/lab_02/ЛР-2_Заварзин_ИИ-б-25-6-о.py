@@ -311,7 +311,7 @@ def mainloop():
             elif s == 4:
                 GRAPHICS_ON = not GRAPHICS_ON
             else:
-                break
+                print("")
 
         elif c == 5:
             return

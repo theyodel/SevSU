@@ -23,7 +23,6 @@ class device {
         void show() {
             cout << "  [device] Название: " << name << "\n";
         }
-        string getName() { return name; }
 };
 
 class clock : public device {
@@ -45,7 +44,6 @@ class clock : public device {
             device::show();
             cout << "  [clock]  Показание: " << hours << " ч.\n";
         }
-        int getHours() { return hours; }
 };
 
 class sandClock : public clock {
@@ -68,7 +66,6 @@ class sandClock : public clock {
             clock::show();
             cout << "  [sandClock] Объём песка: " << sandVolume << " г.\n";
         }
-        double getSandVolume() const { return sandVolume; }
 };
 
 int main() {
@@ -89,15 +86,6 @@ int main() {
 
     cout << "\n=== 6. Явный вызов метода УРОВНЯ 1: obj2.device::show() ===\n";
     obj2.device::show();
-
-    cout << "\n=== 7. Полиморфный вызов через указатель на device* ===\n";
-    device* p = &obj2;
-    p->show();
-
-    cout << "\n=== 8. Доступ к protected/private через геттеры ===\n";
-    cout << "  Имя:   " << obj2.getName()       << "\n";
-    cout << "  Часы:  " << obj2.getHours()      << "\n";
-    cout << "  Песок: " << obj2.getSandVolume() << " г\n";
 
     cout << "\n=== Завершение программы ===\n";
     return 0;
