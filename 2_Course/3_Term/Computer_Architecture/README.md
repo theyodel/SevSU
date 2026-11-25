@@ -14,10 +14,10 @@
         <td>3</td> <td>4</td> <td>06.10.26</td>
     </tr>
     <tr>
-        <td>4</td> <td>--</td> <td>--.--.--</td>
+        <td>4</td> <td>3</td> <td>17.11.26</td>
     </tr>
     <tr>
-        <td>5</td> <td>--</td> <td>--.--.--</td>
+        <td>5</td> <td>3</td> <td>25.11.26</td>
     </tr>
     <tr>
         <td>6</td> <td>--</td> <td>--.--.--</td>
@@ -27,8 +27,5 @@
     </tr>
     <tr>
         <td>8</td> <td>--</td> <td>--.--.--</td>
-    </tr>
-    <tr>
-        <td>9</td> <td>--</td> <td>--.--.--</td>
     </tr>
 </table>
