@@ -77,11 +77,6 @@ Human::~Human() {
     cout << " [ ~Human ] Деструктор" << endl;
 }
 
-void Human::outputData() {
-    cout << "Человек по имени " << this->name
-         << " в возрасте " << this->age << " лет!" << endl;
-}
-
 int Human::getAge() {
     return this->age;
 }
@@ -92,15 +87,18 @@ private:
     string role;
     bool friendly;
 
+    // Дружественная функция
+    friend void outputData(const Ent& ent);
+
 public:
     Ent();
     Ent(int, string, int, string, string, bool);
     ~Ent();
-    void outputData();
     bool isFriendly();
 };
 
-Ent::Ent(int _age, string _name, int _height, string _type, string _role, bool _friendly) : Tree(_height, _type), Human(_age, _name)
+Ent::Ent(int _age, string _name, int _height, string _type, string _role, bool _friendly)
+    : Tree(_height, _type), Human(_age, _name)
 {
     this->role = _role;
     this->friendly = _friendly;
@@ -121,12 +119,12 @@ Ent::~Ent() {
     cout << " [ ~Ent ] Деструктор" << endl;
 }
 
-void Ent::outputData() {
-    cout << "Мифическое существо \"Энт\" по имени " << this->name
-         << " высотой " << this->height << " метров, в возрасте " << this->age
-         << " из древесины " << this->type
-         << ", роль: " << this->role
-         << ", дружелюбный: " << (this->friendly ? "да" : "нет") << endl;
+void outputData(const Ent& ent) {
+    cout << "Мифическое существо \"Энт\" по имени " << ent.name
+         << " высотой " << ent.height << " метров, в возрасте " << ent.age
+         << " из древесины " << ent.type
+         << ", роль: " << ent.role
+         << ", дружелюбный: " << (ent.friendly ? "да" : "нет") << endl;
 }
 
 bool Ent::isFriendly() {
@@ -135,13 +133,13 @@ bool Ent::isFriendly() {
 
 // main
 int main() {
-    Ent ent1; // конструктор по-умолчанию
+    Ent ent1; // конструктор по умолчанию
     Ent ent2(1021, "Трибород", 15, "дуб", "leader", true); // конструктор с параметрами
     int choice;
 
     while (true) {
         cout << "\n--=== МЕНЮ ===---" << endl;
-        cout << "1. Вызов метода с одинаковым названием (.outputData())" << endl;
+        cout << "1. Вызов дружественной функции outputData(...)" << endl;
         cout << "2. Вызов метода .getHeight()" << endl;
         cout << "3. Вызов метода .getAge()" << endl;
         cout << "4. Вызов метода .isFriendly()" << endl;
@@ -151,18 +149,18 @@ int main() {
         switch (choice) {
         case 1:
             cout << "Для объекта ent1:" << endl;
-            ent1.outputData();
+            outputData(ent1);
             cout << "\nДля объекта ent2:" << endl;
-            ent2.outputData();
+            outputData(ent2);
             break;
-        
+
         case 2:
             cout << "Для объекта ent1:" << endl;
             cout << ent1.getHeight() << endl;
             cout << "\nДля объекта ent2:" << endl;
             cout << ent2.getHeight() << endl;
             break;
-        
+
         case 3:
             cout << "Для объекта ent1:" << endl;
             cout << ent1.getAge() << endl;
